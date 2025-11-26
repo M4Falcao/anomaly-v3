@@ -1,2 +1,6 @@
 /insplad-seg
 /anomaly-detection-pesquisa/differnet/insplad-seg
+/insplad-fault
+mlruns
+models
+weights

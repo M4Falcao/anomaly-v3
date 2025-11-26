@@ -7,6 +7,15 @@ import config as c
 from multi_transform_loader import ImageFolderMultiTransform
 from torchvision.datasets import ImageFolder
 from torchvision.datasets.folder import default_loader, IMG_EXTENSIONS
+import random
+import numpy as np
+
+def setup_seed(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.backends.cudnn.deterministic = True
 
 
 

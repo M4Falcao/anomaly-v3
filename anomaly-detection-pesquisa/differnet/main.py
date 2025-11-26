@@ -2,11 +2,16 @@
 "Same Same But DifferNet: Semi-Supervised Defect Detection with Normalizing Flows"
 by Marco Rudolph, Bastian Wandt and Bodo Rosenhahn.
 For further information contact Marco Rudolph (rudolph@tnt.uni-hannover.de)'''
+import os
 
+# --- Adicione estas duas linhas no topo absoluto do seu arquivo ---
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 import config as c
 from train import train
-from utils import load_datasets, make_dataloaders
+from utils import load_datasets, make_dataloaders, setup_seed
 
-train_set, test_set, ground_truth_set = load_datasets(c.dataset_path, c.class_name)
-train_loader, test_loader, ground_truth_loader = make_dataloaders(train_set, test_set, ground_truth_set)
-model = train(train_loader, test_loader, ground_truth_loader)
+if __name__ == "__main__":
+    setup_seed(42)
+    train_set, test_set, ground_truth_set = load_datasets(c.dataset_path, c.class_name)
+    train_loader, test_loader, ground_truth_loader = make_dataloaders(train_set, test_set, ground_truth_set)
+    model = train(train_loader, test_loader, ground_truth_loader)

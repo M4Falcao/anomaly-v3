@@ -2,6 +2,7 @@ import numpy as np
 import torch
 from sklearn.metrics import roc_auc_score
 from tqdm import tqdm
+import mlflow
 
 import config as c
 from localization import export_gradient_maps
@@ -70,6 +71,29 @@ def train(train_loader, test_loader, ground_truth_loader):
     score_obs_image = Score_Observer('AUROC for image level')
     score_obs_pixel = Score_Observer('AUROC for pixel level')
 
+    mlflow.set_tracking_uri(c.mlflow_tracking_uri)
+    mlflow.set_experiment(c.mlflow_experiment_name)
+    mlflow.start_run(run_name=c.mlflow_run_name)
+
+    mlflow.log_params({
+        "dataset_path": c.dataset_path,
+        "class_name": c.class_name,
+        "modelname": c.modelname,
+        "img_size": c.img_size,
+        "n_scales": c.n_scales,
+        "clamp_alpha": c.clamp_alpha,
+        "n_coupling_blocks": c.n_coupling_blocks,
+        "fc_internal": c.fc_internal,
+        "dropout": c.dropout,
+        "lr_init": c.lr_init,
+        "n_feat": c.n_feat,
+        "n_transforms": c.n_transforms,
+        "n_transforms_test": c.n_transforms_test,
+        "batch_size": c.batch_size,
+        "meta_epochs": c.meta_epochs,
+        "sub_epochs": c.sub_epochs,
+    })
+
     for epoch in range(c.meta_epochs):
         # Training loop
         model.train()
@@ -88,12 +112,16 @@ def train(train_loader, test_loader, ground_truth_loader):
             # Compute image-level anomaly score (original score) during training
             image_level_score_train = torch.mean(z ** 2).item()
             image_level_scores_train.append(image_level_score_train)
+            
+            mlflow.log_metric("train_loss_step", loss.item(), step=epoch * len(train_loader) + i)
+            mlflow.log_metric("train_score_step", image_level_score_train, step=epoch * len(train_loader) + i)
 
         # Compute average training loss
         avg_train_loss = np.mean(train_loss)
 
         # Print or log metrics during training
         print('Epoch [{}/{}], Train Loss: {:.4f}'.format(epoch + 1, c.meta_epochs, avg_train_loss))
+        mlflow.log_metric("avg_train_loss", avg_train_loss, step=epoch)
 
         # Evaluation loop
         model.eval()
@@ -145,11 +173,16 @@ def train(train_loader, test_loader, ground_truth_loader):
         is_anomaly = np.array([0 if l == 0 else 1 for l in np.concatenate(test_labels)])
         z_grouped = torch.cat(test_z, dim=0).view(-1, c.n_transforms_test, c.n_feat)
         anomaly_score = t2np(torch.mean(z_grouped ** 2, dim=(-2, -1)))
-        score_obs_image.update(roc_auc_score(is_anomaly, anomaly_score), epoch,
+        image_level_auroc = roc_auc_score(is_anomaly, anomaly_score)
+        score_obs_image.update(image_level_auroc, epoch,
                         print_score=c.verbose or epoch == c.meta_epochs - 1)
         
         score_obs_pixel.update(mean_pixel_auroc_test, epoch,
                         print_score=c.verbose or epoch == c.meta_epochs - 1)
+
+        mlflow.log_metric("avg_test_loss", avg_test_loss, step=epoch)
+        mlflow.log_metric("image_level_auroc", image_level_auroc, step=epoch)
+        mlflow.log_metric("pixel_level_auroc", mean_pixel_auroc_test, step=epoch)
 
     if c.grad_map_viz:
         export_gradient_maps(model, test_loader, optimizer, -1)
@@ -158,5 +191,8 @@ def train(train_loader, test_loader, ground_truth_loader):
         model.to('cpu')
         save_model(model, c.modelname)
         save_weights(model, c.modelname)
+        mlflow.pytorch.log_model(model, "model")
+
+    mlflow.end_run()
     return model
 
