@@ -3,7 +3,7 @@ import os
 import torch
 import torch.nn.functional as F
 from torch import nn
-from torchvision.models import alexnet
+from torchvision.models import alexnet, resnet18
 
 from fightingcv_attention.attention.CBAM import CBAMBlock
 from fightingcv_attention.attention.SEAttention import SEAttention
@@ -90,6 +90,52 @@ class SEDifferNet(nn.Module):
             x = self.alexnet.features[11](x)
             x = self.simsa4(x)
             feat_s = self.alexnet.features[12](x)
+            y_cat.append(torch.mean(feat_s, dim=(2, 3)))
+
+        y = torch.cat(y_cat, dim=1)
+        z = self.nf(y)
+        return z
+
+
+class SEDifferNetResnet18(nn.Module):
+
+    print("SEDifferNetResnet18")
+    def __init__(self):
+        super(SEDifferNetResnet18, self).__init__()
+        self.resnet = resnet18(pretrained=True)
+        self.cbam1 = CBAMBlock(channel=64, reduction=16, kernel_size=49)
+        self.cbam2 = CBAMBlock(channel=128, reduction=16, kernel_size=49)        
+        self.cbam3 = CBAMBlock(channel=256, reduction=16, kernel_size=49)
+        self.cbam4 = CBAMBlock(channel=512, reduction=16, kernel_size=49)
+        self.simsa1 = SEAttention(channel=64, reduction=2)
+        self.simsa2 = SEAttention(channel=128, reduction=2)
+        self.simsa3 = SEAttention(channel=256, reduction=2)
+        self.simsa4 = SEAttention(channel=512, reduction=2)
+        
+        self.nf = nf_head(input_dim=512 * c.n_scales)
+
+    def forward(self, x_input):
+        y_cat = list()
+
+        for s in range(c.n_scales):
+            x_scaled = F.interpolate(x_input, size=c.img_size[0] // (2 ** s)) if s > 0 else x_input
+            x = self.resnet.conv1(x_scaled)
+            x = self.resnet.bn1(x)
+            x = self.resnet.relu(x)
+            x = self.resnet.maxpool(x)
+
+            x = self.resnet.layer1(x)
+            x = self.simsa1(x)
+
+            x = self.resnet.layer2(x)
+            x = self.simsa2(x)
+
+            x = self.resnet.layer3(x)
+            
+            x = self.resnet.layer4(x)
+            x = self.simsa4(x)
+            
+            feat_s = x
             y_cat.append(torch.mean(feat_s, dim=(2, 3)))
 
         y = torch.cat(y_cat, dim=1)

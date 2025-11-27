@@ -10,7 +10,10 @@ torch.cuda.set_device(0)
 # data settings
 dataset_path = r"C:/Users/teo-s/OneDrive/Documentos/GitHub/anomaly-v3/insplad-seg/insplad-seg"
 class_name = "glass-insulator"
-modelname = "teste_v2_glass-insulator"
+modelname = "image_level_glass-insulator_resnet18"
+# dataset_path = r"C:/Users/teo-s/OneDrive/Documentos/GitHub/anomaly-v3/anomaly-detection-pesquisa/differnet/dummy_dataset"
+# class_name = "dummy_class"
+# modelname = "dummy_model"
 
 img_size = (448, 448)
 img_dims = [3] + list(img_size)
@@ -39,8 +42,8 @@ batch_size_test = batch_size
 
 # total epochs = meta_epochs * sub_epochs
 # evaluation after <sub_epochs> epochs
-meta_epochs = 10
-sub_epochs = 10
+meta_epochs = 20
+sub_epochs = 5
 
 # output settings
 verbose = True
@@ -51,4 +54,4 @@ save_model = True
 # mlflow settings
 mlflow_tracking_uri = 'sqlite:///mlflow.db'
 mlflow_experiment_name = 'DifferNet_Experiment_v2'
-mlflow_run_name = 'DifferNet_Run_v2'
+mlflow_run_name = 'DifferNet_Run_v4_resnet18'

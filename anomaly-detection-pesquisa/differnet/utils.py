@@ -91,6 +91,38 @@ def load_datasets(dataset_path, class_name):
     return trainset, testset, ground_truth_set
 
 
+def load_datasets_image_level(dataset_path, class_name):
+    def target_transform(target):
+        return class_perm[target]
+
+    data_dir_train = os.path.join(dataset_path, class_name, 'train')
+    data_dir_test = os.path.join(dataset_path, class_name, 'test')
+
+    classes = os.listdir(data_dir_test)
+    if 'good' not in classes:
+        print('There should exist a subdirectory "good". Read the doc of this function for further information.')
+        exit()
+    classes.sort()
+    class_perm = list()
+    class_idx = 1
+    for cl in classes:
+        if cl == 'good':
+            class_perm.append(0)
+        else:
+            class_perm.append(class_idx)
+            class_idx += 1
+
+    transform_train = get_random_transforms()
+
+    # Skip ground truth loading
+    
+    trainset = ImageFolderMultiTransform(data_dir_train, transform=transform_train, n_transforms=c.n_transforms)
+    testset = ImageFolderMultiTransform(data_dir_test, transform=transform_train, target_transform=target_transform,
+                                        n_transforms=c.n_transforms_test)
+
+    return trainset, testset
+
+
 def make_dataloaders(trainset, testset, ground_truth_set=None):
     trainloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=c.batch_size, shuffle=True,
                                               drop_last=False)

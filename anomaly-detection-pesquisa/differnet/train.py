@@ -1,6 +1,8 @@
 import numpy as np
 import torch
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, roc_curve
+import matplotlib.pyplot as plt
+import datetime
 from tqdm import tqdm
 import mlflow
 
@@ -64,7 +66,7 @@ import time
 print(f'TRAINING ON : {c.device}, cause cuda is {torch.cuda.is_available()}')
 
 def train(train_loader, test_loader, ground_truth_loader):
-    model = SEDifferNet()
+    model = SEDifferNetResnet18()
     optimizer = torch.optim.Adam(model.nf.parameters(), lr=c.lr_init, betas=(0.8, 0.8), eps=1e-04, weight_decay=1e-5)
     model.to(c.device)
 
@@ -73,7 +75,9 @@ def train(train_loader, test_loader, ground_truth_loader):
 
     mlflow.set_tracking_uri(c.mlflow_tracking_uri)
     mlflow.set_experiment(c.mlflow_experiment_name)
-    mlflow.start_run(run_name=c.mlflow_run_name)
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    run_name = f"{c.mlflow_run_name}_{timestamp}"
+    mlflow.start_run(run_name=run_name)
 
     mlflow.log_params({
         "dataset_path": c.dataset_path,
@@ -93,6 +97,9 @@ def train(train_loader, test_loader, ground_truth_loader):
         "meta_epochs": c.meta_epochs,
         "sub_epochs": c.sub_epochs,
     })
+
+    best_image_level_auroc = -1
+
 
     for epoch in range(c.meta_epochs):
         # Training loop
@@ -155,6 +162,8 @@ def train(train_loader, test_loader, ground_truth_loader):
                 pixel_auroc_test = calculate_pixel_level_auroc(t2np(z), t2np(ground_truth_masks))
                 pixel_level_auroc_scores_test.append(pixel_auroc_test)
 
+                mlflow.log_metric("pixel_auroc_step", pixel_auroc_test, step=epoch * len(test_loader) + i)
+
         # Calculate time metrics
         elapsed_time = time.time() - start_time
         images_per_second = total_images / elapsed_time
@@ -171,7 +180,11 @@ def train(train_loader, test_loader, ground_truth_loader):
     
         # Update score observer
         is_anomaly = np.array([0 if l == 0 else 1 for l in np.concatenate(test_labels)])
-        z_grouped = torch.cat(test_z, dim=0).view(-1, c.n_transforms_test, c.n_feat)
+        
+        # Use the actual feature dimension from the model output
+        actual_n_feat = test_z[0].shape[-1]
+        z_grouped = torch.cat(test_z, dim=0).view(-1, c.n_transforms_test, actual_n_feat)
+        
         anomaly_score = t2np(torch.mean(z_grouped ** 2, dim=(-2, -1)))
         image_level_auroc = roc_auc_score(is_anomaly, anomaly_score)
         score_obs_image.update(image_level_auroc, epoch,
@@ -183,6 +196,39 @@ def train(train_loader, test_loader, ground_truth_loader):
         mlflow.log_metric("avg_test_loss", avg_test_loss, step=epoch)
         mlflow.log_metric("image_level_auroc", image_level_auroc, step=epoch)
         mlflow.log_metric("pixel_level_auroc", mean_pixel_auroc_test, step=epoch)
+
+        # --- MLflow Plots ---
+        # 1. ROC Curve
+        fpr, tpr, _ = roc_curve(is_anomaly, anomaly_score)
+        fig_roc, ax_roc = plt.subplots()
+        ax_roc.plot(fpr, tpr, label=f'AUC = {image_level_auroc:.2f}')
+        ax_roc.plot([0, 1], [0, 1], linestyle='--')
+        ax_roc.set_xlabel('False Positive Rate')
+        ax_roc.set_ylabel('True Positive Rate')
+        ax_roc.set_title('ROC Curve')
+        ax_roc.legend()
+        mlflow.log_figure(fig_roc, f"plots/roc_curve_epoch_{epoch}.png")
+        plt.close(fig_roc)
+
+        # 2. Anomaly Score Histogram
+        fig_hist, ax_hist = plt.subplots()
+        normal_scores = anomaly_score[is_anomaly == 0]
+        anomalous_scores = anomaly_score[is_anomaly == 1]
+        ax_hist.hist(normal_scores, bins=20, alpha=0.5, label='Normal', density=True)
+        ax_hist.hist(anomalous_scores, bins=20, alpha=0.5, label='Anomaly', density=True)
+        ax_hist.set_xlabel('Anomaly Score')
+        ax_hist.set_ylabel('Density')
+        ax_hist.set_title('Anomaly Score Distribution')
+        ax_hist.legend()
+        mlflow.log_figure(fig_hist, f"plots/anomaly_score_dist_epoch_{epoch}.png")
+        plt.close(fig_hist)
+
+        # --- Checkpointing (Best Model) ---
+        if image_level_auroc > best_image_level_auroc:
+            best_image_level_auroc = image_level_auroc
+            print(f"New best model found! AUROC: {best_image_level_auroc:.4f}")
+            mlflow.pytorch.log_model(model, "model_best")
+
 
     if c.grad_map_viz:
         export_gradient_maps(model, test_loader, optimizer, -1)

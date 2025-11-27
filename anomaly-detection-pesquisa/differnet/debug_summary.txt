@@ -1,0 +1,8 @@
+DEBUG: c.n_transforms_test=64
+DEBUG: inputs.shape=torch.Size([64, 3, 448, 448])
+DEBUG: z.shape=torch.Size([64, 1536])
+DEBUG: labels.shape=torch.Size([1])
+DEBUG: is_anomaly.shape=(16,)
+DEBUG: anomaly_score.shape=(32,)
+DEBUG: test_labels len=16
+DEBUG: test_labels[0] shape=(1,)
