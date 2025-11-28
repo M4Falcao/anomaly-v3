@@ -45,6 +45,8 @@ batch_size_test = batch_size
 meta_epochs = 20
 sub_epochs = 5
 
+num_workers = 1
+
 # output settings
 verbose = True
 grad_map_viz = False

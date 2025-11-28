@@ -125,13 +125,13 @@ def load_datasets_image_level(dataset_path, class_name):
 
 def make_dataloaders(trainset, testset, ground_truth_set=None):
     trainloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=c.batch_size, shuffle=True,
-                                              drop_last=False)
+                                              drop_last=False, num_workers=c.num_workers)
     testloader = torch.utils.data.DataLoader(testset, pin_memory=True, batch_size=c.batch_size_test, shuffle=True,
-                                             drop_last=False)
+                                             drop_last=False, num_workers=c.num_workers)
     ground_truth_loader = None
     if ground_truth_set:
         ground_truth_loader = torch.utils.data.DataLoader(ground_truth_set, pin_memory=True, batch_size=c.batch_size,
-                                                          shuffle=False, drop_last=False)
+                                                          shuffle=False, drop_last=False, num_workers=c.num_workers)
     return trainloader, testloader, ground_truth_loader
 
 
