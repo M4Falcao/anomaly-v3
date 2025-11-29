@@ -246,12 +246,12 @@ def train(train_loader, test_loader, ground_truth_loader):
 
             # Save model every c.checkpoint_interval epochs
             if (epoch + 1) % c.checkpoint_interval == 0 or image_auroc >= score_obs_image.max_score:
-                
+
                 # Checkpoint best model based on Image Level AUROC
                 if image_auroc >= score_obs_image.max_score:
                     # mlflow.pytorch.log_model(model, "model_best_auroc")
                     print(f"New best model saved to MLflow with AUROC: {image_auroc:.4f} in epoch {epoch + 1}")
-                print(f"Saving model checkpoint at epoch {epoch + 1}...")
+                print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - Saving model checkpoint at epoch {epoch + 1}...")
                 
                 # Ensure checkpoint directory exists
                 if not os.path.exists(c.checkpoint_path):
@@ -263,10 +263,11 @@ def train(train_loader, test_loader, ground_truth_loader):
                 # Save weights explicitly to local path
                 weights_filename = os.path.join(c.checkpoint_path, f"{c.class_name}_{c.modelname}_epoch_{epoch + 1}.pth")
                 torch.save(model.state_dict(), weights_filename)
-                print(f"Checkpoint saved locally to: {weights_filename}")
+                print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - Checkpoint saved locally to: {weights_filename}")
                 
                 # Log the local file as an artifact to MLflow
                 mlflow.log_artifact(weights_filename, artifact_path="checkpoints")
+                print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - Checkpoint saved to MLflow")
 
             if c.export_mlflow:
                 if (epoch + 1) % (c.checkpoint_interval * 2) == 0:
