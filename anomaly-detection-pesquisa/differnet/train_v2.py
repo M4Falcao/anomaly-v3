@@ -63,9 +63,9 @@ class Score_Observer:
 
 import time
 
-print(f'TRAINING ON : {c.device}, cause cuda is {torch.cuda.is_available()}')
 
 def train_v2(train_loader, test_loader, ground_truth_loader):
+    print(f'TRAINING ON : {c.device}, cause cuda is {torch.cuda.is_available()}')  
     model = SEDifferNet()
     optimizer = torch.optim.Adam(model.nf.parameters(), lr=c.lr_init, betas=(0.8, 0.8), eps=1e-04, weight_decay=1e-5)
     model.to(c.device)
@@ -132,7 +132,7 @@ def train_v2(train_loader, test_loader, ground_truth_loader):
             avg_train_loss = np.mean(train_loss)
 
             # Print or log metrics during training
-            print('Epoch [{}/{}], Train Loss: {:.4f}'.format(sub_epoch + 1, c.sub_epochs, avg_train_loss))
+            print('SUB-Epoch [{}/{}], Train Loss: {:.4f}'.format(sub_epoch + 1, c.sub_epochs, avg_train_loss))
             mlflow.log_metric("avg_train_loss", avg_train_loss, step=epoch * 10 + sub_epoch)
 
         # Evaluation loop
@@ -147,27 +147,52 @@ def train_v2(train_loader, test_loader, ground_truth_loader):
         start_time = time.time()
         total_images = 0
 
-        with torch.no_grad():
-            for i, data in enumerate(tqdm(test_loader)):
+        # Enable gradients for the input gradient calculation
+        with torch.set_grad_enabled(True):
+            # Use zip to iterate over test_loader and ground_truth_loader simultaneously
+            for i, (data, ground_truth_data) in enumerate(tqdm(zip(test_loader, ground_truth_loader), total=len(test_loader))):
                 inputs, labels = preprocess_batch(data)
-                z = model(inputs)
-                loss = get_loss(z, model.nf.jacobian(run_forward=False))
-                test_loss.append(loss.item())
-                test_labels.append(t2np(labels)) 
-                test_z.append(z)
+                
+                # Forward pass for image-level score (standard)
+                with torch.no_grad():
+                    z = model(inputs)
+                    loss = get_loss(z, model.nf.jacobian(run_forward=False))
+                    test_loss.append(loss.item())
+                    test_labels.append(t2np(labels)) 
+                    test_z.append(z)
 
                 # Count images processed
                 total_images += inputs.size(0)
 
-                # Load ground truth masks
-                ground_truth_data = next(iter(ground_truth_loader))
+                # Load ground truth masks (now synchronized)
                 ground_truth_masks = ground_truth_data[0].to(c.device)
-
-                # Compute pixel-level AUROC during evaluation
-                pixel_auroc_test = calculate_pixel_level_auroc(t2np(z), t2np(ground_truth_masks))
-                pixel_level_auroc_scores_test.append(pixel_auroc_test)
-
-                mlflow.log_metric("pixel_auroc_step", pixel_auroc_test, step=epoch * len(test_loader) + i)
+                
+                # Generate Anomaly Map (requires gradients)
+                # We need to re-run forward pass with requires_grad=True inside the function
+                # But we can pass the inputs we already have (they will be detached/reattached inside)
+                anomaly_maps = generate_gradient_map(model, inputs, labels)
+                
+                # Calculate Pixel-Level AUROC for this batch
+                # Resize masks to match anomaly map if needed (usually map is same size as input)
+                # Ground truth masks are (Batch, 1, H, W) or (Batch, H, W)
+                gt_masks_np = t2np(ground_truth_masks)
+                if gt_masks_np.ndim == 4:
+                    gt_masks_np = gt_masks_np[:, 0, :, :] # Take first channel
+                
+                # Binarize masks
+                gt_masks_binary = (gt_masks_np > 0).astype(int)
+                
+                # Flatten
+                preds_flat = anomaly_maps.reshape(-1)
+                gt_flat = gt_masks_binary.reshape(-1)
+                
+                try:
+                    pixel_auroc_test = roc_auc_score(gt_flat, preds_flat)
+                    pixel_level_auroc_scores_test.append(pixel_auroc_test)
+                    mlflow.log_metric("pixel_auroc_step", pixel_auroc_test, step=epoch * len(test_loader) + i)
+                except ValueError:
+                    # Handle cases where mask is all 0 or all 1 (undefined AUROC)
+                    pass
 
         # Calculate time metrics
         elapsed_time = time.time() - start_time
@@ -181,7 +206,10 @@ def train_v2(train_loader, test_loader, ground_truth_loader):
         avg_test_loss = np.mean(test_loss)
 
         # Aggregate pixel-level AUROC scores during evaluation
-        mean_pixel_auroc_test = np.mean(np.array(pixel_level_auroc_scores_test))
+        if len(pixel_level_auroc_scores_test) > 0:
+            mean_pixel_auroc_test = np.mean(np.array(pixel_level_auroc_scores_test))
+        else:
+            mean_pixel_auroc_test = 0.0
     
         # Update score observer
         is_anomaly = np.array([0 if l == 0 else 1 for l in np.concatenate(test_labels)])

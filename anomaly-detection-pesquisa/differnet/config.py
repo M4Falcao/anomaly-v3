@@ -7,6 +7,8 @@ import torch
 torch.cuda.empty_cache()
 torch.cuda.set_device(0)
 
+c.model = DifferNet()
+
 # data settings
 dataset_path = r"C:/Users/teo-s/OneDrive/Documentos/GitHub/anomaly-v3/insplad-seg/insplad-seg"
 class_name = "glass-insulator"

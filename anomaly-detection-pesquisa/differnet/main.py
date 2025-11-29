@@ -19,10 +19,16 @@ if __name__ == "__main__":
     # c.modelname = "dummy_model"
     # c.meta_epochs = 5
     # c.sub_epochs = 2
+    c.modelname = "sediffernet_10_10"
+    c.meta_epochs = 10
+    c.sub_epochs = 1
+    c.batch_size = 1
+    c.num_workers = 2
 
+    
     train_set, test_set, ground_truth_set = load_datasets(c.dataset_path, c.class_name)
     train_loader, test_loader, ground_truth_loader = make_dataloaders(train_set, test_set, ground_truth_set)
-    model = train(train_loader, test_loader, ground_truth_loader)
+    model = train_v2(train_loader, test_loader, ground_truth_loader)
     # train_set, test_set = load_datasets_image_level(c.dataset_path, c.class_name)
     # train_loader, test_loader, ground_truth_loader = make_dataloaders(train_set, test_set)
     # model = train(train_loader, test_loader)

@@ -66,7 +66,7 @@ import time
 print(f'TRAINING ON : {c.device}, cause cuda is {torch.cuda.is_available()}')
 
 def train(train_loader, test_loader, ground_truth_loader):
-    model = SEDifferNetResnet18()
+    model : DifferNet | DifferNetResnet18 = c.model
     optimizer = torch.optim.Adam(model.nf.parameters(), lr=c.lr_init, betas=(0.8, 0.8), eps=1e-04, weight_decay=1e-5)
     model.to(c.device)
 

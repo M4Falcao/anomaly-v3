@@ -52,8 +52,8 @@ class DifferNet(nn.Module):
 
 class SEDifferNet(nn.Module):
 
-    print("SEDifferNet")
     def __init__(self):
+        print("SEDifferNet")
         super(SEDifferNet, self).__init__()
         self.alexnet = alexnet(pretrained=True)
         # self.cbam1 = CBAMBlock(channel=384,reduction=16,kernel_size=49)
@@ -99,8 +99,8 @@ class SEDifferNet(nn.Module):
 
 class SEDifferNetResnet18(nn.Module):
 
-    print("SEDifferNetResnet18")
     def __init__(self):
+        print("SEDifferNetResnet18")
         super(SEDifferNetResnet18, self).__init__()
         self.resnet = resnet18(pretrained=True)
         self.cbam1 = CBAMBlock(channel=64, reduction=16, kernel_size=49)

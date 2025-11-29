@@ -57,10 +57,14 @@ def get_loss(z, jac):
     return torch.mean(0.5 * torch.sum(z ** 2, dim=(1,)) - jac) / z.shape[1]
 
 
-def load_datasets(dataset_path, class_name):
-    def target_transform(target):
-        return class_perm[target]
+class TargetTransform:
+    def __init__(self, class_perm):
+        self.class_perm = class_perm
 
+    def __call__(self, target):
+        return self.class_perm[target]
+
+def load_datasets(dataset_path, class_name):
     data_dir_train = os.path.join(dataset_path, class_name, 'train')
     data_dir_test = os.path.join(dataset_path, class_name, 'test')
 
@@ -78,6 +82,7 @@ def load_datasets(dataset_path, class_name):
             class_perm.append(class_idx)
             class_idx += 1
 
+    target_transform = TargetTransform(class_perm)
     transform_train = get_random_transforms()
 
     # Load ground truth masks
@@ -92,9 +97,6 @@ def load_datasets(dataset_path, class_name):
 
 
 def load_datasets_image_level(dataset_path, class_name):
-    def target_transform(target):
-        return class_perm[target]
-
     data_dir_train = os.path.join(dataset_path, class_name, 'train')
     data_dir_test = os.path.join(dataset_path, class_name, 'test')
 
@@ -112,6 +114,7 @@ def load_datasets_image_level(dataset_path, class_name):
             class_perm.append(class_idx)
             class_idx += 1
 
+    target_transform = TargetTransform(class_perm)
     transform_train = get_random_transforms()
 
     # Skip ground truth loading
@@ -126,7 +129,7 @@ def load_datasets_image_level(dataset_path, class_name):
 def make_dataloaders(trainset, testset, ground_truth_set=None):
     trainloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=c.batch_size, shuffle=True,
                                               drop_last=False, num_workers=c.num_workers)
-    testloader = torch.utils.data.DataLoader(testset, pin_memory=True, batch_size=c.batch_size_test, shuffle=True,
+    testloader = torch.utils.data.DataLoader(testset, pin_memory=True, batch_size=c.batch_size_test, shuffle=False,
                                              drop_last=False, num_workers=c.num_workers)
     ground_truth_loader = None
     if ground_truth_set:
@@ -142,3 +145,57 @@ def preprocess_batch(data):
     inputs, labels = inputs.to(c.device), labels.to(c.device)
     inputs = inputs.view(-1, *inputs.shape[-3:])
     return inputs, labels
+
+
+from scipy.ndimage import rotate, gaussian_filter
+
+def generate_gradient_map(model, inputs, labels):
+    '''
+    Generates anomaly map using gradients of the loss w.r.t inputs.
+    Adapted from localization.py but for all images (not just anomalies).
+    '''
+    model.eval()
+    model.zero_grad()
+    
+    inputs.requires_grad = True
+    
+    z = model(inputs)
+    loss = get_loss(z, model.nf.jacobian(run_forward=False))
+    loss.backward()
+    
+    grad = inputs.grad.view(-1, c.n_transforms_test, *inputs.shape[-3:])
+    grad = t2np(grad)
+    
+    degrees = -1 * np.arange(c.n_transforms_test) * 360.0 / c.n_transforms_test
+    
+    for i_item in range(c.n_transforms_test):
+        old_shape = grad[:, i_item].shape
+        # Flatten for rotation
+        img = np.reshape(grad[:, i_item], [-1, *grad.shape[-2:]])
+        # Transpose to (H, W, C) for rotation
+        img = np.transpose(img, [1, 2, 0])
+        # Rotate back
+        img = np.transpose(rotate(img, degrees[i_item], reshape=False), [2, 0, 1])
+        # Apply gaussian filter
+        img = gaussian_filter(img, (0, 3, 3))
+        # Reshape back
+        grad[:, i_item] = np.reshape(img, old_shape)
+        
+    # Average over transforms
+    grad_img = np.mean(np.abs(grad), axis=1)
+    
+    # Square the gradients (common practice for energy/anomaly score)
+    grad_img_sq = grad_img ** 2
+    
+    # Average over channels to get 2D map (H, W)
+    # Input grad is (Batch, C, H, W), we want (Batch, H, W)
+    # But wait, grad_img is (Batch, C, H, W).
+    # Usually we take max or mean over channels.
+    # localization.py does: grad_img = np.mean(np.abs(grad), axis=1) -> this is mean over TRANSFORMS.
+    # So grad_img is (Batch, C, H, W).
+    # Then grad_img_sq = grad_img ** 2.
+    # We need a single map per image.
+    # Let's take mean over channels.
+    anomaly_map = np.mean(grad_img_sq, axis=1)
+    
+    return anomaly_map
