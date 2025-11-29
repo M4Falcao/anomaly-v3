@@ -1,3 +1,6 @@
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 '''This file configures the training procedure because handling arguments in every single function is so exhaustive for
 research purposes. Don't try this code if you are a software engineer.'''
 
@@ -57,5 +60,5 @@ mlflow_run_name = f"{class_name}_{modelname}"
 ngrok_auth_token = None
 
 # pyngrok settings
-use_pyngrok = True
+use_pyngrok = False
 

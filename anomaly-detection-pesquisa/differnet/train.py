@@ -5,6 +5,8 @@ from tqdm import tqdm
 import mlflow
 import threading
 import os
+import time
+import socket
 
 import config as c
 from localization import export_gradient_maps
@@ -18,11 +20,22 @@ def start_ngrok(port):
     from pyngrok import ngrok
     # Set the authtoken if provided in environment or config (optional)
     ngrok.set_auth_token(c.ngrok_auth_token) 
-    public_url = ngrok.connect(port).public_url
+    public_url = ngrok.connect(port, host_header="rewrite").public_url
     print(f" * ngrok tunnel \"{public_url}\" -> \"http://127.0.0.1:{port}\"")
 
 def run_mlflow_ui():
-    os.system(f"mlflow ui --backend-store-uri {c.mlflow_backend_store_uri} --port 5000 --host 0.0.0.0 &")
+    os.system(f"mlflow ui --backend-store-uri {c.mlflow_backend_store_uri} --port 5000 --host 0.0.0.0")
+
+def wait_for_server(host, port, timeout=30):
+    start_time = time.time()
+    while True:
+        try:
+            with socket.create_connection((host, port), timeout=1):
+                return True
+        except (socket.timeout, ConnectionRefusedError, OSError):
+            if time.time() - start_time > timeout:
+                return False
+            time.sleep(1)
 
 def calculate_image_level_auroc(predictions, ground_truth_labels):
     # Calculate image-level AUROC
@@ -78,18 +91,24 @@ print(f'TRAINING ON : {c.device}, cause cuda is {torch.cuda.is_available()}')
 def train(train_loader, test_loader, ground_truth_loader):
     # MLflow Setup
     if c.use_mlflow:
-        mlflow.set_tracking_uri(c.mlflow_tracking_uri)
-        mlflow.set_experiment(c.mlflow_experiment_name)
-        
         if c.use_pyngrok:
             # Start MLflow UI in a background thread
             thread = threading.Thread(target=run_mlflow_ui)
             thread.daemon = True
             thread.start()
             
+            # Wait for MLflow server to start
+            print("Waiting for MLflow server to start...")
+            if wait_for_server("127.0.0.1", 5000):
+                print("MLflow server started!")
+            else:
+                print("Timed out waiting for MLflow server!")
+
             # Start ngrok
             start_ngrok(5000)
 
+        mlflow.set_tracking_uri(c.mlflow_tracking_uri)
+        mlflow.set_experiment(c.mlflow_experiment_name)
         mlflow.start_run(run_name=c.mlflow_run_name)
         
         # Log parameters
