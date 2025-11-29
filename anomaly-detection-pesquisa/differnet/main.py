@@ -3,6 +3,8 @@
 by Marco Rudolph, Bastian Wandt and Bodo Rosenhahn.
 For further information contact Marco Rudolph (rudolph@tnt.uni-hannover.de)'''
 
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 import config as c
 from train import train
 from utils import load_datasets, make_dataloaders

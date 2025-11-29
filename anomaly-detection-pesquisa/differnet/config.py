@@ -8,7 +8,7 @@ torch.cuda.empty_cache()
 torch.cuda.set_device(0)
 
 # data settings
-dataset_path = r"C:\Users\Pichau\Pesquisa\pesquisa\data\insplad-seg\insplad-seg"
+dataset_path = r"C:/Users/teo-s/OneDrive/Documentos/GitHub/anomaly-v3/insplad-seg/insplad-seg"
 class_name = "glass-insulator"
 modelname = "dummy_test"
 
@@ -39,11 +39,22 @@ batch_size_test = batch_size
 
 # total epochs = meta_epochs * sub_epochs
 # evaluation after <sub_epochs> epochs
-meta_epochs = 10
-sub_epochs = 5
+meta_epochs = 1
+sub_epochs = 1
 
 # output settings
 verbose = True
 grad_map_viz = False
 hide_tqdm_bar = True
 save_model = True
+
+# mlflow settings
+use_mlflow = True
+mlflow_tracking_uri = "http://127.0.0.1:5000"
+mlflow_backend_store_uri = r"file:./mlruns"
+mlflow_experiment_name = "DifferNet_Experiment"
+mlflow_run_name = f"{class_name}_{modelname}"
+
+# pyngrok settings
+use_pyngrok = True
+
