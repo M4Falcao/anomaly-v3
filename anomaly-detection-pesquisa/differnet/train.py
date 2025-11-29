@@ -124,6 +124,21 @@ def train(train_loader, test_loader, ground_truth_loader):
     optimizer = torch.optim.Adam(model.nf.parameters(), lr=c.lr_init, betas=(0.8, 0.8), eps=1e-04, weight_decay=1e-5)
     model.to(c.device)
 
+    if c.use_mlflow:
+        # Log config file
+        mlflow.log_artifact("config.py")
+        
+        # Log model summary
+        with open("model_summary.txt", "w") as f:
+            f.write(str(model))
+        mlflow.log_artifact("model_summary.txt")
+        if os.path.exists("model_summary.txt"):
+            os.remove("model_summary.txt")
+            
+        # Log parameter count
+        total_params = sum(p.numel() for p in model.parameters())
+        mlflow.log_param("total_parameters", total_params)
+
     if c.resume_training:
         print(f"Loading weights from {c.resume_file}...")
         try:
@@ -232,6 +247,25 @@ def train(train_loader, test_loader, ground_truth_loader):
             if image_auroc >= score_obs_image.max_score:
                  mlflow.pytorch.log_model(model, "model_best_auroc")
                  print(f"New best model saved to MLflow with AUROC: {image_auroc:.4f}")
+
+            # Save model every c.checkpoint_interval epochs
+            if (epoch + 1) % c.checkpoint_interval == 0:
+                print(f"Saving model checkpoint at epoch {epoch + 1}...")
+                
+                # Ensure checkpoint directory exists
+                if not os.path.exists(c.checkpoint_path):
+                    os.makedirs(c.checkpoint_path)
+                
+                # Save full model to MLflow
+                mlflow.pytorch.log_model(model, f"model_epoch_{epoch + 1}")
+                
+                # Save weights explicitly to local path
+                weights_filename = os.path.join(c.checkpoint_path, f"{c.class_name}_{c.modelname}_epoch_{epoch + 1}.pth")
+                torch.save(model.state_dict(), weights_filename)
+                print(f"Checkpoint saved locally to: {weights_filename}")
+                
+                # Log the local file as an artifact to MLflow
+                mlflow.log_artifact(weights_filename, artifact_path="checkpoints")
 
     if c.grad_map_viz:
         export_gradient_maps(model, test_loader, optimizer, -1)

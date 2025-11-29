@@ -50,9 +50,11 @@ verbose = True
 grad_map_viz = False
 hide_tqdm_bar = True
 save_model = True
+checkpoint_interval = 5
+checkpoint_path = "./checkpoints"
 
 # mlflow settings
-use_mlflow = False
+use_mlflow = True
 mlflow_tracking_uri = "http://127.0.0.1:5000"
 mlflow_backend_store_uri = r"file:./mlruns"
 mlflow_experiment_name = "DifferNet_Experiment"
