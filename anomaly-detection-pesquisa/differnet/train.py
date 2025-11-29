@@ -124,6 +124,15 @@ def train(train_loader, test_loader, ground_truth_loader):
     optimizer = torch.optim.Adam(model.nf.parameters(), lr=c.lr_init, betas=(0.8, 0.8), eps=1e-04, weight_decay=1e-5)
     model.to(c.device)
 
+    if c.resume_training:
+        print(f"Loading weights from {c.resume_file}...")
+        try:
+            load_weights(model, c.resume_file)
+            print("Weights loaded successfully.")
+        except Exception as e:
+            print(f"Error loading weights: {e}")
+            print("Starting training from scratch.")
+
     score_obs_image = Score_Observer('AUROC for image level')
     score_obs_pixel = Score_Observer('AUROC for pixel level')
 

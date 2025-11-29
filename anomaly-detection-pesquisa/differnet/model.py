@@ -147,7 +147,10 @@ def save_model(model, filename):
 
 
 def load_model(filename):
-    path = os.path.join(MODEL_DIR, filename)
+    if os.path.exists(filename):
+        path = filename
+    else:
+        path = os.path.join(MODEL_DIR, filename)
     model = torch.load(path)
     return model
 
@@ -159,6 +162,17 @@ def save_weights(model, filename):
 
 
 def load_weights(model, filename):
-    path = os.path.join(WEIGHT_DIR, filename)
-    model.load_state_dict(torch.load(path))
+    if os.path.exists(filename):
+        path = filename
+    else:
+        path = os.path.join(WEIGHT_DIR, filename)
+    
+    loaded_content = torch.load(path)
+    
+    # Check if we loaded a full model or just state_dict
+    if isinstance(loaded_content, nn.Module):
+        model.load_state_dict(loaded_content.state_dict())
+    else:
+        model.load_state_dict(loaded_content)
+        
     return model

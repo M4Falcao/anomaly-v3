@@ -52,7 +52,7 @@ hide_tqdm_bar = True
 save_model = True
 
 # mlflow settings
-use_mlflow = True
+use_mlflow = False
 mlflow_tracking_uri = "http://127.0.0.1:5000"
 mlflow_backend_store_uri = r"file:./mlruns"
 mlflow_experiment_name = "DifferNet_Experiment"
@@ -60,5 +60,8 @@ mlflow_run_name = f"{class_name}_{modelname}"
 ngrok_auth_token = None
 
 # pyngrok settings
-use_pyngrok = False
+use_pyngrok = use_mlflow
 
+# training settings
+resume_training = True
+resume_file = "C:/Users/teo-s/Downloads/model.pth"
