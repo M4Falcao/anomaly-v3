@@ -60,6 +60,8 @@ mlflow_backend_store_uri = r"file:./mlruns"
 mlflow_experiment_name = "DifferNet_Experiment"
 mlflow_run_name = f"{class_name}_{modelname}"
 ngrok_auth_token = None
+mlflow_export_dir = "./exports"
+export_mlflow = True
 
 # pyngrok settings
 use_pyngrok = use_mlflow

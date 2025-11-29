@@ -267,6 +267,10 @@ def train(train_loader, test_loader, ground_truth_loader):
                 # Log the local file as an artifact to MLflow
                 mlflow.log_artifact(weights_filename, artifact_path="checkpoints")
 
+                if c.export_mlflow:
+                    if (epoch + 1) % (c.checkpoint_interval * 2) == 0:
+                        export_mlflow_data()
+
     if c.grad_map_viz:
         export_gradient_maps(model, test_loader, optimizer, -1)
 

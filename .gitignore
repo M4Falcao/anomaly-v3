@@ -9,6 +9,7 @@ mlruns
 mlruns
 models
 weights
+exports
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
