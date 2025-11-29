@@ -47,7 +47,7 @@ sub_epochs = 1
 
 # output settings
 verbose = True
-grad_map_viz = False
+grad_map_viz = True
 hide_tqdm_bar = True
 save_model = True
 checkpoint_interval = 5

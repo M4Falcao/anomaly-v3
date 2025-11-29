@@ -243,13 +243,14 @@ def train(train_loader, test_loader, ground_truth_loader):
             image_auroc = roc_auc_score(is_anomaly, anomaly_score)
             mlflow.log_metric("image_level_auroc", image_auroc, step=epoch)
             
-            # Checkpoint best model based on Image Level AUROC
-            if image_auroc >= score_obs_image.max_score:
-                 mlflow.pytorch.log_model(model, "model_best_auroc")
-                 print(f"New best model saved to MLflow with AUROC: {image_auroc:.4f}")
 
             # Save model every c.checkpoint_interval epochs
-            if (epoch + 1) % c.checkpoint_interval == 0:
+            if (epoch + 1) % c.checkpoint_interval == 0 or image_auroc >= score_obs_image.max_score:
+                
+                # Checkpoint best model based on Image Level AUROC
+                if image_auroc >= score_obs_image.max_score:
+                    # mlflow.pytorch.log_model(model, "model_best_auroc")
+                    print(f"New best model saved to MLflow with AUROC: {image_auroc:.4f} in epoch {epoch + 1}")
                 print(f"Saving model checkpoint at epoch {epoch + 1}...")
                 
                 # Ensure checkpoint directory exists
@@ -257,7 +258,7 @@ def train(train_loader, test_loader, ground_truth_loader):
                     os.makedirs(c.checkpoint_path)
                 
                 # Save full model to MLflow
-                mlflow.pytorch.log_model(model, f"model_epoch_{epoch + 1}")
+                # mlflow.pytorch.log_model(model, f"model_epoch_{epoch + 1}")
                 
                 # Save weights explicitly to local path
                 weights_filename = os.path.join(c.checkpoint_path, f"{c.class_name}_{c.modelname}_epoch_{epoch + 1}.pth")
@@ -267,9 +268,9 @@ def train(train_loader, test_loader, ground_truth_loader):
                 # Log the local file as an artifact to MLflow
                 mlflow.log_artifact(weights_filename, artifact_path="checkpoints")
 
-                if c.export_mlflow:
-                    if (epoch + 1) % (c.checkpoint_interval * 2) == 0:
-                        export_mlflow_data()
+            if c.export_mlflow:
+                if (epoch + 1) % (c.checkpoint_interval * 2) == 0:
+                    export_mlflow_data()
 
     if c.grad_map_viz:
         export_gradient_maps(model, test_loader, optimizer, -1)
