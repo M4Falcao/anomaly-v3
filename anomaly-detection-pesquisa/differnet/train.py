@@ -17,7 +17,7 @@ from sklearn.metrics import roc_auc_score
 def start_ngrok(port):
     from pyngrok import ngrok
     # Set the authtoken if provided in environment or config (optional)
-    ngrok.set_auth_token("365IEbpEEZzJJLPQeWyXrBkgrVS_ukKPM8QLsvZen1xpZsD3") 
+    ngrok.set_auth_token(c.ngrok_auth_token) 
     public_url = ngrok.connect(port).public_url
     print(f" * ngrok tunnel \"{public_url}\" -> \"http://127.0.0.1:{port}\"")
 
