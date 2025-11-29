@@ -1,6 +1,7 @@
 import shutil
 import os
 import datetime
+import config as c
 
 def export_mlflow_data():
     # Configuration
