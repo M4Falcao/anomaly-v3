@@ -151,7 +151,7 @@ def load_model(filename):
         path = filename
     else:
         path = os.path.join(MODEL_DIR, filename)
-    model = torch.load(path)
+    model = torch.load(path, weights_only=False)
     return model
 
 
@@ -167,7 +167,7 @@ def load_weights(model, filename):
     else:
         path = os.path.join(WEIGHT_DIR, filename)
     
-    loaded_content = torch.load(path)
+    loaded_content = torch.load(path, weights_only=False)
     
     # Check if we loaded a full model or just state_dict
     if isinstance(loaded_content, nn.Module):
