@@ -152,6 +152,12 @@ def train(train_loader, test_loader, ground_truth_loader):
     score_obs_image = Score_Observer('AUROC for image level')
     score_obs_pixel = Score_Observer('AUROC for pixel level')
 
+    # Initialize history lists
+    train_losses = []
+    test_losses = []
+    image_aurocs = []
+    pixel_aurocs = []
+
     for epoch in range(c.meta_epochs):
         # Training loop
         model.train()
@@ -244,6 +250,11 @@ def train(train_loader, test_loader, ground_truth_loader):
             image_auroc = roc_auc_score(is_anomaly, anomaly_score)
             mlflow.log_metric("image_level_auroc", image_auroc, step=epoch)
             
+            # Append metrics to history
+            train_losses.append(avg_train_loss)
+            test_losses.append(avg_test_loss)
+            image_aurocs.append(image_auroc)
+            pixel_aurocs.append(mean_pixel_auroc_test)
 
             # Save model every c.checkpoint_interval epochs
             if (epoch + 1) % c.checkpoint_interval == 0 or image_auroc >= score_obs_image.max_score:
@@ -262,17 +273,25 @@ def train(train_loader, test_loader, ground_truth_loader):
                 # mlflow.pytorch.log_model(model, f"model_epoch_{epoch + 1}")
                 
                 # Save weights explicitly to local path
-                weights_filename = os.path.join(c.checkpoint_path, f"{c.class_name}_{c.modelname}_epoch_{epoch + 1}.pth")
-                torch.save(model.state_dict(), weights_filename)
+                weights_filename = os.path.join(c.checkpoint_path, f"{c.class_name}_{c.modelname}_epoch_{epoch + 1}.pt")
+                torch.save({
+                    'epoch': epoch + 1,
+                    'model_state_dict': model.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
+                    'train_losses': train_losses,
+                    'test_losses': test_losses,
+                    'image_aurocs': image_aurocs,
+                    'pixel_aurocs': pixel_aurocs
+                }, weights_filename)
                 print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - Checkpoint saved locally to: {weights_filename}")
                 
                 # Log the local file as an artifact to MLflow
                 # mlflow.log_artifact(weights_filename, artifact_path="checkpoints")
                 print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - Checkpoint saved to MLflow")
 
-            if c.export_mlflow:
-                if (epoch + 1) % (c.checkpoint_interval * 2) == 0:
-                    export_mlflow_data()
+            # if c.export_mlflow:
+            #     if (epoch + 1) % (c.checkpoint_interval * 2) == 0:
+            #         export_mlflow_data()
 
     if c.grad_map_viz:
         export_gradient_maps(model, test_loader, optimizer, -1)
