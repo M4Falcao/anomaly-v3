@@ -12,6 +12,7 @@ import config as c
 from localization import export_gradient_maps
 from model import *
 from utils import *
+from export_mlflow import export_mlflow_data
 import skimage
 
 from sklearn.metrics import roc_auc_score
