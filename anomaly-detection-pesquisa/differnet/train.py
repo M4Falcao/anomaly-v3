@@ -266,7 +266,7 @@ def train(train_loader, test_loader, ground_truth_loader):
                 print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - Checkpoint saved locally to: {weights_filename}")
                 
                 # Log the local file as an artifact to MLflow
-                mlflow.log_artifact(weights_filename, artifact_path="checkpoints")
+                # mlflow.log_artifact(weights_filename, artifact_path="checkpoints")
                 print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - Checkpoint saved to MLflow")
 
             if c.export_mlflow:
