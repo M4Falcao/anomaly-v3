@@ -127,7 +127,9 @@ def train(train_loader, test_loader, ground_truth_loader):
 
     if c.use_mlflow:
         # Log config file
-        mlflow.log_artifact("config.py")
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(current_dir, "config.py")
+        mlflow.log_artifact(config_path)
         
         # Log model summary
         with open("model_summary.txt", "w") as f:
@@ -140,15 +142,6 @@ def train(train_loader, test_loader, ground_truth_loader):
         total_params = sum(p.numel() for p in model.parameters())
         mlflow.log_param("total_parameters", total_params)
 
-    if c.resume_training:
-        print(f"Loading weights from {c.resume_file}...")
-        try:
-            load_weights(model, c.resume_file)
-            print("Weights loaded successfully.")
-        except Exception as e:
-            print(f"Error loading weights: {e}")
-            print("Starting training from scratch.")
-
     score_obs_image = Score_Observer('AUROC for image level')
     score_obs_pixel = Score_Observer('AUROC for pixel level')
 
@@ -157,8 +150,33 @@ def train(train_loader, test_loader, ground_truth_loader):
     test_losses = []
     image_aurocs = []
     pixel_aurocs = []
+    
+    start_epoch = 0
+    if c.resume_training:
+        print(f"Loading weights from {c.resume_file}...")
+        try:
+            model, checkpoint = load_weights(model, c.resume_file)
+            if checkpoint:
+                print("Restoring checkpoint metadata...")
+                start_epoch = checkpoint['epoch']
+                if 'optimizer_state_dict' in checkpoint:
+                    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+                if 'train_losses' in checkpoint:
+                    train_losses = checkpoint['train_losses']
+                if 'test_losses' in checkpoint:
+                    test_losses = checkpoint['test_losses']
+                if 'image_aurocs' in checkpoint:
+                    image_aurocs = checkpoint['image_aurocs']
+                if 'pixel_aurocs' in checkpoint:
+                    pixel_aurocs = checkpoint['pixel_aurocs']
+                print(f"Resuming from epoch {start_epoch}")
+            
+            print("Weights loaded successfully.")
+        except Exception as e:
+            print(f"Error loading weights: {e}")
+            print("Starting training from scratch.")
 
-    for epoch in range(c.meta_epochs):
+    for epoch in range(start_epoch, c.meta_epochs):
         # Training loop
         model.train()
         train_loss = []

@@ -169,10 +169,15 @@ def load_weights(model, filename):
     
     loaded_content = torch.load(path, weights_only=False)
     
-    # Check if we loaded a full model or just state_dict
+    checkpoint = None
+    
+    # Check if we loaded a full model, a state_dict, or a checkpoint dict
     if isinstance(loaded_content, nn.Module):
         model.load_state_dict(loaded_content.state_dict())
+    elif isinstance(loaded_content, dict) and 'model_state_dict' in loaded_content:
+        model.load_state_dict(loaded_content['model_state_dict'])
+        checkpoint = loaded_content
     else:
         model.load_state_dict(loaded_content)
         
-    return model
+    return model, checkpoint
