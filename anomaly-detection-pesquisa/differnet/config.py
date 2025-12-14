@@ -7,6 +7,17 @@ research purposes. Don't try this code if you are a software engineer.'''
 # device settings
 device = 'cuda' # or 'cpu'
 import torch
+import random
+import numpy as np
+
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+
 torch.cuda.empty_cache()
 torch.cuda.set_device(0)
 
@@ -39,6 +50,9 @@ n_transforms = 4 # number of transformations per sample in training
 n_transforms_test = 64 # number of transformations per sample in testing
 batch_size = 1 # actual batch size is this value multiplied by n_transforms(_test)
 batch_size_test = batch_size
+num_workers = 0
+seed = 42
+
 
 # total epochs = meta_epochs * sub_epochs
 # evaluation after <sub_epochs> epochs

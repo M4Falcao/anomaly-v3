@@ -6,6 +6,7 @@ For further information contact Marco Rudolph (rudolph@tnt.uni-hannover.de)'''
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 import config as c
+c.set_seed(c.seed)
 from train import train
 from utils import load_datasets, make_dataloaders
 
