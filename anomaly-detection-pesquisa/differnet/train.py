@@ -240,6 +240,9 @@ def train(train_loader, test_loader, ground_truth_loader):
                 image_level_score_train = torch.mean(z ** 2).item()
                 image_level_scores_train.append(image_level_score_train)
 
+            print(f"Sub Epoch {sub_epoch+1}/{c.sub_epochs} completed. Loss: {np.mean(train_loss[-len(train_loader):]):.4f}")
+            
+
         # Compute average training loss
         avg_train_loss = np.mean(train_loss)
 
