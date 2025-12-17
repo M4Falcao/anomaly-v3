@@ -486,7 +486,7 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
     for name, cam_cls in cam_methods.items():
         print(f"Running {name}...")
         
-        metrics_store = {'deletion': [], 'insertion': [], 'road_least': [], 'confidence': [], 'pixel_auc': [], 'sanity': []}
+        metrics_store = {'deletion': [], 'insertion': [], 'road_least': [], 'confidence': [], 'pixel_auc': [], 'sanity': [], 'time': []}
         curves_store = {'deletion': [], 'insertion': [], 'road_least': []}
 
         try:
@@ -502,19 +502,14 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
             images = images.to(device)
             if len(images) == 0: continue
             
-            # Process single image (batch_size=1 forced above usually, but flat_loader handles crops)
-            # We take the first image if multiple crops exist to simplify metric accumulation per "sample"
-            # Or iterate all crops. Let's iterate all crops in the batch.
-            
             for i in range(len(images)):
                 img = images[i:i+1] # Keep batch dim [1, C, H, W]
-                # mask = masks[i] if masks is not None else None
+                # Measure Time
+                start_time = time.time()
                 
                 # --- Generate CAM ---
                 with torch.no_grad():
                     out = model(img) # z
-                    # t_idx irrelevant for Normalizing Flow (no classes)
-                    # We utilize the AnomalyScoreTarget
                     t_idx = None 
                 
                 targets = [AnomalyScoreTarget()]
@@ -560,6 +555,9 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
                 save_visualization(img[0], masks[i] if masks is not None else None, cam_map, 
                                    batch_idx * len(images) + i, labels[i].item(), is_correct, output_dir, name)
                 
+                elapsed = time.time() - start_time
+                metrics_store['time'].append(elapsed)
+
                 # Cleanup per image
                 del cam_map, targets
                 if 'out' in locals(): del out
