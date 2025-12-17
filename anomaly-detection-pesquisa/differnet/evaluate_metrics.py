@@ -530,9 +530,9 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
                      metrics_store['pixel_auc'].append(p_auc)
 
                 # Deletion
-                d_auc, d_scores = calculate_deletion_single_image(model, img, cam_map, args.steps, device, t_idx)
-                metrics_store['deletion'].append(d_auc)
-                curves_store['deletion'].append(d_scores)
+                # d_auc, d_scores = calculate_deletion_single_image(model, img, cam_map, args.steps, device, t_idx)
+                # metrics_store['deletion'].append(d_auc)
+                # curves_store['deletion'].append(d_scores)
                 
                 # Insertion
                 # i_auc, i_scores = insertion_metric(model, img, cam_map, t_idx, args.steps)
@@ -545,7 +545,7 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
                 curves_store['road_least'].append(r_scores)
                 
                 # Confidence Drop
-                metrics_store['confidence'].append(confidence_drop_metric(model, img, cam_map, t_idx))
+                # metrics_store['confidence'].append(confidence_drop_metric(model, img, cam_map, t_idx))
                 
                 # Sanity Check (Run only on subset to save time)
                 if run_sanity_check and batch_idx in sanity_check_indices and i == 0: # Check once per batch
@@ -617,7 +617,7 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
         plt.close()
         
         # Plot Curves
-        curve_metrics = ['deletion', 'road_least'] # ROAD structure varies
+        curve_metrics = ['road_least'] # ROAD structure varies
         for cm in curve_metrics:
             col_name = f'{cm}_curve'
             if col_name in df.columns:
@@ -653,7 +653,7 @@ if __name__ == "__main__":
     parser.add_argument("--output_base", type=str, default="./results", help="Base output directory")
     parser.add_argument("--limit", type=int, default=None, help="Limit number of samples for testing")
     parser.add_argument("--steps", type=int, default=20, help="Number of steps for Deletion/Insertion")
-    parser.add_argument("--run_sanity_check", type=str2bool, default=True, help="Run sanity check")
+    parser.add_argument("--run_sanity_check", type=str2bool, default=False, help="Run sanity check")
     
     args = parser.parse_args()
     
