@@ -30,7 +30,7 @@ try:
     from pytorch_grad_cam import GradCAM, GradCAMPlusPlus, XGradCAM
     from pytorch_grad_cam import GradCAM, GradCAMPlusPlus, XGradCAM
     from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
-    from pytorch_grad_cam.metrics.road import ROADMostRelevantFirst
+    from pytorch_grad_cam.metrics.road import ROADMostRelevantFirst, ROADLeastRelevantFirst
 except ImportError:
     print("Error: pytorch-grad-cam not installed. Please install it using 'pip install grad-cam'.")
     sys.exit(1)
@@ -180,7 +180,7 @@ def insertion_metric(model, input_tensor, cam_mask, target_category_idx=None, st
     auc_score = np.trapezoid(scores, dx=1.0/steps)
     return auc_score, scores
 
-def calculate_road_metric(model, input_tensor, cam_mask, target_category_idx=None, percentiles=[10, 50]):
+def calculate_road_metric(model, input_tensor, cam_mask, target_category_idx=None, percentiles=[20, 40, 60, 80]):
     if target_category_idx is None:
          # For NF, we don't have "target class", we maximize score
          pass
@@ -198,8 +198,9 @@ def calculate_road_metric(model, input_tensor, cam_mask, target_category_idx=Non
         # ROADMostRelevantFirst expects: input_tensor, cam, targets, model
         # It internally perturbs and returns (prob_orig - prob_road) / prob_orig usually, or just prob
         # pytorch-grad-cam implementation details vary, we assume standard behavior
-        road = ROADMostRelevantFirst(percentile=p)
-        batch_scores = road(input_tensor, cam_mask_exp, targets, model)
+        road = ROADLeastRelevantFirst(percentile=p)
+        with torch.no_grad():
+            batch_scores = road(input_tensor, cam_mask_exp, targets, model)
         scores.append(np.mean(batch_scores))
 
     return np.mean(scores), scores
@@ -355,7 +356,7 @@ def save_visualization(image_tensor, mask, cam_map, idx, label, pred_correct, ou
     pred_str = "correct" if pred_correct else "wrong"
     
     filename = f"{idx:04d}_{label_str}_{pred_str}_{method_name}.png"
-    img_dir = os.path.join(output_dir, "images")
+    img_dir = os.path.join(output_dir, "images", method_name)
     os.makedirs(img_dir, exist_ok=True)
     cv2.imwrite(os.path.join(img_dir, filename), combined)
 
@@ -492,8 +493,8 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
     for name, cam_cls in cam_methods.items():
         print(f"Running {name}...")
         
-        metrics_store = {'deletion': [], 'insertion': [], 'road': [], 'confidence': [], 'pixel_auc': [], 'sanity': []}
-        curves_store = {'deletion': [], 'insertion': [], 'road': []}
+        metrics_store = {'deletion': [], 'insertion': [], 'road_least': [], 'confidence': [], 'pixel_auc': [], 'sanity': []}
+        curves_store = {'deletion': [], 'insertion': [], 'road_least': []}
 
         try:
             cam_extractor = cam_cls(model=model, target_layers=target_layers)
@@ -541,14 +542,14 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
                 curves_store['deletion'].append(d_scores)
                 
                 # Insertion
-                i_auc, i_scores = insertion_metric(model, img, cam_map, t_idx, args.steps)
-                metrics_store['insertion'].append(i_auc)
-                curves_store['insertion'].append(i_scores)
+                # i_auc, i_scores = insertion_metric(model, img, cam_map, t_idx, args.steps)
+                # metrics_store['insertion'].append(i_auc)
+                # curves_store['insertion'].append(i_scores)
                 
                 # ROAD
                 r_score, r_scores = calculate_road_metric(model, img, cam_map, t_idx)
-                metrics_store['road'].append(r_score)
-                curves_store['road'].append(r_scores)
+                metrics_store['road_least'].append(r_score)
+                curves_store['road_least'].append(r_scores)
                 
                 # Confidence Drop
                 metrics_store['confidence'].append(confidence_drop_metric(model, img, cam_map, t_idx))
@@ -559,32 +560,6 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
                     metrics_store['sanity'].append(sanity_val)
                     print(f" [Debug] Sanity Check {name} (Idx {batch_idx}): {sanity_val:.4f}")
         
-
-                # Visualization (Save every image? Or only some? User asked "save images", implies all executed)
-                # Prediction correctness (Simple max score check vs label? Or we assume t_idx matches label?)
-                # If t_idx was argmax(out), then if t_idx == label it's "correct" (broadly speaking for multiclass)
-                # For anomaly detection (1 class vs anomaly), it's trickier without a threshold. 
-                # DiffNet/SEDiffNet outputs are usually low-dim embeddings or classifications?
-                # model.py shows it returns 'z' from NF head? Wait.
-                # Re-reading model.py:
-                # - DifferNet usually outputs z score. Low likelihood = anomaly.
-                # - But metric_lab.ipynb treats it as a classifier 'out = model(img)', 't_idx = torch.argmax(out)'.
-                # - This implies the model wrapped or modified to output class scores?
-                # - Let's check model.py 'forward' returns 'z = self.nf(y)'.
-                # - 'z' is [B, C*scales]. Not logits.
-                # - BUT metric_lab.ipynb says 't_idx = torch.argmax(out).item()'. This is strange if output is 'z'.
-                # - Unless 'model' passed to evaluate is NOT the raw DifferNet but a wrapper?
-                # - Or the notebook code was generic copy-paste.
-                # - IF DifferNet returns 'z', argmax(z) is meaningless.
-                # - However, typically for CAM on DifferNet, we look at gradients of the log-likelihood or norm of z.
-                # - The notebook code might be flawed or using a different model variant.
-                # - User's previous context mentions "DifferNet" and "SEDifferNet".
-                # - Let's assume for Visualization Labeling: 
-                #   If Label=1 (Anomaly) and Score > Threshold -> Correct.
-                #   But we don't have a threshold.
-                #   Let's just use "result" in filename as "correct" if logic allows, else "N_A".
-                #   Actually, let's look at `t_idx` derived from `out`.
-                
                 # Check prediction for filename
                 # Simplified: correctness = True (placeholder if we can't determine without threshold)
                 is_correct = True 
@@ -647,7 +622,7 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
         plt.close()
         
         # Plot Curves
-        curve_metrics = ['deletion', 'insertion'] # ROAD structure varies
+        curve_metrics = ['deletion', 'road_least'] # ROAD structure varies
         for cm in curve_metrics:
             col_name = f'{cm}_curve'
             if col_name in df.columns:
