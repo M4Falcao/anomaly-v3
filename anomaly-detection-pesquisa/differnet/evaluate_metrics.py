@@ -236,29 +236,19 @@ def calculate_sanity_check(model, input_tensor, original_cam, cam_extractor_cls,
     Measures rank correlation between original CAM and CAM from randomized model.
     Low correlation (near 0) is Good (Passed). High correlation (near 1) means CAM is independent of model weights (Bad).
     """
-    # 1. Deepcopy the model to avoid corrupting original weights
-    print("Creating deepcopy of model for Sanity Check...")
+    # 1. Save original weights to CPU (RAM) to save GPU
+    # Clone properly
+    original_state_dict = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+    
     try:
-        model_copy = copy.deepcopy(model)
-    except Exception as e:
-        print(f"Deepcopy failed: {e}. Skipping Sanity Check.")
-        return np.nan
+        # 2. Randomize ORIGINAL Model in-place
+        print("Randomizing model (in-place) for Sanity Check...")
+        randomize_model_weights(model)
+        model.eval() 
 
-    # 2. Randomize Model Copy
-    randomize_model_weights(model_copy)
-    model_copy.eval() 
-
-    # 3. Compute CAM with randomized model
-    try:
-        # Re-init extractor with random model (use same target layers logic if possible)
-        if hasattr(model_copy, 'alexnet'): # SEDifferNet
-             target_layers_copy = [model_copy.alexnet.features[-1]]
-        elif hasattr(model_copy, 'feature_extractor'): # DifferNet
-             target_layers_copy = [model_copy.feature_extractor.features[-1]]
-        else:
-             target_layers_copy = [list(model_copy.children())[-1]]
-
-        cam_extractor = cam_extractor_cls(model=model_copy, target_layers=target_layers_copy)
+        # 3. Compute CAM with randomized model
+        # Use 'model' (it is randomized now)
+        cam_extractor = cam_extractor_cls(model=model, target_layers=target_layers)
         targets = [AnomalyScoreTarget()] # Use correct target
         
         grayscale_cam = cam_extractor(input_tensor=input_tensor, targets=targets)[0, :]
@@ -273,13 +263,16 @@ def calculate_sanity_check(model, input_tensor, original_cam, cam_extractor_cls,
         print(f"Sanity Check Error: {e}")
         corr = np.nan
     finally:
+        # 5. Restore original weights
+        print("Restoring original model weights...")
+        model.load_state_dict(original_state_dict)
+        
         # Cleanup
-        if 'model_copy' in locals():
-            del model_copy
         if 'cam_extractor' in locals():
             del cam_extractor
         if 'grayscale_cam' in locals():
             del grayscale_cam
+        del original_state_dict
         import gc
         gc.collect()
         torch.cuda.empty_cache()
@@ -439,7 +432,7 @@ def flat_batch_loader(dataloader):
 
 # --- Main Evaluation Logic ---
 
-def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_dir, limit=None):
+def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_dir, limit=None, run_sanity_check=True):
     print(f"Starting evaluation for {model_name} on {class_name}...")
     
     # 1. Load Data
@@ -555,7 +548,7 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
                 metrics_store['confidence'].append(confidence_drop_metric(model, img, cam_map, t_idx))
                 
                 # Sanity Check (Run only on subset to save time)
-                if batch_idx in sanity_check_indices and i == 0: # Check once per batch
+                if run_sanity_check and batch_idx in sanity_check_indices and i == 0: # Check once per batch
                     sanity_val = calculate_sanity_check(model, img, cam_map, cam_cls, target_layers, t_idx)
                     metrics_store['sanity'].append(sanity_val)
                     print(f" [Debug] Sanity Check {name} (Idx {batch_idx}): {sanity_val:.4f}")
@@ -590,7 +583,9 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
         results.append(res)
         
         # Cleanup per method
-        del cam_extractor
+        if 'cam_extractor' in locals():
+            del cam_extractor
+        del metrics_store, curves_store, res
         import gc
         gc.collect()
         torch.cuda.empty_cache()
@@ -640,6 +635,16 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
                 plt.savefig(os.path.join(output_dir, f'{cm}_curve.png'))
                 plt.close()
 
+def str2bool(v):
+    if isinstance(v, bool):
+       return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate CAM Metrics for DifferNet")
     parser.add_argument("--model_path", type=str, required=True, help="Path to .pt model weights")
@@ -648,6 +653,7 @@ if __name__ == "__main__":
     parser.add_argument("--output_base", type=str, default="./results", help="Base output directory")
     parser.add_argument("--limit", type=int, default=None, help="Limit number of samples for testing")
     parser.add_argument("--steps", type=int, default=20, help="Number of steps for Deletion/Insertion")
+    parser.add_argument("--run_sanity_check", type=str2bool, default=True, help="Run sanity check")
     
     args = parser.parse_args()
     
@@ -665,5 +671,6 @@ if __name__ == "__main__":
         dataset_path=args.dataset_path,
         class_name=args.class_name,
         output_dir=run_dir,
-        limit=args.limit
+        limit=args.limit,
+        run_sanity_check=args.run_sanity_check
     )
