@@ -3,7 +3,7 @@ import os
 import torch
 import torch.nn.functional as F
 from torch import nn
-from torchvision.models import alexnet
+from torchvision.models import alexnet, resnet18
 
 from fightingcv_attention.attention.CBAM import CBAMBlock
 from fightingcv_attention.attention.SEAttention import SEAttention
@@ -55,7 +55,7 @@ class SEDifferNet(nn.Module):
     print("SEDifferNet")
     def __init__(self):
         super(SEDifferNet, self).__init__()
-        self.alexnet = alexnet(pretrained=True)
+        self.alexnet = resnet18(pretrained=True)
         # self.cbam1 = CBAMBlock(channel=384,reduction=16,kernel_size=49)
         # self.cbam2 = CBAMBlock(channel=256,reduction=16,kernel_size=49)
         self.cbam1 = CBAMBlock(channel=64,reduction=16,kernel_size=49)
