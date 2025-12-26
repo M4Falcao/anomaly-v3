@@ -51,45 +51,40 @@ class DifferNet(nn.Module):
     
 
 class SEDifferNet(nn.Module):
-
-    print("SEDifferNet")
     def __init__(self):
         super(SEDifferNet, self).__init__()
-        self.alexnet = resnet18(pretrained=True)
-        # self.cbam1 = CBAMBlock(channel=384,reduction=16,kernel_size=49)
-        # self.cbam2 = CBAMBlock(channel=256,reduction=16,kernel_size=49)
-        self.cbam1 = CBAMBlock(channel=64,reduction=16,kernel_size=49)
-        self.cbam2 = CBAMBlock(channel=192,reduction=16,kernel_size=49)        
-        self.cbam3 = CBAMBlock(channel=384,reduction=16,kernel_size=49)
-        self.cbam4 = CBAMBlock(channel=256,reduction=16,kernel_size=49)
-        self.simsa1 = SEAttention(channel=64, reduction=2)
-        self.simsa2 = SEAttention(channel=192, reduction=2)
-        self.simsa3 = SEAttention(channel=384, reduction=2)
-        self.simsa4 = SEAttention(channel=256, reduction=2)
+        res = resnet18(pretrained=True)
         
-        self.nf = nf_head()
+        # Decomposição da ResNet18
+        self.stem = nn.Sequential(res.conv1, res.bn1, res.relu, res.maxpool) # Saída: 64 canais
+        self.layer1 = res.layer1 # Saída: 64 canais
+        self.layer2 = res.layer2 # Saída: 128 canais
+        self.layer3 = res.layer3 # Saída: 256 canais
+        self.layer4 = res.layer4 # Saída: 512 canais
+
+        # Ajuste de canais para ResNet18
+        self.simsa1 = SEAttention(channel=64, reduction=2)
+        self.simsa2 = SEAttention(channel=128, reduction=2)
+        self.simsa3 = SEAttention(channel=256, reduction=2)
+        self.simsa4 = SEAttention(channel=512, reduction=2)
+        
+        self.nf = nf_head(input_dim=512) # Ajustar input_dim no config se necessário
 
     def forward(self, x_input):
         y_cat = list()
-
         for s in range(c.n_scales):
-            x_scaled = F.interpolate(x_input, size=c.img_size[0] // (2 ** s)) if s > 0 else x_input
-            x = self.alexnet.features[0](x_scaled)
-            x = self.alexnet.features[1](x)
+            x = F.interpolate(x_input, size=c.img_size[0] // (2 ** s)) if s > 0 else x_input
+            
+            x = self.stem(x)
             x = self.simsa1(x)
-            x = self.alexnet.features[2](x)
-            x = self.alexnet.features[3](x)
-            x = self.alexnet.features[4](x)
+            x = self.layer1(x)
+            x = self.layer2(x)
             x = self.simsa2(x)
-            x = self.alexnet.features[5](x)
-            x = self.alexnet.features[6](x)
-            x = self.alexnet.features[7](x)
-            x = self.alexnet.features[8](x)
-            x = self.alexnet.features[9](x)
-            x = self.alexnet.features[10](x)
-            x = self.alexnet.features[11](x)
-            x = self.simsa4(x)
-            feat_s = self.alexnet.features[12](x)
+            x = self.layer3(x)
+            x = self.simsa3(x)
+            x = self.layer4(x)
+            feat_s = self.simsa4(x)
+            
             y_cat.append(torch.mean(feat_s, dim=(2, 3)))
 
         y = torch.cat(y_cat, dim=1)
