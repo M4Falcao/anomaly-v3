@@ -150,7 +150,7 @@ def evaluate_sanity_check(model_name, model_path, dataset_path, class_name, outp
     # 2. Load Model
     if "sediffernet" in model_name.lower():
         base_model = SEDifferNet()
-        target_layers = [base_model.alexnet.features[-1]]
+        target_layers = [base_model.simsa4]
     else:
         base_model = DifferNet()
         target_layers = [base_model.feature_extractor.features[-1]]

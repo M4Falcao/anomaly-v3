@@ -68,7 +68,7 @@ class SEDifferNet(nn.Module):
         self.simsa3 = SEAttention(channel=256, reduction=2)
         self.simsa4 = SEAttention(channel=512, reduction=2)
         
-        self.nf = nf_head(input_dim=512) # Ajustar input_dim no config se necessário
+        self.nf = nf_head(input_dim=c.n_feat) # Ajustar input_dim no config se necessário
 
     def forward(self, x_input):
         y_cat = list()

@@ -284,7 +284,7 @@ def run_visualization(model_path, image_path=None, dataset_path=None, class_name
     # Load Model
     if "sediffernet" in os.path.basename(model_path).lower():
         base_model = SEDifferNet()
-        target_layers = [base_model.alexnet.features[-1]]
+        target_layers = [base_model.simsa4]
     else:
         base_model = DifferNet()
         target_layers = [base_model.feature_extractor.features[-1]]
