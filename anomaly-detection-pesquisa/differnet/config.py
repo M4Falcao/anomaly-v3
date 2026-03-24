@@ -22,9 +22,9 @@ torch.cuda.empty_cache()
 torch.cuda.set_device(0)
 
 # data settings
-dataset_path = r"C:/Users/teo-s/OneDrive/Documentos/GitHub/anomaly-v3/insplad-seg/insplad-seg"
-class_name = "glass-insulator"
-modelname = "dummy_test"
+dataset_path = r"C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg"
+class_name = "vari-grip"
+modelname = "seresnet18_differnet_varigrip"
 
 img_size = (448, 448)
 img_dims = [3] + list(img_size)
@@ -56,8 +56,8 @@ seed = 42
 
 # total epochs = meta_epochs * sub_epochs
 # evaluation after <sub_epochs> epochs
-meta_epochs = 1
-sub_epochs = 1
+meta_epochs = 2
+sub_epochs = 2
 
 # output settings
 verbose = True
@@ -68,7 +68,7 @@ checkpoint_interval = 5
 checkpoint_path = "./checkpoints"
 
 # mlflow settings
-use_mlflow = True
+use_mlflow = False
 mlflow_tracking_uri = "http://127.0.0.1:5000"
 mlflow_backend_store_uri = r"sqlite:///mlflow.db"
 mlflow_experiment_name = "DifferNet_Experiment"
@@ -81,5 +81,5 @@ export_mlflow = True
 use_pyngrok = False
 
 # training settings
-resume_training = True
+resume_training = False
 resume_file = "C:/Users/teo-s/Downloads/model.pth"
