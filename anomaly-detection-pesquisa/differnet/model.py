@@ -142,7 +142,7 @@ class CBAMDifferNet(nn.Module):
 class SEResNet18DifferNet(nn.Module):
     def __init__(self):
         super(SEResNet18DifferNet, self).__init__()
-        self.resnet18 = resnet18(pretrained=True)
+        self.resnet = resnet18(pretrained=True)
         self.simsa1 = SEAttention(channel=64, reduction=2)
         self.simsa2 = SEAttention(channel=128, reduction=2)
         self.simsa3 = SEAttention(channel=256, reduction=2)
@@ -155,25 +155,27 @@ class SEResNet18DifferNet(nn.Module):
         for s in range(c.n_scales):
             x_scaled = F.interpolate(x_input, size=c.img_size[0] // (2 ** s)) if s > 0 else x_input
             
-            x = self.resnet18.conv1(x_scaled)
-            x = self.resnet18.bn1(x)
-            x = self.resnet18.relu(x)
-            x = self.resnet18.maxpool(x)
+            x = self.resnet.conv1(x_scaled)
+            x = self.resnet.bn1(x)
+            x = self.resnet.relu(x)
+            x = self.resnet.maxpool(x)
             
-            x = self.resnet18.layer1(x)
+            x = self.resnet.layer1(x)
             x = self.simsa1(x)
             
-            x = self.resnet18.layer2(x)
+            x = self.resnet.layer2(x)
             x = self.simsa2(x)
             
-            x = self.resnet18.layer3(x)
-            feat_s = self.simsa3(x)
+            x = self.resnet.layer3(x)
+            x = self.simsa3(x)
             
+            feat_s = x
             y_cat.append(torch.mean(feat_s, dim=(2, 3)))
 
         y = torch.cat(y_cat, dim=1)
         z = self.nf(y)
         return z
+
 
 
 def save_model(model, filename):

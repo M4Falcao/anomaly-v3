@@ -23,8 +23,8 @@ torch.cuda.set_device(0)
 
 # data settings
 dataset_path = r"C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg"
-class_name = "vari-grip"
-modelname = "seresnet18_differnet_varigrip"
+class_name = "vari-grip2"
+modelname = "seresnet18_differnet_varigrip2"
 
 img_size = (448, 448)
 img_dims = [3] + list(img_size)
@@ -56,15 +56,15 @@ seed = 42
 
 # total epochs = meta_epochs * sub_epochs
 # evaluation after <sub_epochs> epochs
-meta_epochs = 10
-sub_epochs = 10
+meta_epochs = 2
+sub_epochs = 2
 
 # output settings
 verbose = True
 grad_map_viz = True
 hide_tqdm_bar = True
 save_model = True
-checkpoint_interval = 1
+checkpoint_interval = 5
 checkpoint_path = "./checkpoints"
 
 # mlflow settings

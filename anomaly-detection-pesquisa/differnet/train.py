@@ -14,7 +14,7 @@ from model import *
 from utils import *
 from export_mlflow import export_mlflow_data
 import skimage
-from torch.cuda.amp import GradScaler, autocast
+from torch.cuda.amp import GradScaler
 from scipy.ndimage import rotate, gaussian_filter
 from torch.autograd import Variable
 
@@ -65,7 +65,7 @@ def get_grad_maps(model, inputs, labels, optimizer):
     model.eval()
     inputs = Variable(inputs, requires_grad=True)
     
-    with autocast():
+    with torch.amp.autocast('cuda'):
         z = model(inputs)
         loss = get_loss(z, model.nf.jacobian(run_forward=False))
     
@@ -227,7 +227,7 @@ def train(train_loader, test_loader, ground_truth_loader):
                 optimizer.zero_grad()
                 inputs, labels = preprocess_batch(data)
                 
-                with autocast():
+                with torch.amp.autocast('cuda'):
                     z = model(inputs)
                     loss = get_loss(z, model.nf.jacobian(run_forward=False))
                 
