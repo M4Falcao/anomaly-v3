@@ -106,6 +106,30 @@ class SEResNet18(nn.Module):
         self.layer3 = self._make_layer(SEBasicBlock, 256, 2, stride=2)
         self.layer4 = self._make_layer(SEBasicBlock, 512, 2, stride=2)
 
+        self._initialize_weights()
+
+    def _initialize_weights(self):
+        # Kaiming initialization para novos blocos SE e camadas sem pretrained match
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+            elif isinstance(m, nn.BatchNorm2d):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+
+        # Baixar e injetar os pesos pré-treinados da ResNet-18 padrão
+        # para que o extrator de características não forneça features aleatórias
+        from torchvision.models import resnet18
+        pretrained_model = resnet18(pretrained=True)
+        pretrained_dict = pretrained_model.state_dict()
+        model_dict = self.state_dict()
+
+        # Filtra apenas os pesos que batem perfeitamente (ignora camadas do SENet)
+        matched_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict and v.shape == model_dict[k].shape}
+        
+        model_dict.update(matched_dict)
+        self.load_state_dict(model_dict)
+
     def _make_layer(self, block, out_channels, blocks, stride=1):
         downsample = None
         if stride != 1 or self.in_channels != out_channels * block.expansion:
