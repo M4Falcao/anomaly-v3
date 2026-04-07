@@ -10,7 +10,7 @@ import socket
 
 import config as c
 from localization import export_gradient_maps
-from model import *
+from model2 import *
 from utils import *
 from export_mlflow import export_mlflow_data
 import skimage
