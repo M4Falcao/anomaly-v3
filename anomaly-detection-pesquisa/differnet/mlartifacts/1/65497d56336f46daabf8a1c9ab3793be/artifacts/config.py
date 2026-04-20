@@ -23,8 +23,8 @@ torch.cuda.set_device(0)
 
 # data settings
 dataset_path = r"C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg"
-class_name = "polymer-insulator-upper-shackle"
-modelname = "se_differnet_polymer_insulator_upper_shackle_200_1"
+class_name = "lightning-rod-suspension"
+modelname = "se_differnet_lightning_rod_suspension_100_1"
 
 img_size = (448, 448)
 img_dims = [3] + list(img_size)
@@ -56,8 +56,8 @@ seed = 42
 
 # total epochs = meta_epochs * sub_epochs
 # evaluation after <sub_epochs> epochs
-pre_epochs = 30
-meta_epochs = 170
+pre_epochs = 0
+meta_epochs = 150
 sub_epochs = 1
 
 # output settings
@@ -65,14 +65,14 @@ verbose = True
 grad_map_viz = True
 hide_tqdm_bar = True
 save_model = True
-checkpoint_interval = 10
+checkpoint_interval = 5
 checkpoint_path = "./checkpoints"
 
 # mlflow settings
 use_mlflow = True
-mlflow_tracking_uri = "file:./mlruns"
-mlflow_backend_store_uri = "file:./mlruns"
-mlflow_experiment_name = "SEDifferNet_Experiment"
+mlflow_tracking_uri = "http://127.0.0.1:5000"
+mlflow_backend_store_uri = r"sqlite:///mlflow.db"
+mlflow_experiment_name = "DifferNet_Experiment"
 mlflow_run_name = f"{class_name}_{modelname}"
 ngrok_auth_token = None
 mlflow_export_dir = "./exports"
@@ -83,4 +83,4 @@ use_pyngrok = False
 
 # training settings
 resume_training = True
-resume_file = r"C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\checkpoints\run_20260413_125056\polymer-insulator-upper-shackle_se_differnet_polymer_insulator_upper_shackle_200_1_epoch_20.pt"
+resume_file = r"C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\models\se_differnet_lightning_rod_suspension_100_1"

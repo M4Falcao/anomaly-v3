@@ -14,7 +14,8 @@ from model import *
 from utils import *
 from export_mlflow import export_mlflow_data
 import skimage
-from torch.cuda.amp import GradScaler, autocast
+from torch.cuda.amp import GradScaler
+from torch.amp import autocast
 from scipy.ndimage import rotate, gaussian_filter
 from torch.autograd import Variable
 
@@ -47,6 +48,9 @@ def calculate_image_level_auroc(predictions, ground_truth_labels):
     return image_level_auroc
 
 def calculate_pixel_level_auroc(predictions, ground_truth_masks):
+    # Handle NaNs and Infs in predictions
+    predictions = np.nan_to_num(predictions, nan=0.0, posinf=0.0, neginf=0.0)
+    
     # Resize predictions to match the ground truth mask dimensions
     predictions_resized = skimage.transform.resize(predictions, ground_truth_masks.shape, mode='constant')
     
@@ -57,6 +61,10 @@ def calculate_pixel_level_auroc(predictions, ground_truth_masks):
     predictions_flat = predictions_resized.reshape(-1)
     ground_truth_flat = ground_truth_masks_binary.reshape(-1)
     
+    # Handle edge case where masks might only have one class
+    if len(np.unique(ground_truth_flat)) < 2:
+        return 0.5
+        
     # Calculate pixel-level AUROC
     pixel_auroc = roc_auc_score(ground_truth_flat, predictions_flat)
     return pixel_auroc
@@ -65,14 +73,18 @@ def get_grad_maps(model, inputs, labels, optimizer):
     model.eval()
     inputs = Variable(inputs, requires_grad=True)
     
-    with autocast():
+    with autocast('cuda'):
         z = model(inputs)
         loss = get_loss(z, model.nf.jacobian(run_forward=False))
     
     optimizer.zero_grad()
     loss.backward()
 
+    if inputs.grad is None:
+        return None
+
     grad = inputs.grad.view(-1, c.n_transforms_test, *inputs.shape[-3:])
+    grad = torch.nan_to_num(grad, nan=0.0, posinf=0.0, neginf=0.0)
     grad = grad[labels > 0]
     
     # If no gradients (e.g. empty batch or filtered out), return None or zeros
@@ -127,21 +139,31 @@ import time
 print(f'TRAINING ON : {c.device}, cause cuda is {torch.cuda.is_available()}')
 
 def train(train_loader, test_loader, ground_truth_loader):
+    # Create execution specific checkpoint directory
+    run_timestamp = time.strftime('%Y%m%d_%H%M%S')
+    run_checkpoint_dir = os.path.join(c.checkpoint_path, f"run_{run_timestamp}")
+    if not os.path.exists(run_checkpoint_dir):
+        os.makedirs(run_checkpoint_dir)
+
     # MLflow Setup
     if c.use_mlflow:
-        if c.use_pyngrok:
-            # Start MLflow UI in a background thread
-            thread = threading.Thread(target=run_mlflow_ui)
-            thread.daemon = True
-            thread.start()
-            
-            # Wait for MLflow server to start
-            print("Waiting for MLflow server to start...")
-            if wait_for_server("127.0.0.1", 5000):
-                print("MLflow server started!")
+        # Start MLflow UI in background if tracking URI is local
+        if "127.0.0.1" in c.mlflow_tracking_uri or "localhost" in c.mlflow_tracking_uri:
+            if not wait_for_server("127.0.0.1", 5000, timeout=2):
+                print("Starting MLflow UI in a background thread...")
+                thread = threading.Thread(target=run_mlflow_ui)
+                thread.daemon = True
+                thread.start()
+                
+                print("Waiting for MLflow server to start...")
+                if wait_for_server("127.0.0.1", 5000):
+                    print("MLflow server started!")
+                else:
+                    print("Timed out waiting for MLflow server!")
             else:
-                print("Timed out waiting for MLflow server!")
+                print("MLflow server is already running!")
 
+        if c.use_pyngrok:
             # Start ngrok
             start_ngrok(5000)
 
@@ -158,8 +180,8 @@ def train(train_loader, test_loader, ground_truth_loader):
             except:
                 pass
 
-    # model = SEDifferNet()
-    model = SEResNet18DifferNet()
+    model = SEDifferNet()
+    # model = SEResNet18DifferNet()
     optimizer = torch.optim.Adam(model.nf.parameters(), lr=c.lr_init, betas=(0.8, 0.8), eps=1e-04, weight_decay=1e-5)
     model.to(c.device)
     
@@ -216,6 +238,31 @@ def train(train_loader, test_loader, ground_truth_loader):
             print(f"Error loading weights: {e}")
             print("Starting training from scratch.")
 
+    # Pre-epochs training loop
+    if hasattr(c, 'pre_epochs') and c.pre_epochs > 0 and start_epoch == 0:
+        print(f"Starting {c.pre_epochs} pre-epochs...")
+        model.train()
+        for pre_epoch in range(c.pre_epochs):
+            pre_train_loss = []
+            for i, data in enumerate(tqdm(train_loader, desc=f"Pre-Epoch {pre_epoch+1}/{c.pre_epochs}")):
+                optimizer.zero_grad()
+                inputs, labels = preprocess_batch(data)
+                
+                with autocast('cuda'):
+                    z = model(inputs)
+                    loss = get_loss(z, model.nf.jacobian(run_forward=False))
+                
+                pre_train_loss.append(loss.item())
+                
+                scaler.scale(loss).backward()
+                scaler.step(optimizer)
+                scaler.update()
+
+            avg_pre_train_loss = np.mean(pre_train_loss)
+            print(f"Pre-Epoch [{pre_epoch + 1}/{c.pre_epochs}], Train Loss: {avg_pre_train_loss:.4f}")
+            if c.use_mlflow:
+                mlflow.log_metric("pre_train_loss", avg_pre_train_loss, step=pre_epoch)
+
     for meta_epoch in range(start_epoch, c.meta_epochs):
         # Training loop
         model.train()
@@ -227,7 +274,7 @@ def train(train_loader, test_loader, ground_truth_loader):
                 optimizer.zero_grad()
                 inputs, labels = preprocess_batch(data)
                 
-                with autocast():
+                with autocast('cuda'):
                     z = model(inputs)
                     loss = get_loss(z, model.nf.jacobian(run_forward=False))
                 
@@ -443,19 +490,19 @@ def train(train_loader, test_loader, ground_truth_loader):
 
                 # Checkpoint best model based on Image Level AUROC
                 if image_auroc >= score_obs_image.max_score:
-                    # mlflow.pytorch.log_model(model, "model_best_auroc")
+                    mlflow.pytorch.log_model(model, "model_best_auroc")
                     print(f"New best model saved to MLflow with AUROC: {image_auroc:.4f} in epoch {meta_epoch + 1}")
                 print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - Saving model checkpoint at epoch {meta_epoch + 1}...")
                 
                 # Ensure checkpoint directory exists
-                if not os.path.exists(c.checkpoint_path):
-                    os.makedirs(c.checkpoint_path)
+                if not os.path.exists(run_checkpoint_dir):
+                    os.makedirs(run_checkpoint_dir)
                 
                 # Save full model to MLflow
                 # mlflow.pytorch.log_model(model, f"model_epoch_{meta_epoch + 1}")
                 
                 # Save weights explicitly to local path
-                weights_filename = os.path.join(c.checkpoint_path, f"{c.class_name}_{c.modelname}_epoch_{meta_epoch + 1}.pt")
+                weights_filename = os.path.join(run_checkpoint_dir, f"{c.class_name}_{c.modelname}_epoch_{meta_epoch + 1}.pt")
                 torch.save({
                     'epoch': meta_epoch + 1,
                     'model_state_dict': model.state_dict(),
@@ -486,6 +533,19 @@ def train(train_loader, test_loader, ground_truth_loader):
     if c.use_mlflow:
         mlflow.pytorch.log_model(model, "final_model")
         mlflow.end_run()
+
+    # Save all values to a text file at the end of the execution
+    metrics_file = os.path.join(run_checkpoint_dir, "metrics_history.txt")
+    with open(metrics_file, "w") as f:
+        f.write("Epoch\tTrain_Loss\tTest_Loss\tImage_AUROC\tPixel_AUROC\n")
+        num_epochs = len(train_losses)
+        for i in range(num_epochs):
+            tr_loss = train_losses[i] if i < len(train_losses) else 0.0
+            te_loss = test_losses[i] if i < len(test_losses) else 0.0
+            img_auc = image_aurocs[i] if i < len(image_aurocs) else 0.0
+            pix_auc = pixel_aurocs[i] if i < len(pixel_aurocs) else 0.0
+            f.write(f"{start_epoch + i + 1}\t{tr_loss:.6f}\t{te_loss:.6f}\t{img_auc:.6f}\t{pix_auc:.6f}\n")
+    print(f"Metrics history saved to {metrics_file}")
         
     return model
 

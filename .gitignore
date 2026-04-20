@@ -230,3 +230,4 @@ __marimo__/
 *.pt
 *.png
 /anomaly-detection-pesquisa/differnet/results
+anomaly-detection-pesquisa/differnet/mlflow.db
