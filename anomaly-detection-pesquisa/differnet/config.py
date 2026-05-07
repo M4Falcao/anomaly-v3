@@ -23,8 +23,8 @@ torch.cuda.set_device(0)
 
 # data settings
 dataset_path = r"C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg"
-class_name = "polymer-insulator-upper-shackle"
-modelname = "se_differnet_polymer_insulator_upper_shackle_200_1"
+class_name = "lightning-rod-suspension"
+modelname = "cbam_differnet_lightning_rod_suspension_200"
 
 img_size = (448, 448)
 img_dims = [3] + list(img_size)
@@ -53,7 +53,6 @@ batch_size_test = batch_size
 num_workers = 0
 seed = 42
 
-
 # total epochs = meta_epochs * sub_epochs
 # evaluation after <sub_epochs> epochs
 pre_epochs = 30
@@ -72,7 +71,7 @@ checkpoint_path = "./checkpoints"
 use_mlflow = True
 mlflow_tracking_uri = "file:./mlruns"
 mlflow_backend_store_uri = "file:./mlruns"
-mlflow_experiment_name = "SEDifferNet_Experiment"
+mlflow_experiment_name = "CBAM_DifferNet_Experiment"
 mlflow_run_name = f"{class_name}_{modelname}"
 ngrok_auth_token = None
 mlflow_export_dir = "./exports"
@@ -82,5 +81,5 @@ export_mlflow = True
 use_pyngrok = False
 
 # training settings
-resume_training = True
+resume_training = False
 resume_file = r"C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\checkpoints\run_20260413_125056\polymer-insulator-upper-shackle_se_differnet_polymer_insulator_upper_shackle_200_1_epoch_20.pt"

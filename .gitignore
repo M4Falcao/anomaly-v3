@@ -231,3 +231,4 @@ __marimo__/
 *.png
 /anomaly-detection-pesquisa/differnet/results
 anomaly-detection-pesquisa/differnet/mlflow.db
+differnet_glass_insulator_200_1
