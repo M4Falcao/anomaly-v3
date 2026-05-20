@@ -10,6 +10,10 @@ c.set_seed(c.seed)
 from train import train
 from utils import load_datasets, make_dataloaders
 
-train_set, test_set, ground_truth_set = load_datasets(c.dataset_path, c.class_name)
-train_loader, test_loader, ground_truth_loader = make_dataloaders(train_set, test_set, ground_truth_set)
-model = train(train_loader, test_loader, ground_truth_loader)
+def main():
+    train_set, test_set, ground_truth_set = load_datasets(c.dataset_path, c.class_name)
+    train_loader, test_loader, ground_truth_loader = make_dataloaders(train_set, test_set, ground_truth_set)
+    model = train(train_loader, test_loader, ground_truth_loader)
+
+if __name__ == '__main__':
+    main()

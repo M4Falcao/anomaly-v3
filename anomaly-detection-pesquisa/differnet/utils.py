@@ -48,9 +48,14 @@ def get_loss(z, jac):
     return torch.mean(0.5 * torch.sum(z ** 2, dim=(1,)) - jac) / z.shape[1]
 
 
+class TargetTransform:
+    def __init__(self, class_perm):
+        self.class_perm = class_perm
+
+    def __call__(self, target):
+        return self.class_perm[target]
+
 def load_datasets(dataset_path, class_name):
-    def target_transform(target):
-        return class_perm[target]
 
     data_dir_train = os.path.join(dataset_path, class_name, 'train')
     data_dir_test = os.path.join(dataset_path, class_name, 'test')
@@ -76,7 +81,7 @@ def load_datasets(dataset_path, class_name):
     ground_truth_set = ImageFolder(ground_truth_dir, transform=transform_train)
 
     trainset = ImageFolderMultiTransform(data_dir_train, transform=transform_train, n_transforms=c.n_transforms)
-    testset = ImageFolderMultiTransform(data_dir_test, transform=transform_train, target_transform=target_transform,
+    testset = ImageFolderMultiTransform(data_dir_test, transform=transform_train, target_transform=TargetTransform(class_perm),
                                         n_transforms=c.n_transforms_test)
 
     return trainset, testset, ground_truth_set
