@@ -22,7 +22,7 @@ torch.cuda.empty_cache()
 torch.cuda.set_device(0)
 
 # data settings
-dataset_path = r"C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg-no-back-treino"
+dataset_path = r"C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg"
 class_name = "polymer-insulator-upper-shackle"
 modelname = "se_differnet_nbg_200"
 

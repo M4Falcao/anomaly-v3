@@ -645,6 +645,8 @@ class CombinedTestDataset(Dataset):
             for idx, (path, _) in enumerate(gt_dataset.samples):
                 # Normalize filename: lowercase, no extension
                 fname = os.path.splitext(os.path.basename(path))[0].lower()
+                if fname.endswith('_mask'):
+                    fname = fname[:-5]
                 self.gt_map[fname] = idx
         else:
             print("Warning: GT dataset does not have .samples. Alignment might fail.")
@@ -720,6 +722,31 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
     c.transf_rotations = False
     train_set, test_set, ground_truth_set = utils.load_datasets(dataset_path, class_name)
     combined_dataset = CombinedTestDataset(test_set, ground_truth_set)
+
+    if limit is not None:
+        normal_idx = []
+        anom_idx = []
+        good_idx = test_set.class_to_idx.get('good', None)
+        
+        for i in range(len(test_set)):
+            _, original_target = test_set.samples[i]
+            if original_target == good_idx:
+                normal_idx.append(i)
+            else:
+                anom_idx.append(i)
+                
+        n_anom = len(anom_idx)
+        n_norm = len(normal_idx)
+        
+        # Pick half and half, or if limit > 2 * n_anom, pick all anomalies and remaining normal
+        k_anom = min(limit // 2, n_anom)
+        k_norm = min(limit - k_anom, n_norm)
+        
+        selected_indices = normal_idx[:k_norm] + anom_idx[:k_anom]
+        selected_indices.sort() # Keep original dataset order
+        
+        combined_dataset = torch.utils.data.Subset(combined_dataset, selected_indices)
+
     loader = DataLoader(combined_dataset, batch_size=1, shuffle=False)
     
     # 2. Load Model
@@ -773,9 +800,35 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
     
     # Determine how many samples to run for Sanity Check (it is slow)
     total_samples = limit if limit else len(loader)
-    sanity_check_indices = set(np.random.choice(total_samples, min(5, total_samples), replace=False))
+    
+    sanity_check_indices = set()
+    norm_count = 0
+    anom_count = 0
+    
+    for i in range(len(combined_dataset)):
+        if isinstance(combined_dataset, torch.utils.data.Subset):
+            orig_idx = combined_dataset.indices[i]
+            dataset_ref = combined_dataset.dataset
+        else:
+            orig_idx = i
+            dataset_ref = combined_dataset
+            
+        _, original_target = dataset_ref.test_dataset.samples[orig_idx]
+        good_idx = dataset_ref.test_dataset.class_to_idx.get('good', None)
+        
+        if original_target == good_idx:
+            if norm_count < 3:
+                sanity_check_indices.add(i)
+                norm_count += 1
+        else:
+            if anom_count < 3:
+                sanity_check_indices.add(i)
+                anom_count += 1
+                
+        if norm_count == 3 and anom_count == 3:
+            break
 
-    print(f"Evaluating {total_samples} samples (Sanity Check on {len(sanity_check_indices)} indices)...")
+    print(f"Evaluating {total_samples} samples (Sanity Check on {len(sanity_check_indices)} indices - {norm_count} normal, {anom_count} anom)...")
     
     for name, method_type, method_ref in all_methods:
         print(f"\nRunning {name} ({'GradCAM-based' if method_type == 'gradcam' else 'Model-native'})...")
@@ -802,8 +855,6 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
 
         # Iterate Data
         for batch_idx, (images, labels, masks) in enumerate(tqdm(flat_batch_loader(loader), total=len(loader))):
-            if limit and batch_idx >= limit:
-                break
             images = images.to(device)
             if len(images) == 0: continue
             
@@ -827,8 +878,10 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
                 # Pixel-level metrics (ONLY for anomalous images where GT mask has defects)
                 if masks is not None:
                      current_mask = masks[i].squeeze().cpu().numpy()
+                     if current_mask.ndim == 3:
+                         current_mask = current_mask[0] # Take first channel if RGB
+                         
                      is_anomalous = np.sum((current_mask > 0.5).astype(int)) > 0
-                     
                      if is_anomalous:
                          # Pixel AUROC
                          p_auc = calculate_pixel_auroc(cam_map, current_mask)
