@@ -198,10 +198,56 @@ def save_weights(model, filename):
 
 
 def load_weights(model, filename):
+    # Try finding the file directly
     if os.path.exists(filename):
         path = filename
-    else:
+    elif os.path.exists(os.path.join(WEIGHT_DIR, filename)):
         path = os.path.join(WEIGHT_DIR, filename)
+    else:
+        # Try to resolve path if user passed a path relative to repo root but is inside a subdirectory
+        normalized_filename = filename.replace('\\', '/')
+        normalized_cwd = os.getcwd().replace('\\', '/')
+        
+        filename_parts = normalized_filename.split('/')
+        resolved_path = None
+        
+        # Check if we can find the file by stripping leading parts of the filename that match CWD suffixes
+        for i in range(len(filename_parts)):
+            test_path = os.path.join(os.getcwd(), *filename_parts[i:])
+            if os.path.exists(test_path):
+                resolved_path = test_path
+                break
+                
+        if resolved_path:
+            path = resolved_path
+        else:
+            # Try to search in parent directories (up to 4 levels up)
+            curr_dir = os.getcwd()
+            found = False
+            for _ in range(4):
+                test_path = os.path.join(curr_dir, filename)
+                if os.path.exists(test_path):
+                    path = test_path
+                    found = True
+                    break
+                
+                # Also try matching suffix parts of the filename in parent directories
+                for i in range(1, len(filename_parts)):
+                    test_subpath = os.path.join(curr_dir, *filename_parts[i:])
+                    if os.path.exists(test_subpath):
+                        path = test_subpath
+                        found = True
+                        break
+                if found:
+                    break
+                parent = os.path.dirname(curr_dir)
+                if parent == curr_dir:
+                    break
+                curr_dir = parent
+            
+            if not found:
+                # Fallback to original default behavior
+                path = os.path.join(WEIGHT_DIR, filename)
     
     loaded_content = torch.load(path, weights_only=False)
     

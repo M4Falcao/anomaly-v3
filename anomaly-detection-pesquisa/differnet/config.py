@@ -22,9 +22,9 @@ torch.cuda.empty_cache()
 torch.cuda.set_device(0)
 
 # data settings
-dataset_path = r"C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg"
-class_name = "lightning-rod-suspension"
-modelname = "se_differnet_lightning_rod_suspension_200"
+dataset_path = r"C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg-no-back-treino"
+class_name = "polymer-insulator-upper-shackle"
+modelname = "se_differnet_nbg_200"
 
 img_size = (448, 448)
 img_dims = [3] + list(img_size)
@@ -71,7 +71,7 @@ checkpoint_path = "./checkpoints"
 use_mlflow = True
 mlflow_tracking_uri = "file:./mlruns"
 mlflow_backend_store_uri = "file:./mlruns"
-mlflow_experiment_name = "SE_DifferNet_Experiment"
+mlflow_experiment_name = "NGB_SE_DifferNet_Experiment"
 mlflow_run_name = f"{class_name}_{modelname}"
 ngrok_auth_token = None
 mlflow_export_dir = "./exports"

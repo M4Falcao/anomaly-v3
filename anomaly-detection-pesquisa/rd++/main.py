@@ -1,3 +1,4 @@
+from datetime import time
 import torch
 import torch.nn as nn
 import numpy as np
@@ -18,6 +19,7 @@ from model.de_resnet import de_resnet18, de_resnet34, de_wide_resnet50_2, de_res
 from utils.utils_test import evaluation_multi_proj
 from utils.utils_train import MultiProjectionLayer, Revisit_RDLoss, loss_fucntion
 from dataset.dataset import MVTecDataset_test, MVTecDataset_train, get_data_transforms
+import datetime
 
 def setup_seed(seed):
     torch.manual_seed(seed)
@@ -25,18 +27,18 @@ def setup_seed(seed):
     np.random.seed(seed)
     random.seed(seed)
     torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.benchmark = True
 
 def get_args():
     parser = ArgumentParser()
-    parser.add_argument('--save_folder', default = './RD++_checkpoint_result', type=str)
+    parser.add_argument('--save_folder', default = './RD++_checkpoint_result_' + str(datetime.datetime.now().strftime('%Y%m%d_%H%M%S')), type=str)
     parser.add_argument('--batch_size', default = 16, type=int)
     parser.add_argument('--image_size', default = 256, type=int)
     parser.add_argument('--detail_training', default='note', type = str)
     parser.add_argument('--proj_lr', default = 0.001, type=float)
     parser.add_argument('--distill_lr', default = 0.005, type=float)
     parser.add_argument('--weight_proj', default = 0.2, type=float) 
-    parser.add_argument('--classes', nargs="+", default=["glass-insulator"])
+    parser.add_argument('--classes', nargs="+", default=["lightning-rod-suspension"])
     pars = parser.parse_args()
     return pars
 
@@ -50,16 +52,18 @@ def train(_class_, pars):
 
     data_transform, gt_transform = get_data_transforms(pars.image_size, pars.image_size)
     
-    train_path = r"C:\Users\Pichau\Pesquisa\pesquisa\data\insplad-seg\insplad-seg\class_name\train".replace("class_name", _class_)
-    test_path = r"C:\Users\Pichau\Pesquisa\pesquisa\data\insplad-seg\insplad-seg\class_name".replace("class_name", _class_)
+    train_path = r"C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg\class_name\train".replace("class_name", _class_)
+    test_path = r"C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg\class_name".replace("class_name", _class_)
     
     if not os.path.exists(pars.save_folder + '/' + _class_):
         os.makedirs(pars.save_folder + '/' + _class_)
     save_model_path  = pars.save_folder + '/' + _class_ + '/' + 'wres50_'+_class_+'.pth'
+    save_model_path_px  = pars.save_folder + '/' + _class_ + '/' + 'wres50_'+_class_+'_best_px.pth'
+    save_model_path_sp  = pars.save_folder + '/' + _class_ + '/' + 'wres50_'+_class_+'_best_sp.pth'
     train_data = MVTecDataset_train(root=train_path, transform=data_transform)
     test_data = MVTecDataset_test(root=test_path, transform=data_transform, gt_transform=gt_transform)
-    train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=8, shuffle=True)
-    test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=1, shuffle=False)
+    train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=8, shuffle=True, num_workers=4, pin_memory=True, persistent_workers=True)
+    test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=1, shuffle=False, num_workers=4, pin_memory=True, persistent_workers=True)
 
     print(f"train_data: {len(train_data)}")
     print(f"test_data: {len(test_data)}")
@@ -70,7 +74,7 @@ def train(_class_, pars):
     bn = bn.to(device)
     encoder.eval()
 
-    decoder = de_wide_resnet50_2_cbam(pretrained=False)
+    decoder = de_wide_resnet50_2(pretrained=False)
     decoder = decoder.to(device)
     
     proj_layer =  MultiProjectionLayer(base=64).to(device)
@@ -84,6 +88,9 @@ def train(_class_, pars):
     best_auroc_px = 0
     best_auroc_sp = 0
     best_aupro_px = 0
+    
+    best_auroc_px_score = 0
+    best_auroc_sp_score = 0
     
     auroc_px_list = []
     auroc_sp_list = []
@@ -102,7 +109,7 @@ def train(_class_, pars):
     import time
 
     # Set appropriate epochs for specific classes (Some classes converge faster than others)
-    num_epoch = 10
+    num_epoch = 200
 
     print(f'With class {_class_}, Training with {num_epoch} Epochs')
 
@@ -186,7 +193,7 @@ def train(_class_, pars):
         ax[2][0].set_title('loss_distill')
         ax[2][1].plot(total_loss)
         ax[2][1].set_title('total_loss')
-        plt.savefig(pars.save_folder + '/' + _class_ + '/monitor_training.png', dpi=100)
+        plt.savefig(pars.save_folder + '/' + _class_ + '/monitor_training.png', dpi=300)
 
         print(f'Epoch {epoch}, Sample AUROC: {auroc_sp:.4f}, Pixel AUROC: {auroc_px:.4f}, Pixel AUPRO: {aupro_px:.4f}')
 
@@ -211,6 +218,24 @@ def train(_class_, pars):
             history_infor['epoch'] = best_epoch
             with open(os.path.join(pars.save_folder + '/' + _class_, 'history.json'), 'w') as f:
                 json.dump(history_infor, f)
+                
+        # Save best model by pixel AUROC
+        if auroc_px > best_auroc_px_score:
+            best_auroc_px_score = auroc_px
+            torch.save({
+                'proj': proj_layer.state_dict(),
+                'decoder': decoder.state_dict(),
+                'bn': bn.state_dict()
+            }, save_model_path_px)
+            
+        # Save best model by sample AUROC
+        if auroc_sp > best_auroc_sp_score:
+            best_auroc_sp_score = auroc_sp
+            torch.save({
+                'proj': proj_layer.state_dict(),
+                'decoder': decoder.state_dict(),
+                'bn': bn.state_dict()
+            }, save_model_path_sp)
 
     return best_auroc_sp, best_auroc_px, best_aupro_px
 
@@ -222,7 +247,7 @@ if __name__ == '__main__':
     pars = get_args()
     print('Training with classes: ', pars.classes)
     all_classes = [ 'carpet','grid','leather','tile','wood','bottle','cable','capsule','hazelnut','metal_nut','pill','screw','toothbrush','transistor','zipper']
-    setup_seed(111)
+    setup_seed(42)
     metrics = {'class': [], 'AUROC_sample':[], 'AUROC_pixel': [], 'AUPRO_pixel': []}
     
     # train all_classes

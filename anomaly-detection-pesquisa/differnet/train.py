@@ -142,8 +142,10 @@ def train(train_loader, test_loader, ground_truth_loader):
     # Create execution specific checkpoint directory
     run_timestamp = time.strftime('%Y%m%d_%H%M%S')
     run_checkpoint_dir = os.path.join(c.checkpoint_path, f"run_{run_timestamp}")
+    best_models_dir = os.path.join(run_checkpoint_dir, "best_models")
     if not os.path.exists(run_checkpoint_dir):
         os.makedirs(run_checkpoint_dir)
+    os.makedirs(best_models_dir, exist_ok=True)
 
     # MLflow Setup
     if c.use_mlflow:
@@ -207,6 +209,8 @@ def train(train_loader, test_loader, ground_truth_loader):
 
     score_obs_image = Score_Observer('AUROC for image level')
     score_obs_pixel = Score_Observer('AUROC for pixel level')
+    best_img_auroc = -1.0
+    best_pix_auroc = -1.0
 
     # Initialize history lists
     train_losses = []
@@ -504,7 +508,7 @@ def train(train_loader, test_loader, ground_truth_loader):
                 
                 # Save weights explicitly to local path
                 weights_filename = os.path.join(run_checkpoint_dir, f"{c.class_name}_{c.modelname}_epoch_{meta_epoch + 1}.pt")
-                torch.save({
+                checkpoint_data = {
                     'epoch': meta_epoch + 1,
                     'model_state_dict': model.state_dict(),
                     'optimizer_state_dict': optimizer.state_dict(),
@@ -512,12 +516,39 @@ def train(train_loader, test_loader, ground_truth_loader):
                     'test_losses': test_losses,
                     'image_aurocs': image_aurocs,
                     'pixel_aurocs': pixel_aurocs
-                }, weights_filename)
+                }
+                torch.save(checkpoint_data, weights_filename)
                 print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - Checkpoint saved locally to: {weights_filename}")
                 
                 # Log the local file as an artifact to MLflow
                 # mlflow.log_artifact(weights_filename, artifact_path="checkpoints")
                 print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - Checkpoint saved to MLflow")
+
+            # Save best image-level AUROC model (overwrites previous best)
+            if image_auroc > best_img_auroc:
+                best_img_auroc = image_auroc
+                best_img_path = os.path.join(best_models_dir, "best_img_auroc.pt")
+                torch.save({
+                    'epoch': meta_epoch + 1,
+                    'model_state_dict': model.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
+                    'image_auroc': image_auroc,
+                    'pixel_auroc': mean_pixel_auroc_test,
+                }, best_img_path)
+                print(f"  ★ New best IMAGE AUROC: {image_auroc:.4f} (epoch {meta_epoch + 1}) -> {best_img_path}")
+
+            # Save best pixel-level AUROC model (overwrites previous best)
+            if mean_pixel_auroc_test > best_pix_auroc:
+                best_pix_auroc = mean_pixel_auroc_test
+                best_pix_path = os.path.join(best_models_dir, "best_pix_auroc.pt")
+                torch.save({
+                    'epoch': meta_epoch + 1,
+                    'model_state_dict': model.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
+                    'image_auroc': image_auroc,
+                    'pixel_auroc': mean_pixel_auroc_test,
+                }, best_pix_path)
+                print(f"  ★ New best PIXEL AUROC: {mean_pixel_auroc_test:.4f} (epoch {meta_epoch + 1}) -> {best_pix_path}")
 
             # if c.export_mlflow:
             #     if (epoch + 1) % (c.checkpoint_interval * 2) == 0:

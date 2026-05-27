@@ -1,6 +1,7 @@
 import os
 import sys
 import glob
+import gc
 import argparse
 import time
 import numpy as np
@@ -27,6 +28,11 @@ from model import DifferNet, SEDifferNet, CBAMDifferNet, load_weights
 
 device = c.device
 c.set_seed(c.seed)
+
+# --- Inference Optimizations ---
+torch.backends.cudnn.benchmark = True        # optimize convs for fixed input size
+torch.backends.cuda.matmul.allow_tf32 = True  # TF32 for matmuls (RTX 30/40 series)
+torch.backends.cudnn.allow_tf32 = True        # TF32 for cuDNN convolutions
 
 # --- Metric Helpers ---
 
@@ -127,12 +133,19 @@ def get_grad_maps(model, inputs, labels, optimizer):
     grad_img_sq = grad_img ** 2
     return grad_img_sq
 
-def calculate_pixel_level_metrics(predictions, ground_truth_masks):
+def calculate_pixel_level_metrics(predictions, ground_truth_masks, fg_mask=None):
     predictions = np.nan_to_num(predictions, nan=0.0, posinf=0.0, neginf=0.0)
     predictions_resized = skimage.transform.resize(predictions, ground_truth_masks.shape, mode='constant')
     ground_truth_masks_binary = (ground_truth_masks > 0).astype(int)
-    predictions_flat = predictions_resized.reshape(-1)
-    ground_truth_flat = ground_truth_masks_binary.reshape(-1)
+
+    if fg_mask is not None:
+        # Resize foreground mask to match ground_truth shape and apply
+        fg_resized = skimage.transform.resize(fg_mask.astype(float), ground_truth_masks.shape, mode='constant') > 0.5
+        predictions_flat = predictions_resized[fg_resized].reshape(-1)
+        ground_truth_flat = ground_truth_masks_binary[fg_resized].reshape(-1)
+    else:
+        predictions_flat = predictions_resized.reshape(-1)
+        ground_truth_flat = ground_truth_masks_binary.reshape(-1)
     
     return get_optimal_metrics(ground_truth_flat, predictions_flat)
 
@@ -180,12 +193,15 @@ def detect_architecture_from_state_dict(state_dict, folder_name=None):
 
     return None  # unknown structure
 
-def run_evaluation(mode="fast", output_dir="results_aggregated"):
+def run_evaluation(mode="fast", output_dir="results_aggregated", no_bg=False):
     # Create a timestamped run subdirectory
     run_timestamp = time.strftime('%Y%m%d_%H%M%S')
-    run_dir = os.path.join(output_dir, f"run_{run_timestamp}_{mode}")
+    bg_suffix = "_nobg" if no_bg else ""
+    run_dir = os.path.join(output_dir, f"run_{run_timestamp}_{mode}{bg_suffix}")
     os.makedirs(run_dir, exist_ok=True)
     print(f"Output directory: {run_dir}", flush=True)
+    if no_bg:
+        print("  [INFO] --no_bg enabled: black background pixels will be excluded from pixel-level metrics", flush=True)
     base_dir = r"c:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models"
     
     if not os.path.exists(base_dir):
@@ -259,12 +275,18 @@ def run_evaluation(mode="fast", output_dir="results_aggregated"):
         optimizer = torch.optim.Adam(model.nf.parameters(), lr=c.lr_init, betas=(0.8, 0.8), eps=1e-04, weight_decay=1e-5)
         
         # Load using the identical logic as train/main, enforcing full config params
+        # Use num_workers=0 on Windows to prevent worker processes from re-spawning the script
+        _orig_workers = c.num_workers
+        c.num_workers = 0
         try:
             train_set, test_set, ground_truth_set = load_datasets(c.dataset_path, cls)
             _, test_loader, ground_truth_loader = make_dataloaders(train_set, test_set, ground_truth_set)
         except Exception as e:
             print(f"Could not load dataset for class {cls}: {e}", flush=True)
+            c.num_workers = _orig_workers
             continue
+        finally:
+            c.num_workers = _orig_workers
 
         test_labels = []
         test_z = []
@@ -288,6 +310,16 @@ def run_evaluation(mode="fast", output_dir="results_aggregated"):
         for i, data in enumerate(pbar):
             inputs, labels = preprocess_batch(data)
             
+            # Replace black background pixels with neutral values (ImageNet mean)
+            if no_bg:
+                norm_mean_t = torch.tensor(c.norm_mean, device=device).view(1, 3, 1, 1)
+                norm_std_t = torch.tensor(c.norm_std, device=device).view(1, 3, 1, 1)
+                img_raw = inputs * norm_std_t + norm_mean_t  # un-normalize to [0, 1]
+                bg_mask = img_raw.mean(dim=1, keepdim=True) < 0.02  # detect black pixels
+                bg_mask = bg_mask.expand_as(inputs)
+                inputs = inputs.clone()
+                inputs[bg_mask] = 0.0  # 0 in normalized space = ImageNet mean in pixel space
+            
             with torch.no_grad():
                 z = model(inputs)
                 test_labels.append(t2np(labels))
@@ -295,8 +327,12 @@ def run_evaluation(mode="fast", output_dir="results_aggregated"):
             total_images += inputs.size(0)
 
             if mode == "full":
-                with torch.enable_grad():
-                    grad_map = get_grad_maps(model, inputs, labels, optimizer)
+                # Skip gradient computation for normal-only batches (no anomalies)
+                if t2np(labels).max() > 0:
+                    with torch.enable_grad():
+                        grad_map = get_grad_maps(model, inputs, labels, optimizer)
+                else:
+                    grad_map = None
                 
                 if grad_map is not None:
                     if gt_iter is None:
@@ -311,7 +347,23 @@ def run_evaluation(mode="fast", output_dir="results_aggregated"):
                     gt_masks = gt_masks[:grad_map.shape[0]]
                     
                     if len(gt_masks) == len(grad_map):
-                        p_metrics = calculate_pixel_level_metrics(grad_map, t2np(gt_masks))
+                        # Build foreground mask from input images when --no_bg is enabled
+                        fg_mask = None
+                        if no_bg:
+                            # Reshape inputs to (batch, n_transforms, C, H, W) and select anomalous samples
+                            inputs_grouped = inputs.view(-1, c.n_transforms_test, *inputs.shape[-3:])
+                            anom_inputs = inputs_grouped[labels > 0]  # same filter as get_grad_maps
+                            if anom_inputs.shape[0] > 0:
+                                # Take the first transform (0° rotation = original orientation)
+                                first_tf = anom_inputs[:, 0]  # (N_anom, 3, H, W)
+                                # Un-normalize: pixel = tensor * std + mean → back to [0, 1]
+                                norm_mean_t = torch.tensor(c.norm_mean, device=device).view(1, 3, 1, 1)
+                                norm_std_t = torch.tensor(c.norm_std, device=device).view(1, 3, 1, 1)
+                                img_raw = first_tf * norm_std_t + norm_mean_t
+                                # Foreground = mean RGB > threshold (black pixels ≈ 0)
+                                fg_mask = t2np(img_raw.mean(dim=1) > 0.02)  # (N_anom, H, W)
+                        
+                        p_metrics = calculate_pixel_level_metrics(grad_map, t2np(gt_masks), fg_mask=fg_mask)
                         if not np.isnan(p_metrics['AUROC']):
                             pixel_auroc_list.append(p_metrics['AUROC'])
                             pixel_acc_list.append(p_metrics['Accuracy'])
@@ -321,7 +373,7 @@ def run_evaluation(mode="fast", output_dir="results_aggregated"):
                             pixel_prauc_list.append(p_metrics['PR-AUC'])
                             pixel_pg2_list.append(p_metrics['PG2'])
 
-            if i % 5 == 0 or i == len(test_loader) - 1:
+            if i % 20 == 0 or i == len(test_loader) - 1:
                 ram_mb, vram_mb = get_system_metrics()
                 pbar.set_postfix({"images": total_images, "RAM_MB": f"{ram_mb:.0f}", "VRAM_MB": f"{vram_mb:.0f}"})
                 sys.stdout.flush()
@@ -370,6 +422,11 @@ def run_evaluation(mode="fast", output_dir="results_aggregated"):
         print(f"Img AUROC: {res_dict['Img AUROC']:.4f} | Img F1: {res_dict['Img F1']:.4f} | Img PG2: {res_dict['Img PG2']:.4f}", flush=True)
         print(f"System: Latency {latency_ms:.2f}ms | RAM {ram_mb:.1f}MB | VRAM {vram_mb:.1f}MB", flush=True)
         sys.stdout.flush()
+
+        # Free GPU memory between models to avoid VRAM accumulation
+        del model, base_model, optimizer
+        torch.cuda.empty_cache()
+        gc.collect()
             
     df = pd.DataFrame(results)
     
@@ -731,8 +788,9 @@ def run_evaluation(mode="fast", output_dir="results_aggregated"):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=["fast", "full"], default="fast", help="Evaluation mode")
+    parser.add_argument("--no_bg", action="store_true", help="Exclude black background pixels from pixel-level metrics (for background-removed images)")
     args = parser.parse_args()
     
     print(f"Starting aggregated evaluation in '{args.mode}' mode with full metrics...", flush=True)
     sys.stdout.flush()
-    run_evaluation(mode=args.mode)
+    run_evaluation(mode=args.mode, no_bg=args.no_bg)
