@@ -527,6 +527,7 @@ def main():
     # PatchCore
     parser.add_argument('--patchcore_coreset', type=float, default=0.1)
     parser.add_argument('--patchcore_k', type=int, default=3)
+    parser.add_argument('--disable_patchcore', action='store_true', help="Disable PatchCore to save memory")
     
     # Post-processing
     parser.add_argument('--sigma', type=float, default=4.0)
@@ -612,11 +613,15 @@ def main():
     print(f"  Test:  {len(testset)} samples")
     
     # ─── Build PatchCore memory bank ─────────────────────────────────────────
-    print("\n--- Building PatchCore Memory Bank ---")
-    patchcore = PatchCoreBank(coreset_ratio=args.patchcore_coreset, 
-                              k=args.patchcore_k, seed=args.seed)
-    patchcore.fit(backbone, train_loader)
-    mlflow.log_metric("patchcore_bank_size", patchcore.bank.shape[0])
+    if not args.disable_patchcore:
+        print("\n--- Building PatchCore Memory Bank ---")
+        patchcore = PatchCoreBank(coreset_ratio=args.patchcore_coreset, 
+                                  k=args.patchcore_k, seed=args.seed)
+        patchcore.fit(backbone, train_loader)
+        mlflow.log_metric("patchcore_bank_size", patchcore.bank.shape[0])
+    else:
+        print("\n--- PatchCore Disabled ---")
+        patchcore = None
     
     # ─── Build CFLOW pixel head ──────────────────────────────────────────────
     print("\n--- Initializing CFLOW Pixel Head ---")
@@ -796,13 +801,14 @@ def main():
             # CFLOW score map
             cflow_map = t2np(cflow.score_map(feats, args.img_size))
             cflow_map = gaussian_smooth(cflow_map, sigma=args.sigma)
+            all_cflow_maps.append(cflow_map)
             
             # PatchCore score map
-            pc_map = t2np(patchcore.score_map(concat, args.img_size))
-            pc_map = gaussian_smooth(pc_map, sigma=args.sigma)
+            if not args.disable_patchcore:
+                pc_map = t2np(patchcore.score_map(concat, args.img_size))
+                pc_map = gaussian_smooth(pc_map, sigma=args.sigma)
+                all_patchcore_maps.append(pc_map)
             
-            all_cflow_maps.append(cflow_map)
-            all_patchcore_maps.append(pc_map)
             all_masks.append(masks.squeeze(1).numpy())
             
             # Save images for visualization (first batch only)
@@ -811,32 +817,35 @@ def main():
             
             # Image-level scores
             cflow_img = cflow_map.reshape(cflow_map.shape[0], -1).max(axis=1)
-            pc_img = pc_map.reshape(pc_map.shape[0], -1).max(axis=1)
             all_image_scores_cflow.extend(cflow_img.tolist())
-            all_image_scores_patchcore.extend(pc_img.tolist())
+            
+            if not args.disable_patchcore:
+                pc_img = pc_map.reshape(pc_map.shape[0], -1).max(axis=1)
+                all_image_scores_patchcore.extend(pc_img.tolist())
+                
             all_image_labels.extend([1 if l > 0 else 0 for l in labels.numpy()])
     
     # Concatenate
     cflow_maps = np.concatenate(all_cflow_maps, axis=0)
-    pc_maps = np.concatenate(all_patchcore_maps, axis=0)
     gt_masks = np.concatenate(all_masks, axis=0)
-    
-    # Ensemble: normalized CFLOW + PatchCore
-    cflow_norm = minmax_norm(cflow_maps)
-    pc_norm = minmax_norm(pc_maps)
-    ensemble_maps = 0.6 * cflow_norm + 0.4 * pc_norm
-    
     image_labels = np.array(all_image_labels)
-    
-    # ─── Compute all metrics ─────────────────────────────────────────────────
-    print("\n--- Computing Metrics ---")
     
     methods_eval = {
         'CFLOW': (cflow_maps, all_image_scores_cflow),
-        'PatchCore': (pc_maps, all_image_scores_patchcore),
-        'Ensemble': (ensemble_maps, (0.6 * minmax_norm(np.array(all_image_scores_cflow).reshape(-1, 1)) + 
-                                      0.4 * minmax_norm(np.array(all_image_scores_patchcore).reshape(-1, 1))).flatten().tolist()),
     }
+    
+    if not args.disable_patchcore:
+        pc_maps = np.concatenate(all_patchcore_maps, axis=0)
+        # Ensemble: normalized CFLOW + PatchCore
+        cflow_norm = minmax_norm(cflow_maps)
+        pc_norm = minmax_norm(pc_maps)
+        ensemble_maps = 0.6 * cflow_norm + 0.4 * pc_norm
+        
+        methods_eval['PatchCore'] = (pc_maps, all_image_scores_patchcore)
+        methods_eval['Ensemble'] = (ensemble_maps, (0.6 * minmax_norm(np.array(all_image_scores_cflow).reshape(-1, 1)) + 
+                                      0.4 * minmax_norm(np.array(all_image_scores_patchcore).reshape(-1, 1))).flatten().tolist())
+    
+    # ─── Compute all metrics ─────────────────────────────────────────────────
     
     results_table = []
     
@@ -909,11 +918,12 @@ def main():
                          "CFLOW Image-Level Score Distribution",
                          os.path.join(plots_dir, "hist_image_scores_cflow.png"))
     
-    normal_pc_scores = np.array(all_image_scores_patchcore)[image_labels == 0]
-    anomaly_pc_scores = np.array(all_image_scores_patchcore)[image_labels == 1]
-    plot_score_histogram(normal_pc_scores, anomaly_pc_scores,
-                         "PatchCore Image-Level Score Distribution",
-                         os.path.join(plots_dir, "hist_image_scores_patchcore.png"))
+    if not args.disable_patchcore:
+        normal_pc_scores = np.array(all_image_scores_patchcore)[image_labels == 0]
+        anomaly_pc_scores = np.array(all_image_scores_patchcore)[image_labels == 1]
+        plot_score_histogram(normal_pc_scores, anomaly_pc_scores,
+                             "PatchCore Image-Level Score Distribution",
+                             os.path.join(plots_dir, "hist_image_scores_patchcore.png"))
     
     # 2. Pixel-level score histogram
     normal_pix = cflow_maps[gt_masks == 0]
@@ -922,11 +932,12 @@ def main():
                          "CFLOW Pixel-Level Score Distribution",
                          os.path.join(plots_dir, "hist_pixel_scores_cflow.png"))
     
-    normal_pix_pc = pc_maps[gt_masks == 0]
-    anomaly_pix_pc = pc_maps[gt_masks > 0]
-    plot_pixel_histogram(normal_pix_pc, anomaly_pix_pc,
-                         "PatchCore Pixel-Level Score Distribution",
-                         os.path.join(plots_dir, "hist_pixel_scores_patchcore.png"))
+    if not args.disable_patchcore:
+        normal_pix_pc = pc_maps[gt_masks == 0]
+        anomaly_pix_pc = pc_maps[gt_masks > 0]
+        plot_pixel_histogram(normal_pix_pc, anomaly_pix_pc,
+                             "PatchCore Pixel-Level Score Distribution",
+                             os.path.join(plots_dir, "hist_pixel_scores_patchcore.png"))
     
     # 3. ROC curves
     plot_roc_curve(image_labels, np.array(all_image_scores_cflow),
@@ -941,9 +952,10 @@ def main():
                    "CFLOW Pixel-Level ROC Curve",
                    os.path.join(plots_dir, "roc_pixel_cflow.png"))
     
-    plot_roc_curve(lab_flat[idx], ensemble_maps.reshape(-1)[idx],
-                   "Ensemble Pixel-Level ROC Curve",
-                   os.path.join(plots_dir, "roc_pixel_ensemble.png"))
+    if not args.disable_patchcore:
+        plot_roc_curve(lab_flat[idx], ensemble_maps.reshape(-1)[idx],
+                       "Ensemble Pixel-Level ROC Curve",
+                       os.path.join(plots_dir, "roc_pixel_ensemble.png"))
     
     # 4. Anomaly map visualization (anomaly samples only)
     anomaly_indices = [i for i, l in enumerate(all_image_labels) if l == 1]
@@ -961,13 +973,14 @@ def main():
                               os.path.join(plots_dir, "anomaly_maps_cflow.png"))
             
             # Also for ensemble
-            viz_maps_ens = [ensemble_maps[anomaly_indices[i]] 
-                           for i in range(min(8, len(anomaly_indices)))
-                           if anomaly_indices[i] < len(ensemble_maps)]
-            if viz_maps_ens:
-                plot_anomaly_maps(viz_images[:len(viz_maps_ens)], 
-                                  viz_masks[:len(viz_maps_ens)], viz_maps_ens,
-                                  os.path.join(plots_dir, "anomaly_maps_ensemble.png"))
+            if not args.disable_patchcore:
+                viz_maps_ens = [ensemble_maps[anomaly_indices[i]] 
+                               for i in range(min(8, len(anomaly_indices)))
+                               if anomaly_indices[i] < len(ensemble_maps)]
+                if viz_maps_ens:
+                    plot_anomaly_maps(viz_images[:len(viz_maps_ens)], 
+                                      viz_masks[:len(viz_maps_ens)], viz_maps_ens,
+                                      os.path.join(plots_dir, "anomaly_maps_ensemble.png"))
     
     # 5. Method comparison bar chart
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))
