@@ -1,0 +1,9 @@
+method,variant,pixel_auroc,fit_seconds,eval_seconds
+H_DifferNet,raw,0.750914,2.00,2.16
+H_DifferNet,A,0.747535,2.00,2.16
+H_DifferNet,B,0.500000,2.00,2.16
+H_DifferNet,C,0.611810,2.00,2.16
+I_SEDifferNet,raw,0.506807,2.10,1.51
+I_SEDifferNet,A,0.504354,2.10,1.51
+I_SEDifferNet,B,0.500000,2.10,1.51
+I_SEDifferNet,C,0.517075,2.10,1.51

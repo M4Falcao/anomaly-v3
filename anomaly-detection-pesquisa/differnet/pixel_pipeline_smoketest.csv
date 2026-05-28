@@ -1,0 +1,17 @@
+method,variant,pixel_auroc,fit_seconds,eval_seconds
+D_PaDiM,raw,0.802829,0.56,1.71
+D_PaDiM,A,0.806255,0.56,1.71
+D_PaDiM,B,0.816511,0.56,1.71
+D_PaDiM,C,0.818732,0.56,1.71
+E_PatchCore,raw,0.726245,0.08,1.65
+E_PatchCore,A,0.726333,0.08,1.65
+E_PatchCore,B,0.794694,0.08,1.65
+E_PatchCore,C,0.775960,0.08,1.65
+F_FastFlow,raw,0.891648,0.23,2.06
+F_FastFlow,A,0.892639,0.23,2.06
+F_FastFlow,B,0.910785,0.23,2.06
+F_FastFlow,C,0.636812,0.23,2.06
+G_CFLOW,raw,0.869899,0.16,1.95
+G_CFLOW,A,0.870904,0.16,1.95
+G_CFLOW,B,0.897133,0.16,1.95
+G_CFLOW,C,0.575833,0.16,1.95

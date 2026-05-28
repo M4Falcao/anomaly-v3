@@ -51,8 +51,6 @@ class DifferNet(nn.Module):
     
 
 class SEDifferNet(nn.Module):
-
-    print("SEDifferNet")
     def __init__(self):
         super(SEDifferNet, self).__init__()
         self.alexnet = alexnet(pretrained=True)

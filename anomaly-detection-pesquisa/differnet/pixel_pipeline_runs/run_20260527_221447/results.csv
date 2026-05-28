@@ -1,0 +1,7 @@
+method,best_image_auroc,best_pixel_auroc,best_image_epoch,best_pixel_epoch
+D_PaDiM,0.846711,0.891159,0,0
+E_PatchCore,0.570048,0.843085,0,0
+F_FastFlow,0.910256,0.800687,58,53
+G_CFLOW,0.909885,0.936890,18,13
+H_DifferNet,0.000000,0.000000,0,0
+I_SEDifferNet,0.524712,0.669616,95,56

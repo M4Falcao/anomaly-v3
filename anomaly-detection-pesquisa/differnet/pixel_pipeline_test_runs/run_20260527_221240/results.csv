@@ -1,0 +1,3 @@
+method,best_image_auroc,best_pixel_auroc,best_image_epoch,best_pixel_epoch
+D_PaDiM,0.547566,0.806192,0,0
+F_FastFlow,0.343181,0.668823,1,1
