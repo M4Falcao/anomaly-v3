@@ -57,8 +57,8 @@ def _detect_arch(checkpoint_path):
     """Detect model architecture from checkpoint state_dict keys."""
     data = torch.load(checkpoint_path, map_location='cpu', weights_only=False)
     keys = data.get('model_state_dict', data).keys()
-    if any('cbam' in k for k in keys):
-        return 'cbam'
+    # if any('cbam' in k for k in keys):
+    #     return 'cbam'
     return 'se'
 
 
@@ -595,6 +595,18 @@ def main():
     # ─── Load data ───────────────────────────────────────────────────────────
     print(f"\nLoading dataset: {args.class_name}")
     trainset, testset = load_datasets(args.dataset, args.class_name, aligned=True)
+    
+    # For pixel-level evaluation, we need exactly 1 transform per test image 
+    # (no random rotations) so that the predicted map aligns with the ground truth mask.
+    import torchvision.transforms as transforms
+    eval_transform = transforms.Compose([
+        transforms.Resize((args.img_size, args.img_size)),
+        transforms.ToTensor(),
+        transforms.Normalize(c.norm_mean, c.norm_std)
+    ])
+    testset.transform = eval_transform
+    testset.n_transforms = 1
+    
     train_loader, test_loader = make_dataloaders(trainset, testset)
     print(f"  Train: {len(trainset)} samples")
     print(f"  Test:  {len(testset)} samples")
