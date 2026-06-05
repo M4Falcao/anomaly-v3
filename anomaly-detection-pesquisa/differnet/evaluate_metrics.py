@@ -6,6 +6,7 @@ import random
 import copy
 import datetime
 import time
+import math
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -559,6 +560,469 @@ class SEAttentionMethod:
         self.se_outputs.clear()
 
 
+class PixelBackboneFeatureExtractor(torch.nn.Module):
+    """Extracts multi-level spatial features from the loaded DifferNet backbone."""
+
+    def __init__(self, model, out_size=56):
+        super().__init__()
+        self.out_size = out_size
+        if hasattr(model, 'alexnet'):
+            self.alexnet = model.alexnet
+            self.attn1 = getattr(model, 'cbam1', getattr(model, 'simsa1', None))
+            self.attn2 = getattr(model, 'cbam2', getattr(model, 'simsa2', None))
+            self.attn3 = getattr(model, 'cbam3', getattr(model, 'simsa3', None))
+            self.attn4 = getattr(model, 'cbam4', getattr(model, 'simsa4', None))
+        else:
+            self.alexnet = model.feature_extractor
+            self.attn1 = None
+            self.attn2 = None
+            self.attn3 = None
+            self.attn4 = None
+
+        self.layer_channels = [64, 192, 256]
+
+        for param in self.parameters():
+            param.requires_grad_(False)
+
+    @torch.no_grad()
+    def forward(self, x_input):
+        feats = []
+
+        x = self.alexnet.features[0](x_input)
+        x = self.alexnet.features[1](x)
+        if self.attn1 is not None:
+            x = self.attn1(x)
+        feats.append(x)
+
+        x = self.alexnet.features[2](x)
+        x = self.alexnet.features[3](x)
+        x = self.alexnet.features[4](x)
+        if self.attn2 is not None:
+            x = self.attn2(x)
+        feats.append(x)
+
+        x = self.alexnet.features[5](x)
+        x = self.alexnet.features[6](x)
+        x = self.alexnet.features[7](x)
+        if self.attn3 is not None:
+            x = self.attn3(x)
+        x = self.alexnet.features[8](x)
+        x = self.alexnet.features[9](x)
+        x = self.alexnet.features[10](x)
+        x = self.alexnet.features[11](x)
+        if self.attn4 is not None:
+            x = self.attn4(x)
+        feats.append(x)
+
+        resized = [
+            F.interpolate(f, size=(self.out_size, self.out_size), mode='bilinear', align_corners=False)
+            for f in feats
+        ]
+        concat = torch.cat(resized, dim=1)
+        return concat, resized
+
+
+def _pixel_pos_encoding(h, w, dim=64, target_device=device):
+    assert dim % 4 == 0
+    quarter_dim = dim // 4
+    y_pos = torch.arange(h, device=target_device).float()
+    x_pos = torch.arange(w, device=target_device).float()
+    div = torch.exp(torch.arange(0, quarter_dim, device=target_device).float() * (-math.log(10000.0) / quarter_dim))
+    yy = y_pos.unsqueeze(1) * div.unsqueeze(0)
+    xx = x_pos.unsqueeze(1) * div.unsqueeze(0)
+    pe_y = torch.cat([yy.sin(), yy.cos()], dim=1)
+    pe_x = torch.cat([xx.sin(), xx.cos()], dim=1)
+    pe_y = pe_y.unsqueeze(1).expand(h, w, dim // 2)
+    pe_x = pe_x.unsqueeze(0).expand(h, w, dim // 2)
+    return torch.cat([pe_y, pe_x], dim=-1).reshape(h * w, dim)
+
+
+class PixelCondCouplingBlock(torch.nn.Module):
+    def __init__(self, channels, cond_dim, hidden=256):
+        super().__init__()
+        self.c_split = channels // 2
+        c_pass = channels - self.c_split
+        self.net = torch.nn.Sequential(
+            torch.nn.Linear(c_pass + cond_dim, hidden),
+            torch.nn.ReLU(inplace=True),
+            torch.nn.Linear(hidden, hidden),
+            torch.nn.ReLU(inplace=True),
+            torch.nn.Linear(hidden, 2 * self.c_split),
+        )
+        torch.nn.init.zeros_(self.net[-1].weight)
+        torch.nn.init.zeros_(self.net[-1].bias)
+
+    def forward(self, x, cond):
+        x1, x2 = x[:, :self.c_split], x[:, self.c_split:]
+        st = self.net(torch.cat([x2, cond], dim=1))
+        s, t = st.chunk(2, dim=1)
+        s = torch.tanh(s) * 2.0
+        y1 = x1 * torch.exp(s) + t
+        log_det = s.sum(dim=1)
+        return torch.cat([y1, x2], dim=1), log_det
+
+
+class PixelCondFlow(torch.nn.Module):
+    def __init__(self, channels, cond_dim, n_blocks=4, hidden=256):
+        super().__init__()
+        self.blocks = torch.nn.ModuleList([
+            PixelCondCouplingBlock(channels, cond_dim, hidden) for _ in range(n_blocks)
+        ])
+        self.register_buffer(
+            'perm_idx',
+            torch.tensor([(i + channels // 2) % channels for i in range(channels)])
+        )
+
+    def forward(self, x, cond):
+        log_det_sum = torch.zeros(x.size(0), device=x.device)
+        for block in self.blocks:
+            x, log_det = block(x, cond)
+            log_det_sum = log_det_sum + log_det
+            x = x.index_select(1, self.perm_idx)
+        return x, log_det_sum
+
+
+class CFlowPixelHead(torch.nn.Module):
+    def __init__(self, layer_channels, cond_dim=64, n_blocks=4, hidden=256):
+        super().__init__()
+        self.cond_dim = cond_dim
+        self.flows = torch.nn.ModuleList([
+            PixelCondFlow(channels, cond_dim, n_blocks=n_blocks, hidden=hidden)
+            for channels in layer_channels
+        ])
+
+    def nll_per_level(self, feats_per_level):
+        maps = []
+        for feat, flow in zip(feats_per_level, self.flows):
+            batch_size, channels, height, width = feat.shape
+            pe = _pixel_pos_encoding(height, width, dim=self.cond_dim, target_device=feat.device)
+            pe = pe.unsqueeze(0).expand(batch_size, -1, -1)
+            x = feat.permute(0, 2, 3, 1).reshape(batch_size * height * width, channels)
+            cond = pe.reshape(batch_size * height * width, self.cond_dim)
+            z, log_det = flow(x, cond)
+            log_prob = -0.5 * (z ** 2).sum(dim=1) - 0.5 * channels * math.log(2 * math.pi)
+            log_p = log_prob + log_det
+            maps.append((-log_p).view(batch_size, height, width))
+        return maps
+
+    def score_map(self, feats_per_level, img_size):
+        nll_maps = self.nll_per_level(feats_per_level)
+        upsampled = [
+            F.interpolate(level.unsqueeze(1), size=(img_size, img_size), mode='bilinear', align_corners=False).squeeze(1)
+            for level in nll_maps
+        ]
+        return sum(upsampled)
+
+
+class PatchCoreBank:
+    def __init__(self, coreset_ratio=0.1, k=3, seed=42):
+        self.coreset_ratio = coreset_ratio
+        self.k = k
+        self.seed = seed
+        self.bank = None
+
+    @torch.no_grad()
+    def fit(self, backbone, train_loader):
+        features = []
+        for batch in tqdm(train_loader, desc='[PatchCore] Building memory bank'):
+            images = batch[0] if isinstance(batch, (tuple, list)) else batch
+            images = images.to(device).view(-1, *images.shape[-3:])
+            concat, _ = backbone(images)
+            feat = concat.permute(0, 2, 3, 1).reshape(-1, concat.shape[1])
+            features.append(feat.cpu())
+
+        feat_all = torch.cat(features, dim=0)
+        n_select = max(int(len(feat_all) * self.coreset_ratio), 1024)
+        n_select = min(n_select, len(feat_all))
+        rng = np.random.RandomState(self.seed)
+        indices = rng.choice(len(feat_all), n_select, replace=False)
+        self.bank = feat_all[indices].to(device)
+        print(f"[PatchCore] Memory bank: {self.bank.shape}")
+
+    @torch.no_grad()
+    def score_map(self, concat, img_size):
+        batch_size, channels, height, width = concat.shape
+        feat = concat.permute(0, 2, 3, 1).reshape(batch_size * height * width, channels)
+        chunk_size = 2048
+        min_distances = torch.empty(batch_size * height * width, device=device)
+
+        for start in range(0, feat.shape[0], chunk_size):
+            distances = torch.cdist(feat[start:start + chunk_size], self.bank)
+            topk = torch.topk(distances, k=self.k, dim=1, largest=False).values
+            min_distances[start:start + chunk_size] = topk.mean(dim=1)
+
+        score = min_distances.view(batch_size, height, width)
+        return F.interpolate(score.unsqueeze(1), size=(img_size, img_size), mode='bilinear', align_corners=False).squeeze(1)
+
+
+def normalize_map(anomaly_map):
+    anomaly_map = np.asarray(anomaly_map, dtype=np.float32)
+    min_val = anomaly_map.min()
+    max_val = anomaly_map.max()
+    if max_val - min_val <= 1e-8:
+        return np.zeros_like(anomaly_map)
+    return (anomaly_map - min_val) / (max_val - min_val)
+
+
+def load_metric_datasets(dataset_path, class_name):
+    loaded = utils.load_datasets(dataset_path, class_name)
+    if not isinstance(loaded, tuple):
+        raise RuntimeError("utils.load_datasets returned an unexpected value")
+
+    if len(loaded) == 2:
+        train_set, combined_dataset = loaded
+    elif len(loaded) == 3:
+        train_set, test_set, ground_truth_set = loaded
+        combined_dataset = CombinedTestDataset(test_set, ground_truth_set)
+    else:
+        raise RuntimeError(f"Unsupported dataset tuple length: {len(loaded)}")
+
+    return train_set, combined_dataset
+
+
+def select_balanced_subset(dataset, limit):
+    if limit is None or limit >= len(dataset):
+        return dataset
+
+    normal_idx = []
+    anomaly_idx = []
+    for idx in range(len(dataset)):
+        _, label, _ = dataset[idx]
+        if int(label) == 0:
+            normal_idx.append(idx)
+        else:
+            anomaly_idx.append(idx)
+
+    k_anom = min(limit // 2, len(anomaly_idx))
+    k_norm = min(limit - k_anom, len(normal_idx))
+    selected_indices = sorted(normal_idx[:k_norm] + anomaly_idx[:k_anom])
+    return torch.utils.data.Subset(dataset, selected_indices)
+
+
+def maybe_load_cflow_weights(cflow, candidate_paths, checkpoint=None):
+    if checkpoint is not None and isinstance(checkpoint, dict) and 'cflow_state_dict' in checkpoint:
+        cflow.load_state_dict(checkpoint['cflow_state_dict'])
+        return 'model checkpoint'
+
+    for path in candidate_paths:
+        if not path or not os.path.exists(path):
+            continue
+        data = torch.load(path, map_location=device, weights_only=False)
+        if isinstance(data, dict) and 'cflow_state_dict' in data:
+            cflow.load_state_dict(data['cflow_state_dict'])
+            return path
+    return None
+
+
+def train_cflow_head(cflow, backbone, train_loader, epochs, lr):
+    optimizer = torch.optim.Adam(cflow.parameters(), lr=lr)
+    cflow.train()
+    for epoch in range(epochs):
+        losses = []
+        for batch in tqdm(train_loader, desc=f'[CFLOW] Epoch {epoch + 1}/{epochs}', leave=False):
+            images = batch[0] if isinstance(batch, (tuple, list)) else batch
+            images = images.to(device).view(-1, *images.shape[-3:])
+            with torch.no_grad():
+                _, feats = backbone(images)
+
+            optimizer.zero_grad()
+            nll_maps = cflow.nll_per_level(feats)
+            loss = sum(level.mean() for level in nll_maps)
+            loss.backward()
+            optimizer.step()
+            losses.append(loss.item())
+
+        mean_loss = float(np.mean(losses)) if losses else float('nan')
+        print(f'[CFLOW] Epoch {epoch + 1}/{epochs} loss={mean_loss:.4f}')
+    cflow.eval()
+
+
+def evaluate_pixel_models(model, train_set, eval_loader, output_dir, cflow_checkpoint=None,
+                          loaded_checkpoint=None, cflow_epochs=10, cflow_cond_dim=64,
+                          cflow_n_blocks=6, cflow_hidden=256, cflow_lr=1e-3,
+                          patchcore_coreset=0.02, patchcore_k=3, pixel_sigma=4.0,
+                          disable_patchcore=False, run_sanity_check=False, sanity_check_indices=None):
+    print("\nPreparing CFLOW and PatchCore evaluation...")
+    out_size = max(1, c.img_size[0] // 8)
+    backbone = PixelBackboneFeatureExtractor(model, out_size=out_size).to(device).eval()
+    train_loader = DataLoader(train_set, batch_size=1, shuffle=True)
+
+    patchcore = None
+    if disable_patchcore:
+        print("PatchCore disabled for this run.")
+    else:
+        patchcore = PatchCoreBank(coreset_ratio=patchcore_coreset, k=patchcore_k)
+        patchcore.fit(backbone, train_loader)
+
+    cflow = CFlowPixelHead(
+        layer_channels=backbone.layer_channels,
+        cond_dim=cflow_cond_dim,
+        n_blocks=cflow_n_blocks,
+        hidden=cflow_hidden,
+    ).to(device)
+    cflow.eval()
+
+    cflow_source = maybe_load_cflow_weights(
+        cflow,
+        candidate_paths=[cflow_checkpoint],
+        checkpoint=loaded_checkpoint,
+    )
+    if cflow_source:
+        print(f"CFLOW weights loaded from {cflow_source}.")
+    else:
+        print(f"CFLOW weights not found. Training head for {cflow_epochs} epochs without validation...")
+        train_cflow_head(cflow, backbone, train_loader, cflow_epochs, cflow_lr)
+        torch.save(
+            {'cflow_state_dict': cflow.state_dict()},
+            os.path.join(output_dir, 'cflow_trained_for_evaluation.pt')
+        )
+
+    metrics_by_method = {
+        'CFLOW': {'pixel_auc': [], 'iou': [], 'dice': [], 'time': [], 'image_scores': [], 'road_most': [], 'road_least': [], 'sanity': []},
+    }
+    curves_store = {
+        'CFLOW': {'road_most_curve': [], 'road_least_curve': []}
+    }
+    if not disable_patchcore:
+        metrics_by_method['PatchCore'] = {'pixel_auc': [], 'iou': [], 'dice': [], 'time': [], 'image_scores': [], 'road_most': [], 'road_least': [], 'sanity': []}
+        curves_store['PatchCore'] = {'road_most_curve': [], 'road_least_curve': []}
+    image_labels = []
+
+    print("Running CFLOW and PatchCore on the evaluation split...")
+    for batch_idx, (images, labels, masks) in enumerate(tqdm(flat_batch_loader(eval_loader), total=len(eval_loader))):
+        images = images.to(device)
+        if len(images) == 0:
+            continue
+
+        for index in range(len(images)):
+            img = images[index:index + 1]
+            mask_tensor = masks[index] if masks is not None else None
+            label_value = int(labels[index].item())
+            image_labels.append(1 if label_value > 0 else 0)
+
+            with torch.no_grad():
+                concat, feats = backbone(img)
+
+                start_time = time.time()
+                cflow_map = cflow.score_map(feats, img.shape[-1]).squeeze(0).detach().cpu().numpy()
+                cflow_map = normalize_map(gaussian_filter(cflow_map, sigma=pixel_sigma))
+                metrics_by_method['CFLOW']['time'].append(time.time() - start_time)
+                metrics_by_method['CFLOW']['image_scores'].append(float(cflow_map.max()))
+
+                if not disable_patchcore:
+                    start_time = time.time()
+                    patchcore_map = patchcore.score_map(concat, img.shape[-1]).squeeze(0).detach().cpu().numpy()
+                    patchcore_map = normalize_map(gaussian_filter(patchcore_map, sigma=pixel_sigma))
+                    metrics_by_method['PatchCore']['time'].append(time.time() - start_time)
+                    metrics_by_method['PatchCore']['image_scores'].append(float(patchcore_map.max()))
+
+            current_mask = None
+            if mask_tensor is not None:
+                current_mask = mask_tensor.squeeze().cpu().numpy()
+                if current_mask.ndim == 3:
+                    current_mask = current_mask[0]
+
+            method_maps = [('CFLOW', cflow_map)]
+            if not disable_patchcore:
+                method_maps.append(('PatchCore', patchcore_map))
+
+            for method_name, anomaly_map in method_maps:
+                if current_mask is not None:
+                    is_anomalous = np.sum((current_mask > 0.5).astype(int)) > 0
+                    if is_anomalous:
+                        pixel_auc = calculate_pixel_auroc(anomaly_map, current_mask)
+                        if not np.isnan(pixel_auc):
+                            metrics_by_method[method_name]['pixel_auc'].append(pixel_auc)
+
+                        iou_val, dice_val = calculate_iou_dice(anomaly_map, current_mask)
+                        if not np.isnan(iou_val):
+                            metrics_by_method[method_name]['iou'].append(iou_val)
+                        if not np.isnan(dice_val):
+                            metrics_by_method[method_name]['dice'].append(dice_val)
+
+                # Compute ROAD
+                r_most, r_most_scores, r_least, r_least_scores = calculate_road_metrics(model, img, anomaly_map)
+                metrics_by_method[method_name]['road_most'].append(r_most)
+                metrics_by_method[method_name]['road_least'].append(r_least)
+                curves_store[method_name]['road_most_curve'].append(r_most_scores)
+                curves_store[method_name]['road_least_curve'].append(r_least_scores)
+                
+                # Compute Sanity Check
+                if run_sanity_check and sanity_check_indices and (batch_idx in sanity_check_indices) and (index == 0):
+                    if method_name == 'CFLOW':
+                        orig_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+                        orig_cflow_state = {k: v.cpu().clone() for k, v in cflow.state_dict().items()}
+                        
+                        randomize_model_weights(model)
+                        randomize_model_weights(cflow)
+                        model.eval()
+                        cflow.eval()
+                        
+                        with torch.no_grad():
+                            _, feats_rand = backbone(img)
+                            cflow_map_rand = cflow.score_map(feats_rand, img.shape[-1]).squeeze(0).cpu().numpy()
+                            cflow_map_rand = normalize_map(gaussian_filter(cflow_map_rand, sigma=pixel_sigma))
+                            
+                        corr, _ = spearmanr(anomaly_map.flatten(), cflow_map_rand.flatten())
+                        metrics_by_method[method_name]['sanity'].append(corr)
+                        print(f" [Debug] Sanity Check {method_name} (Idx {batch_idx}): {corr:.4f}")
+                        
+                        model.load_state_dict(orig_model_state)
+                        cflow.load_state_dict(orig_cflow_state)
+                        
+                    elif method_name == 'PatchCore':
+                        orig_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+                        randomize_model_weights(model)
+                        model.eval()
+                        
+                        with torch.no_grad():
+                            concat_rand, _ = backbone(img)
+                            pc_map_rand = patchcore.score_map(concat_rand, img.shape[-1]).squeeze(0).cpu().numpy()
+                            pc_map_rand = normalize_map(gaussian_filter(pc_map_rand, sigma=pixel_sigma))
+                            
+                        corr, _ = spearmanr(anomaly_map.flatten(), pc_map_rand.flatten())
+                        metrics_by_method[method_name]['sanity'].append(corr)
+                        print(f" [Debug] Sanity Check {method_name} (Idx {batch_idx}): {corr:.4f}")
+                        
+                        model.load_state_dict(orig_model_state)
+
+                save_visualization(
+                    img[0],
+                    mask_tensor if mask_tensor is not None else None,
+                    anomaly_map,
+                    batch_idx * len(images) + index,
+                    label_value,
+                    True,
+                    output_dir,
+                    method_name,
+                )
+
+            torch.cuda.empty_cache()
+
+    results = []
+    labels_np = np.array(image_labels)
+    for method_name, metric_store in metrics_by_method.items():
+        result = {'Method': method_name}
+        if len(np.unique(labels_np)) > 1 and metric_store['image_scores']:
+            result['image_auc'] = calculate_image_auroc(metric_store['image_scores'], labels_np)
+        for key in ['pixel_auc', 'iou', 'dice', 'time', 'road_most', 'road_least', 'sanity']:
+            if metric_store[key]:
+                result[key] = float(np.mean(metric_store[key]))
+                
+        # Save curves average
+        if method_name in curves_store:
+            for k, v in curves_store[method_name].items():
+                if v:
+                    try:
+                        result[k] = np.mean(np.array(v), axis=0).tolist()
+                    except:
+                        pass
+                        
+        results.append(result)
+
+    return results
+
+
 # --- Visualization Helper ---
 def denormalize(tensor):
     """Denormalizes a tensor image to [0,1] range for visualization."""
@@ -625,7 +1089,7 @@ def save_visualization(image_tensor, mask, cam_map, idx, label, pred_correct, ou
     combined = np.hstack((left_img, right_img))
     
     # Naming
-    label_str = "anomaly" if label == 1 else "normal" # Adjust based on your label convention (usually 1=anomaly)
+    label_str = "anomaly" if label != 0 else "normal"
     pred_str = "correct" if pred_correct else "wrong"
     
     filename = f"{idx:04d}_{label_str}_{pred_str}_{method_name}.png"
@@ -714,38 +1178,18 @@ def flat_batch_loader(dataloader):
 
 # --- Main Evaluation Logic ---
 
-def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_dir, limit=None, run_sanity_check=True):
+def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_dir, limit=None,
+                     run_sanity_check=True, cflow_checkpoint=None, cflow_epochs=10,
+                     cflow_cond_dim=64, cflow_n_blocks=6, cflow_hidden=256,
+                     cflow_lr=1e-3, patchcore_coreset=0.1, patchcore_k=3,
+                     pixel_sigma=4.0, disable_patchcore=False):
     print(f"Starting evaluation for {model_name} on {class_name}...")
     
     # 1. Load Data
     c.n_transforms_test = 1 # Force 1 crop for consistent evaluation
     c.transf_rotations = False
-    train_set, test_set, ground_truth_set = utils.load_datasets(dataset_path, class_name)
-    combined_dataset = CombinedTestDataset(test_set, ground_truth_set)
-
-    if limit is not None:
-        normal_idx = []
-        anom_idx = []
-        good_idx = test_set.class_to_idx.get('good', None)
-        
-        for i in range(len(test_set)):
-            _, original_target = test_set.samples[i]
-            if original_target == good_idx:
-                normal_idx.append(i)
-            else:
-                anom_idx.append(i)
-                
-        n_anom = len(anom_idx)
-        n_norm = len(normal_idx)
-        
-        # Pick half and half, or if limit > 2 * n_anom, pick all anomalies and remaining normal
-        k_anom = min(limit // 2, n_anom)
-        k_norm = min(limit - k_anom, n_norm)
-        
-        selected_indices = normal_idx[:k_norm] + anom_idx[:k_anom]
-        selected_indices.sort() # Keep original dataset order
-        
-        combined_dataset = torch.utils.data.Subset(combined_dataset, selected_indices)
+    train_set, combined_dataset = load_metric_datasets(dataset_path, class_name)
+    combined_dataset = select_balanced_subset(combined_dataset, limit)
 
     loader = DataLoader(combined_dataset, batch_size=1, shuffle=False)
     
@@ -755,7 +1199,7 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
     else:
         base_model = DifferNet()
         
-    model, _ = load_weights(base_model, model_path)
+    model, checkpoint = load_weights(base_model, model_path)
     model.to(device)
     model.eval()
     
@@ -806,17 +1250,8 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
     anom_count = 0
     
     for i in range(len(combined_dataset)):
-        if isinstance(combined_dataset, torch.utils.data.Subset):
-            orig_idx = combined_dataset.indices[i]
-            dataset_ref = combined_dataset.dataset
-        else:
-            orig_idx = i
-            dataset_ref = combined_dataset
-            
-        _, original_target = dataset_ref.test_dataset.samples[orig_idx]
-        good_idx = dataset_ref.test_dataset.class_to_idx.get('good', None)
-        
-        if original_target == good_idx:
+        _, label_value, _ = combined_dataset[i]
+        if int(label_value) == 0:
             if norm_count < 3:
                 sanity_check_indices.add(i)
                 norm_count += 1
@@ -950,6 +1385,27 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
         import gc
         gc.collect()
         torch.cuda.empty_cache()
+
+    pixel_model_results = evaluate_pixel_models(
+        model=model,
+        train_set=train_set,
+        eval_loader=loader,
+        output_dir=output_dir,
+        cflow_checkpoint=cflow_checkpoint,
+        loaded_checkpoint=checkpoint,
+        cflow_epochs=cflow_epochs,
+        cflow_cond_dim=cflow_cond_dim,
+        cflow_n_blocks=cflow_n_blocks,
+        cflow_hidden=cflow_hidden,
+        cflow_lr=cflow_lr,
+        patchcore_coreset=patchcore_coreset,
+        patchcore_k=patchcore_k,
+        pixel_sigma=pixel_sigma,
+        disable_patchcore=disable_patchcore,
+        run_sanity_check=run_sanity_check,
+        sanity_check_indices=sanity_check_indices,
+    )
+    results.extend(pixel_model_results)
     
     # --- Reporting & plotting ---
     df = pd.DataFrame(results)
@@ -968,7 +1424,7 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
             
         # Re-order columns to make sure they are in a nice, consistent order
         ordered_cols = ['Method']
-        for col in ['pixel_auc', 'iou', 'dice', 'road_most', 'road_least', 'road_delta', 'sanity', 'time']:
+        for col in ['image_auc', 'pixel_auc', 'iou', 'dice', 'road_most', 'road_least', 'road_delta', 'sanity', 'time']:
             if col in df_csv.columns:
                 ordered_cols.append(col)
         # Any other columns that might exist
@@ -983,6 +1439,7 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
         # Create a display dataframe with arrows in column names for the terminal print
         df_display = df_csv.copy()
         column_rename = {
+            'image_auc': 'image_auc (↑)',
             'pixel_auc': 'pixel_auc (↑)',
             'iou': 'iou (↑)',
             'dice': 'dice (↑)',
@@ -995,10 +1452,11 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
         df_display = df_display.rename(columns=column_rename)
         
         print("\n" + "=" * 100)
-        print("CAM EVALUATION RESULTS")
+        print("ANOMALY MAP EVALUATION RESULTS")
         print("=" * 100)
         print(df_display.to_string(index=False))
         print("\n--- Interpretation Guide ---")
+        print("  image_auc  ↑ : Higher is better (separates normal vs anomalous images).")
         print("  pixel_auc  ↑ : Higher is better (1.0 = perfect localization). Only anomalous images.")
         print("  iou        ↑ : Higher is better (overlap between binarized CAM and GT mask).")
         print("  dice       ↑ : Higher is better (similar to IoU but emphasizes overlap).")
@@ -1013,6 +1471,7 @@ def evaluate_metrics(model_name, model_path, dataset_path, class_name, output_di
         loc_cols = [c for c in ['pixel_auc', 'iou', 'dice'] if c in df_csv.columns]
         # Arrow labels for charts
         METRIC_ARROWS = {
+            'image_auc': 'image_auc ↑',
             'pixel_auc': 'pixel_auc ↑',
             'iou': 'iou ↑',
             'dice': 'dice ↑',
@@ -1086,6 +1545,16 @@ if __name__ == "__main__":
     parser.add_argument("--limit", type=int, default=None, help="Limit number of samples for testing")
     parser.add_argument("--steps", type=int, default=20, help="Number of steps for Deletion/Insertion")
     parser.add_argument("--run_sanity_check", type=str2bool, default=False, help="Run sanity check")
+    parser.add_argument("--cflow_checkpoint", type=str, default=None, help="Optional checkpoint containing cflow_state_dict")
+    parser.add_argument("--cflow_epochs", type=int, default=10, help="Train CFLOW for this many epochs if no checkpoint is provided")
+    parser.add_argument("--cflow_cond_dim", type=int, default=64, help="CFLOW positional encoding dimension")
+    parser.add_argument("--cflow_n_blocks", type=int, default=6, help="Number of conditional flow blocks per level")
+    parser.add_argument("--cflow_hidden", type=int, default=256, help="Hidden size of CFLOW coupling MLPs")
+    parser.add_argument("--cflow_lr", type=float, default=1e-3, help="Learning rate used when CFLOW needs quick training")
+    parser.add_argument("--patchcore_coreset", type=float, default=0.1, help="PatchCore coreset ratio")
+    parser.add_argument("--patchcore_k", type=int, default=3, help="PatchCore kNN neighbors")
+    parser.add_argument("--pixel_sigma", type=float, default=4.0, help="Gaussian smoothing sigma for CFLOW and PatchCore maps")
+    parser.add_argument("--disable_patchcore", action='store_true', help="Disable PatchCore evaluation")
     # python evaluate_metrics.py --model_path anomaly-detection-pesquisa\differnet\final_models\SEDiffernet\glass-insulator\glass-insulator_se_differnet_glass_insulator_200_1_epoch_170.pt --limit 10
     args = parser.parse_args()
     
@@ -1104,5 +1573,15 @@ if __name__ == "__main__":
         class_name=args.class_name,
         output_dir=run_dir,
         limit=args.limit,
-        run_sanity_check=args.run_sanity_check
+        run_sanity_check=args.run_sanity_check,
+        cflow_checkpoint=args.cflow_checkpoint,
+        cflow_epochs=args.cflow_epochs,
+        cflow_cond_dim=args.cflow_cond_dim,
+        cflow_n_blocks=args.cflow_n_blocks,
+        cflow_hidden=args.cflow_hidden,
+        cflow_lr=args.cflow_lr,
+        patchcore_coreset=args.patchcore_coreset,
+        patchcore_k=args.patchcore_k,
+        pixel_sigma=args.pixel_sigma,
+        disable_patchcore=args.disable_patchcore,
     )

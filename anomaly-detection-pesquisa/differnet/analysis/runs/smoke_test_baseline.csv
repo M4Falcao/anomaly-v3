@@ -1,0 +1,6 @@
+Class,Images,Normal%,Anom Pixels%,Baseline PixAcc,Baseline PixAUROC,Baseline ImgAUROC,Baseline IoU
+glass-insulator,678,87.2%,0.12%,99.88%,0.5000,0.5000,0.0000
+lightning-rod-suspension,163,71.8%,1.91%,98.09%,0.5000,0.5000,0.0000
+polymer-insulator-upper-shackle,317,74.1%,2.71%,97.29%,0.5000,0.5000,0.0000
+vari-grip,154,74.0%,4.46%,95.54%,0.5000,0.5000,0.0000
+yoke-suspension,1253,96.3%,1.85%,98.15%,0.5000,0.5000,0.0000

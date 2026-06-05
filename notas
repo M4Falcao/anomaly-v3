@@ -1,0 +1,6 @@
+python .\evaluate_metrics.py `
+  --model_path "C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\pixel_head_runs\run_20260528_173015\best_models\best_pixel_auroc.pt"`
+  --class_name polymer-insulator-upper-shackle`
+  --dataset_path "C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg" `
+  --limit 10 `
+  --run_sanity_check false --disable_patchcore
