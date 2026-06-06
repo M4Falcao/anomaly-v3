@@ -1,0 +1,7 @@
+class,image_auroc,image_ap,image_f1,pixel_auroc,pixel_ap,pixel_f1,aupro,fps_image,fps_pixel,latency_image_ms,latency_pixel_ms
+glass-insulator,,,,,,,,130.423668,137.696286,7.667320,7.262360
+lightning-rod-suspension,,,,,,,,125.075045,130.111089,7.995200,7.685740
+polymer-insulator-upper-shackle,,,,,,,,126.829194,129.848545,7.884620,7.701280
+vari-grip,,,,,,,,121.247687,121.693289,8.247580,8.217380
+yoke-suspension,,,,,,,,123.525721,132.916861,8.095480,7.523500
+MÉDIA,,,,,,,,125.420263,130.453214,7.978040,7.678052

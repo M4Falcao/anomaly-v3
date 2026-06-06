@@ -1,0 +1,12 @@
+dataset=C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg
+classes=None
+limit=5
+sigma=4.0
+cflow_cond_dim=64
+cflow_n_blocks=6
+cflow_hidden=256
+seed=42
+device=cuda
+img_size=(448, 448)
+n_scales=3
+timestamp=20260605_013811
