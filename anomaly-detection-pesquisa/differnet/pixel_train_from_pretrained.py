@@ -57,8 +57,8 @@ def _detect_arch(checkpoint_path):
     """Detect model architecture from checkpoint state_dict keys."""
     data = torch.load(checkpoint_path, map_location='cpu', weights_only=False)
     keys = data.get('model_state_dict', data).keys()
-    # if any('cbam' in k for k in keys):
-    #     return 'cbam'
+    if any('cbam' in k for k in keys):
+        return 'cbam'
     return 'se'
 
 
@@ -179,7 +179,7 @@ class CondCouplingBlock(nn.Module):
         x1, x2 = x[:, :self.c_split], x[:, self.c_split:]
         st = self.net(torch.cat([x2, cond], dim=1))
         s, t = st.chunk(2, dim=1)
-        s = torch.tanh(s) * 2.0
+        s = torch.tanh(s) * 0.5  # Conservative scale for training stability
         y1 = x1 * torch.exp(s) + t
         log_det = s.sum(dim=1)
         return torch.cat([y1, x2], dim=1), log_det
@@ -217,7 +217,9 @@ class CFlowPixelHead(nn.Module):
         ])
     
     def nll_per_level(self, feats_per_level):
-        """Compute NLL map per level. Returns list of (B, H, W) tensors."""
+        """Compute NLL map per level. Returns list of (B, H, W) tensors.
+        Each level's NLL is normalized by its channel count for balanced loss.
+        Uses chunked processing to avoid OOM on large spatial maps."""
         maps = []
         for feat, flow in zip(feats_per_level, self.flows):
             B, C, H, W = feat.shape
@@ -225,20 +227,40 @@ class CFlowPixelHead(nn.Module):
             pe = pe.unsqueeze(0).expand(B, -1, -1)  # (B, HW, cd)
             x = feat.permute(0, 2, 3, 1).reshape(B * H * W, C)
             cond = pe.reshape(B * H * W, self.cond_dim)
-            z, log_det = flow(x, cond)
-            log_prob = -0.5 * (z ** 2).sum(dim=1) - 0.5 * C * math.log(2 * math.pi)
-            log_p = log_prob + log_det
-            nll = (-log_p).view(B, H, W)
+            
+            # Process in chunks to save VRAM
+            chunk_size = 4096
+            n_total = x.shape[0]
+            nll_chunks = []
+            for i in range(0, n_total, chunk_size):
+                x_chunk = x[i:i+chunk_size]
+                c_chunk = cond[i:i+chunk_size]
+                z, log_det = flow(x_chunk, c_chunk)
+                log_prob = -0.5 * (z ** 2).sum(dim=1) - 0.5 * C * math.log(2 * math.pi)
+                log_p = log_prob + log_det
+                nll_chunks.append(-log_p / C)
+            
+            nll = torch.cat(nll_chunks, dim=0).view(B, H, W)
             maps.append(nll)
         return maps
     
     def score_map(self, feats_per_level, img_size):
-        """Compute aggregated NLL score map upsampled to img_size."""
+        """Compute aggregated NLL score map with per-level normalization.
+        Normalization at native res, upsample on CPU to save VRAM."""
         nll_maps = self.nll_per_level(feats_per_level)
-        upsampled = [F.interpolate(m.unsqueeze(1), size=(img_size, img_size),
-                                   mode='bilinear', align_corners=False).squeeze(1)
-                     for m in nll_maps]
-        return sum(upsampled)
+        normalized = []
+        for m in nll_maps:
+            # Normalize at native (out_size) resolution - much cheaper
+            B = m.shape[0]
+            flat = m.view(B, -1)
+            mn = flat.min(dim=1, keepdim=True).values.unsqueeze(-1)
+            mx = flat.max(dim=1, keepdim=True).values.unsqueeze(-1)
+            m_norm = (m - mn) / (mx - mn + 1e-8)
+            normalized.append(m_norm)
+        # Sum normalized maps at native res, then upsample on CPU
+        combined = sum(normalized).cpu()
+        return F.interpolate(combined.unsqueeze(1), size=(img_size, img_size),
+                             mode='bilinear', align_corners=False).squeeze(1)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -513,16 +535,19 @@ def main():
     parser.add_argument('--dataset', type=str, default=c.dataset_path)
     parser.add_argument('--class_name', type=str, default=c.class_name)
     parser.add_argument('--img_size', type=int, default=448)
-    parser.add_argument('--out_size', type=int, default=56)
+    parser.add_argument('--out_size', type=int, default=96)
     
     # CFLOW training
-    parser.add_argument('--epochs', type=int, default=80)
-    parser.add_argument('--lr', type=float, default=1e-3)
+    parser.add_argument('--epochs', type=int, default=120)
+    parser.add_argument('--lr', type=float, default=2e-4)
     parser.add_argument('--cond_dim', type=int, default=64)
-    parser.add_argument('--n_blocks', type=int, default=6)
+    parser.add_argument('--n_blocks', type=int, default=8)
     parser.add_argument('--hidden', type=int, default=256)
     parser.add_argument('--eval_interval', type=int, default=5)
     parser.add_argument('--checkpoint_interval', type=int, default=10)
+    parser.add_argument('--warmup_epochs', type=int, default=5)
+    parser.add_argument('--grad_clip', type=float, default=1.0)
+    parser.add_argument('--use_amp', action='store_true', help='Enable AMP (off by default for flow stability)')
     
     # PatchCore
     parser.add_argument('--patchcore_coreset', type=float, default=0.1)
@@ -530,7 +555,7 @@ def main():
     parser.add_argument('--disable_patchcore', action='store_true', help="Disable PatchCore to save memory")
     
     # Post-processing
-    parser.add_argument('--sigma', type=float, default=4.0)
+    parser.add_argument('--sigma', type=float, default=6.0)
     
     # Output
     parser.add_argument('--out_dir', type=str, default='./pixel_head_runs')
@@ -571,7 +596,11 @@ def main():
         'sigma': args.sigma,
         'patchcore_coreset': args.patchcore_coreset,
         'patchcore_k': args.patchcore_k,
+        'disable_patchcore': args.disable_patchcore,
         'class_name': args.class_name,
+        'warmup_epochs': args.warmup_epochs,
+        'grad_clip': args.grad_clip,
+        'use_amp': args.use_amp,
     })
     
     # ─── Load pretrained model (auto-detect SE vs CBAM) ─────────────────────
@@ -596,21 +625,11 @@ def main():
     # ─── Load data ───────────────────────────────────────────────────────────
     print(f"\nLoading dataset: {args.class_name}")
     trainset, testset = load_datasets(args.dataset, args.class_name, aligned=True)
-    
-    # For pixel-level evaluation, we need exactly 1 transform per test image 
-    # (no random rotations) so that the predicted map aligns with the ground truth mask.
-    import torchvision.transforms as transforms
-    eval_transform = transforms.Compose([
-        transforms.Resize((args.img_size, args.img_size)),
-        transforms.ToTensor(),
-        transforms.Normalize(c.norm_mean, c.norm_std)
-    ])
-    testset.transform = eval_transform
-    testset.n_transforms = 1
-    
-    train_loader, test_loader = make_dataloaders(trainset, testset)
+    train_loader, _ = make_dataloaders(trainset, testset)
+    # Use a small batch size for test_loader to avoid OOM during dense CFLOW pixel evaluation
+    test_loader = DataLoader(testset, batch_size=1, shuffle=False, pin_memory=True)
     print(f"  Train: {len(trainset)} samples")
-    print(f"  Test:  {len(testset)} samples")
+    print(f"  Test:  {len(testset)} samples (batch_size=1 for eval)")
     
     # ─── Build PatchCore memory bank ─────────────────────────────────────────
     if not args.disable_patchcore:
@@ -637,11 +656,22 @@ def main():
     mlflow.log_param("cflow_params", n_params)
     
     optimizer = torch.optim.Adam(cflow.parameters(), lr=args.lr)
-    scaler = GradScaler()
+    scaler = GradScaler(enabled=args.use_amp)
+    
+    # Cosine annealing with linear warmup
+    def lr_lambda(epoch):
+        if epoch < args.warmup_epochs:
+            return (epoch + 1) / args.warmup_epochs
+        progress = (epoch - args.warmup_epochs) / max(1, args.epochs - args.warmup_epochs)
+        return 0.5 * (1.0 + math.cos(math.pi * progress))
+    
+    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
     
     # ─── Training CFLOW ──────────────────────────────────────────────────────
     print(f"\n{'='*60}")
     print(f"Training CFLOW Pixel Head ({args.epochs} epochs)")
+    print(f"  LR: {args.lr} | Warmup: {args.warmup_epochs} ep | Grad clip: {args.grad_clip}")
+    print(f"  AMP: {'ON' if args.use_amp else 'OFF'} | out_size: {args.out_size} | sigma: {args.sigma}")
     print(f"{'='*60}")
     
     best_pixel_auroc = 0.0
@@ -659,29 +689,43 @@ def main():
             else:
                 images, labels = data
             
-            images = images.to(DEVICE).view(-1, *images.shape[-3:])
+            # For pixel training, use only first transform (rotations don't help)
+            images = images.to(DEVICE)
+            if images.dim() == 5:
+                images = images[:, 0]  # (B, n_transforms, C, H, W) -> (B, C, H, W)
             
             with torch.no_grad():
                 _, feats = backbone(images)
             
             optimizer.zero_grad()
-            with autocast('cuda'):
+            if args.use_amp:
+                with autocast('cuda'):
+                    nll_maps = cflow.nll_per_level(feats)
+                    loss = sum(m.mean() for m in nll_maps)
+                scaler.scale(loss).backward()
+                scaler.unscale_(optimizer)
+                torch.nn.utils.clip_grad_norm_(cflow.parameters(), args.grad_clip)
+                scaler.step(optimizer)
+                scaler.update()
+            else:
                 nll_maps = cflow.nll_per_level(feats)
                 loss = sum(m.mean() for m in nll_maps)
-            
-            scaler.scale(loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(cflow.parameters(), args.grad_clip)
+                optimizer.step()
             epoch_losses.append(loss.item())
         
         avg_loss = np.mean(epoch_losses)
         history['train_loss'].append(avg_loss)
+        current_lr = optimizer.param_groups[0]['lr']
         mlflow.log_metric("cflow_train_loss", avg_loss, step=epoch)
+        mlflow.log_metric("learning_rate", current_lr, step=epoch)
+        scheduler.step()
         
         # Evaluate
         if (epoch + 1) % args.eval_interval == 0 or epoch == args.epochs - 1:
             cflow.eval()
-            
+            torch.cuda.empty_cache()
             all_pixel_scores = []
             all_pixel_labels = []
             all_image_scores = []
@@ -695,7 +739,10 @@ def main():
                         images, labels = data
                         masks = torch.zeros(images.shape[0], 1, args.img_size, args.img_size)
                     
-                    images = images.to(DEVICE).view(-1, *images.shape[-3:])
+                    # Only first transform for pixel eval
+                    images = images.to(DEVICE)
+                    if images.dim() == 5:
+                        images = images[:, 0]
                     _, feats = backbone(images)
                     
                     # CFLOW score
@@ -776,7 +823,7 @@ def main():
                            map_location=DEVICE, weights_only=False)
     cflow.load_state_dict(best_ckpt['cflow_state_dict'])
     cflow.eval()
-    
+    torch.cuda.empty_cache()
     # Full evaluation with all metrics
     all_cflow_maps = []
     all_patchcore_maps = []
@@ -795,7 +842,10 @@ def main():
                 images, labels = data
                 masks = torch.zeros(images.shape[0], 1, args.img_size, args.img_size)
             
-            images_dev = images.to(DEVICE).view(-1, *images.shape[-3:])
+            # Only first transform for pixel eval
+            images_dev = images.to(DEVICE)
+            if images_dev.dim() == 5:
+                images_dev = images_dev[:, 0]
             concat, feats = backbone(images_dev)
             
             # CFLOW score map
@@ -830,6 +880,9 @@ def main():
     gt_masks = np.concatenate(all_masks, axis=0)
     image_labels = np.array(all_image_labels)
     
+    # ─── Compute all metrics ─────────────────────────────────────────────────
+    print("\n--- Computing Metrics ---")
+    
     methods_eval = {
         'CFLOW': (cflow_maps, all_image_scores_cflow),
     }
@@ -844,8 +897,6 @@ def main():
         methods_eval['PatchCore'] = (pc_maps, all_image_scores_patchcore)
         methods_eval['Ensemble'] = (ensemble_maps, (0.6 * minmax_norm(np.array(all_image_scores_cflow).reshape(-1, 1)) + 
                                       0.4 * minmax_norm(np.array(all_image_scores_patchcore).reshape(-1, 1))).flatten().tolist())
-    
-    # ─── Compute all metrics ─────────────────────────────────────────────────
     
     results_table = []
     
@@ -918,12 +969,11 @@ def main():
                          "CFLOW Image-Level Score Distribution",
                          os.path.join(plots_dir, "hist_image_scores_cflow.png"))
     
-    if not args.disable_patchcore:
-        normal_pc_scores = np.array(all_image_scores_patchcore)[image_labels == 0]
-        anomaly_pc_scores = np.array(all_image_scores_patchcore)[image_labels == 1]
-        plot_score_histogram(normal_pc_scores, anomaly_pc_scores,
-                             "PatchCore Image-Level Score Distribution",
-                             os.path.join(plots_dir, "hist_image_scores_patchcore.png"))
+    normal_pc_scores = np.array(all_image_scores_patchcore)[image_labels == 0]
+    anomaly_pc_scores = np.array(all_image_scores_patchcore)[image_labels == 1]
+    plot_score_histogram(normal_pc_scores, anomaly_pc_scores,
+                         "PatchCore Image-Level Score Distribution",
+                         os.path.join(plots_dir, "hist_image_scores_patchcore.png"))
     
     # 2. Pixel-level score histogram
     normal_pix = cflow_maps[gt_masks == 0]
@@ -932,12 +982,11 @@ def main():
                          "CFLOW Pixel-Level Score Distribution",
                          os.path.join(plots_dir, "hist_pixel_scores_cflow.png"))
     
-    if not args.disable_patchcore:
-        normal_pix_pc = pc_maps[gt_masks == 0]
-        anomaly_pix_pc = pc_maps[gt_masks > 0]
-        plot_pixel_histogram(normal_pix_pc, anomaly_pix_pc,
-                             "PatchCore Pixel-Level Score Distribution",
-                             os.path.join(plots_dir, "hist_pixel_scores_patchcore.png"))
+    normal_pix_pc = pc_maps[gt_masks == 0]
+    anomaly_pix_pc = pc_maps[gt_masks > 0]
+    plot_pixel_histogram(normal_pix_pc, anomaly_pix_pc,
+                         "PatchCore Pixel-Level Score Distribution",
+                         os.path.join(plots_dir, "hist_pixel_scores_patchcore.png"))
     
     # 3. ROC curves
     plot_roc_curve(image_labels, np.array(all_image_scores_cflow),
@@ -952,10 +1001,9 @@ def main():
                    "CFLOW Pixel-Level ROC Curve",
                    os.path.join(plots_dir, "roc_pixel_cflow.png"))
     
-    if not args.disable_patchcore:
-        plot_roc_curve(lab_flat[idx], ensemble_maps.reshape(-1)[idx],
-                       "Ensemble Pixel-Level ROC Curve",
-                       os.path.join(plots_dir, "roc_pixel_ensemble.png"))
+    plot_roc_curve(lab_flat[idx], ensemble_maps.reshape(-1)[idx],
+                   "Ensemble Pixel-Level ROC Curve",
+                   os.path.join(plots_dir, "roc_pixel_ensemble.png"))
     
     # 4. Anomaly map visualization (anomaly samples only)
     anomaly_indices = [i for i, l in enumerate(all_image_labels) if l == 1]
@@ -973,14 +1021,13 @@ def main():
                               os.path.join(plots_dir, "anomaly_maps_cflow.png"))
             
             # Also for ensemble
-            if not args.disable_patchcore:
-                viz_maps_ens = [ensemble_maps[anomaly_indices[i]] 
-                               for i in range(min(8, len(anomaly_indices)))
-                               if anomaly_indices[i] < len(ensemble_maps)]
-                if viz_maps_ens:
-                    plot_anomaly_maps(viz_images[:len(viz_maps_ens)], 
-                                      viz_masks[:len(viz_maps_ens)], viz_maps_ens,
-                                      os.path.join(plots_dir, "anomaly_maps_ensemble.png"))
+            viz_maps_ens = [ensemble_maps[anomaly_indices[i]] 
+                           for i in range(min(8, len(anomaly_indices)))
+                           if anomaly_indices[i] < len(ensemble_maps)]
+            if viz_maps_ens:
+                plot_anomaly_maps(viz_images[:len(viz_maps_ens)], 
+                                  viz_masks[:len(viz_maps_ens)], viz_maps_ens,
+                                  os.path.join(plots_dir, "anomaly_maps_ensemble.png"))
     
     # 5. Method comparison bar chart
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))

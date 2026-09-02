@@ -5,3 +5,10 @@ XGradCAM,,0.3511619603574511,0.04029435838407828,0.07368128511662442,0.530239224
 InputGradient,,0.7715518296845812,0.0676228577588507,0.122354825394176,0.7028630971908569,0.29699453711509705,0.4058685600757599,8.57664225101471
 SEAttention,,0.895720844848506,0.08992438804432655,0.1571889115776317,0.6414934992790222,0.49668821692466736,0.14480528235435486,12.347180342674255
 CFLOW,0.5,0.8632558450122929,0.05935211843120144,0.11013317428168694,0.782189667224884,0.39965569972991943,0.3825339674949646,0.07887609004974365
+
+cd C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\analysis
+
+python analyze_class.py --model_path "C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\SEDiffernet\lightning-rod-suspension\lightning-rod-suspension_se_differnet_lightning_rod_suspension_100_1_epoch_41.pt" --cflow_checkpoint "C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\NF Head\run_20260529_024905_ligth\best_models\best_pixel_auroc.pt" --class_name lightning-rod-suspension --dataset_path "C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg"
+python analyze_class.py --model_path "" --cflow_checkpoint "" --class_name polymer-insulator-upper-shackle --dataset_path "C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg"
+python analyze_class.py --model_path "" --cflow_checkpoint "" --class_name polymer-insulator-upper-shackle --dataset_path "C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg"
+python analyze_class.py --model_path "" --cflow_checkpoint "" --class_name polymer-insulator-upper-shackle --dataset_path "C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg"
