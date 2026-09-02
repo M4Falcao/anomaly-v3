@@ -1,0 +1,46 @@
+# glass-insulator
+python .\evaluate_metrics.py `
+  --cflow_checkpoint "C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\NF Head\glass-insulator\best_models\best_pixel_auroc.pt" `
+  --class_name glass-insulator `
+  --dataset_path "C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg" `
+  --limit 10 `
+  --run_sanity_check false --disable_patchcore `
+  --model_path "C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\SEDiffernet\glass-insulator\glass-insulator_se_differnet_glass_insulator_200_1_epoch_170.pt"
+
+# lightning-rod-suspension
+python .\evaluate_metrics.py `
+  --cflow_checkpoint "C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\NF Head\lightning-rod-suspension\best_models\best_pixel_auroc.pt" `
+  --class_name lightning-rod-suspension `
+  --dataset_path "C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg" `
+  --limit 10 `
+  --run_sanity_check false --disable_patchcore `
+  --model_path "C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\SEDiffernet\lightning-rod-suspension\lightning-rod-suspension_se_differnet_lightning_rod_suspension_100_1_epoch_41.pt"
+
+# polymer-insulator-upper-shackle
+python .\evaluate_metrics.py `
+  --cflow_checkpoint "C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\NF Head\polymer-insulator-upper-shackle\best_models\best_pixel_auroc.pt" `
+  --class_name polymer-insulator-upper-shackle `
+  --dataset_path "C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg" `
+  --limit 10 `
+  --run_sanity_check false --disable_patchcore `
+  --model_path "C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\SEDiffernet\polymer-insulator-upper-shackle\polymer-insulator-upper-shackle_se_differnet_polymer_insulator_upper_shackle_200_1_epoch_146.pt"
+
+# vari-grip
+python .\evaluate_metrics.py `
+  --cflow_checkpoint "C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\NF Head\vari-grip\best_models\best_pixel_auroc.pt" `
+  --class_name vari-grip `
+  --dataset_path "C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg" `
+  --limit 10 `
+  --run_sanity_check false --disable_patchcore `
+  --model_path "C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\SEDiffernet\vari-grip\vari-grip_se_differnet_vari_grip_200_1_epoch_163.pt"
+
+# yoke-suspension
+python .\evaluate_metrics.py `
+  --cflow_checkpoint "C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\NF Head\yoke-suspension\best_models\best_pixel_auroc.pt" `
+  --class_name yoke-suspension `
+  --dataset_path "C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg" `
+  --limit 10 `
+  --run_sanity_check false --disable_patchcore `
+  --model_path "C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\SEDiffernet\yoke-suspension\yoke-suspension_se_differnet_yoke_suspension_200_1_epoch_70.pt"
+
+python pixel_train_from_pretrained.py --epochs 100 --eval_interval 1 --checkpoint C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\SEDiffernet\vari-grip\vari-grip_se_differnet_vari_grip_200_1_epoch_163.pt --class_name vari-grip  --disable_patchcore

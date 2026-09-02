@@ -1,16 +1,30 @@
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 '''This file configures the training procedure because handling arguments in every single function is so exhaustive for
 research purposes. Don't try this code if you are a software engineer.'''
 
 # device settings
 device = 'cuda' # or 'cpu'
 import torch
+import random
+import numpy as np
+
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+
 torch.cuda.empty_cache()
 torch.cuda.set_device(0)
 
 # data settings
-dataset_path = r"C:\Users\Pichau\Pesquisa\pesquisa\data\insplad-seg\insplad-seg"
-class_name = "glass-insulator"
-modelname = "dummy_test"
+dataset_path = r"C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg"
+class_name = "lightning-rod-suspension"
+modelname = "se_differnet_pix_200"
 
 img_size = (448, 448)
 img_dims = [3] + list(img_size)
@@ -36,14 +50,36 @@ n_transforms = 4 # number of transformations per sample in training
 n_transforms_test = 64 # number of transformations per sample in testing
 batch_size = 1 # actual batch size is this value multiplied by n_transforms(_test)
 batch_size_test = batch_size
+num_workers = 0
+seed = 42
 
 # total epochs = meta_epochs * sub_epochs
 # evaluation after <sub_epochs> epochs
-meta_epochs = 10
-sub_epochs = 5
+pre_epochs = 30
+meta_epochs = 170
+sub_epochs = 1
 
 # output settings
 verbose = True
-grad_map_viz = False
+grad_map_viz = True
 hide_tqdm_bar = True
 save_model = True
+checkpoint_interval = 10
+checkpoint_path = "./checkpoints"
+
+# mlflow settings
+use_mlflow = True
+mlflow_tracking_uri = "file:./mlruns"
+mlflow_backend_store_uri = "file:./mlruns"
+mlflow_experiment_name = "PIX_SE_DifferNet_Experiment"
+mlflow_run_name = f"{class_name}_{modelname}"
+ngrok_auth_token = None
+mlflow_export_dir = "./exports"
+export_mlflow = True
+
+# pyngrok settings
+use_pyngrok = False
+
+# training settings
+resume_training = False
+resume_file = ""

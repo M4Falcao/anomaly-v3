@@ -37,7 +37,14 @@ def export_gradient_maps(model, testloader, optimizer, n_batches=1):
     # TODO n batches
     for i, data in enumerate(tqdm(testloader, disable=c.hide_tqdm_bar)):
         optimizer.zero_grad()
-        inputs, labels = preprocess_batch(data)
+        # Handle both old (images, labels) and new (images, labels, masks) formats
+        if len(data) == 3:
+            inputs_raw, labels, masks = data
+        else:
+            inputs_raw, labels = data
+        inputs = inputs_raw.to(c.device)
+        labels = labels.to(c.device)
+        inputs = inputs.view(-1, *inputs.shape[-3:])
         inputs = Variable(inputs, requires_grad=True)
 
         emb = model(inputs)

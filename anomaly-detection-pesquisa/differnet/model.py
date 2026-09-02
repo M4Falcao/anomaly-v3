@@ -3,7 +3,7 @@ import os
 import torch
 import torch.nn.functional as F
 from torch import nn
-from torchvision.models import alexnet
+from torchvision.models import alexnet, resnet18
 
 from fightingcv_attention.attention.CBAM import CBAMBlock
 from fightingcv_attention.attention.SEAttention import SEAttention
@@ -51,8 +51,6 @@ class DifferNet(nn.Module):
     
 
 class SEDifferNet(nn.Module):
-
-    print("SEDifferNet")
     def __init__(self):
         super(SEDifferNet, self).__init__()
         self.alexnet = alexnet(pretrained=True)
@@ -139,6 +137,42 @@ class CBAMDifferNet(nn.Module):
         z = self.nf(y)
         return z
 
+class SEResNet18DifferNet(nn.Module):
+    def __init__(self):
+        super(SEResNet18DifferNet, self).__init__()
+        self.resnet18 = resnet18(pretrained=True)
+        self.simsa1 = SEAttention(channel=64, reduction=2)
+        self.simsa2 = SEAttention(channel=128, reduction=2)
+        self.simsa3 = SEAttention(channel=256, reduction=2)
+        
+        self.nf = nf_head()
+
+    def forward(self, x_input):
+        y_cat = list()
+
+        for s in range(c.n_scales):
+            x_scaled = F.interpolate(x_input, size=c.img_size[0] // (2 ** s)) if s > 0 else x_input
+            
+            x = self.resnet18.conv1(x_scaled)
+            x = self.resnet18.bn1(x)
+            x = self.resnet18.relu(x)
+            x = self.resnet18.maxpool(x)
+            
+            x = self.resnet18.layer1(x)
+            x = self.simsa1(x)
+            
+            x = self.resnet18.layer2(x)
+            x = self.simsa2(x)
+            
+            x = self.resnet18.layer3(x)
+            feat_s = self.simsa3(x)
+            
+            y_cat.append(torch.mean(feat_s, dim=(2, 3)))
+
+        y = torch.cat(y_cat, dim=1)
+        z = self.nf(y)
+        return z
+
 
 def save_model(model, filename):
     if not os.path.exists(MODEL_DIR):
@@ -147,8 +181,11 @@ def save_model(model, filename):
 
 
 def load_model(filename):
-    path = os.path.join(MODEL_DIR, filename)
-    model = torch.load(path)
+    if os.path.exists(filename):
+        path = filename
+    else:
+        path = os.path.join(MODEL_DIR, filename)
+    model = torch.load(path, weights_only=False)
     return model
 
 
@@ -159,6 +196,68 @@ def save_weights(model, filename):
 
 
 def load_weights(model, filename):
-    path = os.path.join(WEIGHT_DIR, filename)
-    model.load_state_dict(torch.load(path))
-    return model
+    # Try finding the file directly
+    if os.path.exists(filename):
+        path = filename
+    elif os.path.exists(os.path.join(WEIGHT_DIR, filename)):
+        path = os.path.join(WEIGHT_DIR, filename)
+    else:
+        # Try to resolve path if user passed a path relative to repo root but is inside a subdirectory
+        normalized_filename = filename.replace('\\', '/')
+        normalized_cwd = os.getcwd().replace('\\', '/')
+        
+        filename_parts = normalized_filename.split('/')
+        resolved_path = None
+        
+        # Check if we can find the file by stripping leading parts of the filename that match CWD suffixes
+        for i in range(len(filename_parts)):
+            test_path = os.path.join(os.getcwd(), *filename_parts[i:])
+            if os.path.exists(test_path):
+                resolved_path = test_path
+                break
+                
+        if resolved_path:
+            path = resolved_path
+        else:
+            # Try to search in parent directories (up to 4 levels up)
+            curr_dir = os.getcwd()
+            found = False
+            for _ in range(4):
+                test_path = os.path.join(curr_dir, filename)
+                if os.path.exists(test_path):
+                    path = test_path
+                    found = True
+                    break
+                
+                # Also try matching suffix parts of the filename in parent directories
+                for i in range(1, len(filename_parts)):
+                    test_subpath = os.path.join(curr_dir, *filename_parts[i:])
+                    if os.path.exists(test_subpath):
+                        path = test_subpath
+                        found = True
+                        break
+                if found:
+                    break
+                parent = os.path.dirname(curr_dir)
+                if parent == curr_dir:
+                    break
+                curr_dir = parent
+            
+            if not found:
+                # Fallback to original default behavior
+                path = os.path.join(WEIGHT_DIR, filename)
+    
+    loaded_content = torch.load(path, weights_only=False)
+    
+    checkpoint = None
+    
+    # Check if we loaded a full model, a state_dict, or a checkpoint dict
+    if isinstance(loaded_content, nn.Module):
+        model.load_state_dict(loaded_content.state_dict())
+    elif isinstance(loaded_content, dict) and 'model_state_dict' in loaded_content:
+        model.load_state_dict(loaded_content['model_state_dict'])
+        checkpoint = loaded_content
+    else:
+        model.load_state_dict(loaded_content)
+        
+    return model, checkpoint

@@ -1,0 +1,437 @@
+﻿python : 
+C:\ProgramData\anaconda3\Lib\site-packages\torchvision\models\_utils.py:208: 
+UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be 
+removed in the future, please use 'weights' instead.
+No linha:1 caractere:32
++ ... NG="utf-8"; python -m pixel_pipeline.run --n_train 30 --epochs 8 --ba ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\ProgramData\...ights' 
+instead.:String) [], RemoteEx    ception
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  warnings.warn(
+C:\ProgramData\anaconda3\Lib\site-packages\torchvision\models\_utils.py:223: 
+UserWarning: Arguments other than a weight enum or `None` for 'weights' are 
+deprecated since 0.13 and may be removed in the future. The current behavior 
+is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also 
+use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+[data] train: 30 normal images (subset of lightning-rod-suspension)
+[data] test:  163 images (117 good / 46 anomaly)
+
+====== D_PaDiM ======
+
+[PaDiM] fit:   0%|          | 0/8 [00:00<?, ?it/s]
+[PaDiM] fit:  12%|ÔûêÔûÄ        | 1/8 [00:00<00:03,  1.87it/s]
+[PaDiM] fit:  62%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûÄ   | 5/8 [00:00<00:00,  9.67it/s]
+[PaDiM] fit: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 11.07it/s]
+C:\ProgramData\anaconda3\Lib\site-packages\torchvision\models\_utils.py:208: 
+UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be 
+removed in the future, please use 'weights' instead.
+  warnings.warn(
+C:\ProgramData\anaconda3\Lib\site-packages\torchvision\models\_utils.py:223: 
+UserWarning: Arguments other than a weight enum or `None` for 'weights' are 
+deprecated since 0.13 and may be removed in the future. The current behavior 
+is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also 
+use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+  D_PaDiM      | raw   | pixel AUROC = 0.8355
+  D_PaDiM      | A     | pixel AUROC = 0.8416
+  D_PaDiM      | B     | pixel AUROC = 0.8330
+  D_PaDiM      | C     | pixel AUROC = 0.8336
+
+====== E_PatchCore ======
+
+[PatchCore] fit:   0%|          | 0/8 [00:00<?, ?it/s]
+[PatchCore] fit:  38%|ÔûêÔûêÔûêÔûè      | 3/8 [00:00<00:00, 29.41it/s]
+[PatchCore] fit:  88%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûè | 7/8 [00:00<00:00, 
+34.06it/s]
+[PatchCore] fit: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+34.80it/s]
+C:\ProgramData\anaconda3\Lib\site-packages\torchvision\models\_utils.py:208: 
+UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be 
+removed in the future, please use 'weights' instead.
+  warnings.warn(
+C:\ProgramData\anaconda3\Lib\site-packages\torchvision\models\_utils.py:223: 
+UserWarning: Arguments other than a weight enum or `None` for 'weights' are 
+deprecated since 0.13 and may be removed in the future. The current behavior 
+is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also 
+use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+[PatchCore] memory bank: torch.Size([9408, 512])
+  E_PatchCore  | raw   | pixel AUROC = 0.7616
+  E_PatchCore  | A     | pixel AUROC = 0.7634
+  E_PatchCore  | B     | pixel AUROC = 0.7923
+  E_PatchCore  | C     | pixel AUROC = 0.7887
+
+====== F_FastFlow ======
+
+[FastFlow] ep 1/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[FastFlow] ep 1/8:  12%|ÔûêÔûÄ        | 1/8 [00:00<00:03,  2.15it/s]
+[FastFlow] ep 1/8:  25%|ÔûêÔûêÔûî       | 2/8 [00:00<00:01,  3.81it/s]
+[FastFlow] ep 1/8:  38%|ÔûêÔûêÔûêÔûè      | 3/8 [00:00<00:00,  5.15it/s]
+[FastFlow] ep 1/8:  62%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûÄ   | 5/8 [00:00<00:00,  7.99it/s]
+[FastFlow] ep 1/8:  88%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûè | 7/8 [00:00<00:00,  
+9.73it/s]
+[FastFlow] ep 1/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:01<00:00,  
+7.60it/s]
+  loss: 1013.7789
+
+[FastFlow] ep 2/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[FastFlow] ep 2/8:  25%|ÔûêÔûêÔûî       | 2/8 [00:00<00:00, 14.52it/s]
+[FastFlow] ep 2/8:  50%|ÔûêÔûêÔûêÔûêÔûê     | 4/8 [00:00<00:00, 14.52it/s]
+[FastFlow] ep 2/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+14.53it/s]
+[FastFlow] ep 2/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+15.94it/s]
+[FastFlow] ep 2/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+15.38it/s]
+  loss: 772.1617
+
+[FastFlow] ep 3/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[FastFlow] ep 3/8:  25%|ÔûêÔûêÔûî       | 2/8 [00:00<00:00, 16.95it/s]
+[FastFlow] ep 3/8:  50%|ÔûêÔûêÔûêÔûêÔûê     | 4/8 [00:00<00:00, 15.47it/s]
+[FastFlow] ep 3/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+14.26it/s]
+[FastFlow] ep 3/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+15.84it/s]
+[FastFlow] ep 3/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+15.57it/s]
+  loss: 671.9436
+
+[FastFlow] ep 4/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[FastFlow] ep 4/8:  25%|ÔûêÔûêÔûî       | 2/8 [00:00<00:00, 15.52it/s]
+[FastFlow] ep 4/8:  50%|ÔûêÔûêÔûêÔûêÔûê     | 4/8 [00:00<00:00, 14.84it/s]
+[FastFlow] ep 4/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+15.12it/s]
+[FastFlow] ep 4/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+16.59it/s]
+[FastFlow] ep 4/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+16.00it/s]
+  loss: 595.0111
+
+[FastFlow] ep 5/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[FastFlow] ep 5/8:  25%|ÔûêÔûêÔûî       | 2/8 [00:00<00:00, 15.47it/s]
+[FastFlow] ep 5/8:  50%|ÔûêÔûêÔûêÔûêÔûê     | 4/8 [00:00<00:00, 15.44it/s]
+[FastFlow] ep 5/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+14.88it/s]
+[FastFlow] ep 5/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+16.13it/s]
+  loss: 548.6846
+
+[FastFlow] ep 6/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[FastFlow] ep 6/8:  25%|ÔûêÔûêÔûî       | 2/8 [00:00<00:00, 15.34it/s]
+[FastFlow] ep 6/8:  50%|ÔûêÔûêÔûêÔûêÔûê     | 4/8 [00:00<00:00, 14.92it/s]
+[FastFlow] ep 6/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+14.64it/s]
+[FastFlow] ep 6/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+15.81it/s]
+  loss: 518.1311
+
+[FastFlow] ep 7/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[FastFlow] ep 7/8:  25%|ÔûêÔûêÔûî       | 2/8 [00:00<00:00, 13.30it/s]
+[FastFlow] ep 7/8:  50%|ÔûêÔûêÔûêÔûêÔûê     | 4/8 [00:00<00:00, 14.31it/s]
+[FastFlow] ep 7/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+14.82it/s]
+[FastFlow] ep 7/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+16.14it/s]
+[FastFlow] ep 7/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+15.41it/s]
+  loss: 472.9397
+
+[FastFlow] ep 8/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[FastFlow] ep 8/8:  25%|ÔûêÔûêÔûî       | 2/8 [00:00<00:00, 14.71it/s]
+[FastFlow] ep 8/8:  50%|ÔûêÔûêÔûêÔûêÔûê     | 4/8 [00:00<00:00, 13.83it/s]
+[FastFlow] ep 8/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+14.62it/s]
+[FastFlow] ep 8/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+15.70it/s]
+C:\ProgramData\anaconda3\Lib\site-packages\torchvision\models\_utils.py:208: 
+UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be 
+removed in the future, please use 'weights' instead.
+  warnings.warn(
+C:\ProgramData\anaconda3\Lib\site-packages\torchvision\models\_utils.py:223: 
+UserWarning: Arguments other than a weight enum or `None` for 'weights' are 
+deprecated since 0.13 and may be removed in the future. The current behavior 
+is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also 
+use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+  loss: 440.5403
+  F_FastFlow   | raw   | pixel AUROC = 0.8345
+  F_FastFlow   | A     | pixel AUROC = 0.8381
+  F_FastFlow   | B     | pixel AUROC = 0.8627
+  F_FastFlow   | C     | pixel AUROC = 0.6416
+
+====== G_CFLOW ======
+
+[CFLOW] ep 1/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[CFLOW] ep 1/8:  12%|ÔûêÔûÄ        | 1/8 [00:00<00:00,  8.78it/s]
+[CFLOW] ep 1/8:  38%|ÔûêÔûêÔûêÔûè      | 3/8 [00:00<00:00, 13.50it/s]
+[CFLOW] ep 1/8:  62%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûÄ   | 5/8 [00:00<00:00, 14.14it/s]
+[CFLOW] ep 1/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+17.38it/s]
+[CFLOW] ep 1/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+15.80it/s]
+  loss: 1124.8859
+
+[CFLOW] ep 2/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[CFLOW] ep 2/8:  25%|ÔûêÔûêÔûî       | 2/8 [00:00<00:00, 16.49it/s]
+[CFLOW] ep 2/8:  50%|ÔûêÔûêÔûêÔûêÔûê     | 4/8 [00:00<00:00, 17.67it/s]
+[CFLOW] ep 2/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 17.18it/s]
+[CFLOW] ep 2/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+16.85it/s]
+[CFLOW] ep 2/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+16.96it/s]
+  loss: 824.4078
+
+[CFLOW] ep 3/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[CFLOW] ep 3/8:  25%|ÔûêÔûêÔûî       | 2/8 [00:00<00:00, 16.85it/s]
+[CFLOW] ep 3/8:  50%|ÔûêÔûêÔûêÔûêÔûê     | 4/8 [00:00<00:00, 16.99it/s]
+[CFLOW] ep 3/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 16.77it/s]
+[CFLOW] ep 3/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+17.07it/s]
+[CFLOW] ep 3/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+16.99it/s]
+  loss: 736.2302
+
+[CFLOW] ep 4/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[CFLOW] ep 4/8:  25%|ÔûêÔûêÔûî       | 2/8 [00:00<00:00, 16.76it/s]
+[CFLOW] ep 4/8:  50%|ÔûêÔûêÔûêÔûêÔûê     | 4/8 [00:00<00:00, 16.19it/s]
+[CFLOW] ep 4/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 17.04it/s]
+[CFLOW] ep 4/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+18.22it/s]
+  loss: 672.3909
+
+[CFLOW] ep 5/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[CFLOW] ep 5/8:  25%|ÔûêÔûêÔûî       | 2/8 [00:00<00:00, 19.65it/s]
+[CFLOW] ep 5/8:  62%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûÄ   | 5/8 [00:00<00:00, 18.96it/s]
+[CFLOW] ep 5/8:  88%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûè | 7/8 [00:00<00:00, 18.65it/s]
+[CFLOW] ep 5/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+19.88it/s]
+  loss: 621.8599
+
+[CFLOW] ep 6/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[CFLOW] ep 6/8:  25%|ÔûêÔûêÔûî       | 2/8 [00:00<00:00, 18.35it/s]
+[CFLOW] ep 6/8:  50%|ÔûêÔûêÔûêÔûêÔûê     | 4/8 [00:00<00:00, 18.54it/s]
+[CFLOW] ep 6/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 17.93it/s]
+[CFLOW] ep 6/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+18.99it/s]
+  loss: 572.4573
+
+[CFLOW] ep 7/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[CFLOW] ep 7/8:  25%|ÔûêÔûêÔûî       | 2/8 [00:00<00:00, 17.13it/s]
+[CFLOW] ep 7/8:  50%|ÔûêÔûêÔûêÔûêÔûê     | 4/8 [00:00<00:00, 16.77it/s]
+[CFLOW] ep 7/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 17.71it/s]
+[CFLOW] ep 7/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+18.87it/s]
+  loss: 537.4734
+
+[CFLOW] ep 8/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[CFLOW] ep 8/8:  38%|ÔûêÔûêÔûêÔûè      | 3/8 [00:00<00:00, 20.18it/s]
+[CFLOW] ep 8/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 18.17it/s]
+[CFLOW] ep 8/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+19.74it/s]
+C:\ProgramData\anaconda3\Lib\site-packages\torchvision\models\_utils.py:208: 
+UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be 
+removed in the future, please use 'weights' instead.
+  warnings.warn(
+C:\ProgramData\anaconda3\Lib\site-packages\torchvision\models\_utils.py:223: 
+UserWarning: Arguments other than a weight enum or `None` for 'weights' are 
+deprecated since 0.13 and may be removed in the future. The current behavior 
+is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also 
+use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+  loss: 497.7473
+  G_CFLOW      | raw   | pixel AUROC = 0.8681
+  G_CFLOW      | A     | pixel AUROC = 0.8700
+  G_CFLOW      | B     | pixel AUROC = 0.8514
+  G_CFLOW      | C     | pixel AUROC = 0.5718
+
+====== H_DifferNet ======
+
+[DifferNet] ep 1/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[DifferNet] ep 1/8:  25%|ÔûêÔûêÔûî       | 2/8 [00:00<00:00, 14.85it/s]
+[DifferNet] ep 1/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+24.79it/s]
+[DifferNet] ep 1/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+23.52it/s]
+  loss: 831.5733
+
+[DifferNet] ep 2/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[DifferNet] ep 2/8:  38%|ÔûêÔûêÔûêÔûè      | 3/8 [00:00<00:00, 26.74it/s]
+[DifferNet] ep 2/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+26.60it/s]
+[DifferNet] ep 2/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+27.75it/s]
+  loss: 168.3753
+
+[DifferNet] ep 3/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[DifferNet] ep 3/8:  50%|ÔûêÔûêÔûêÔûêÔûê     | 4/8 [00:00<00:00, 29.59it/s]
+[DifferNet] ep 3/8:  88%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûè | 7/8 [00:00<00:00, 
+24.07it/s]
+[DifferNet] ep 3/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+25.42it/s]
+  loss: -33.1844
+
+[DifferNet] ep 4/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[DifferNet] ep 4/8:  38%|ÔûêÔûêÔûêÔûè      | 3/8 [00:00<00:00, 25.62it/s]
+[DifferNet] ep 4/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+25.24it/s]
+[DifferNet] ep 4/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+26.63it/s]
+  loss: -156.2696
+
+[DifferNet] ep 5/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[DifferNet] ep 5/8:  50%|ÔûêÔûêÔûêÔûêÔûê     | 4/8 [00:00<00:00, 27.42it/s]
+[DifferNet] ep 5/8:  88%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûè | 7/8 [00:00<00:00, 
+28.49it/s]
+[DifferNet] ep 5/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+29.55it/s]
+  loss: -262.3617
+
+[DifferNet] ep 6/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[DifferNet] ep 6/8:  38%|ÔûêÔûêÔûêÔûè      | 3/8 [00:00<00:00, 29.07it/s]
+[DifferNet] ep 6/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+28.79it/s]
+[DifferNet] ep 6/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+30.38it/s]
+
+  loss: -348.6844
+[DifferNet] ep 7/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[DifferNet] ep 7/8:  38%|ÔûêÔûêÔûêÔûè      | 3/8 [00:00<00:00, 25.97it/s]
+[DifferNet] ep 7/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+26.60it/s]
+[DifferNet] ep 7/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+27.71it/s]
+  loss: -464.5927
+
+[DifferNet] ep 8/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[DifferNet] ep 8/8:  38%|ÔûêÔûêÔûêÔûè      | 3/8 [00:00<00:00, 28.72it/s]
+[DifferNet] ep 8/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+25.42it/s]
+[DifferNet] ep 8/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+27.18it/s]
+C:\ProgramData\anaconda3\Lib\site-packages\torchvision\models\_utils.py:208: 
+UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be 
+removed in the future, please use 'weights' instead.
+  warnings.warn(
+C:\ProgramData\anaconda3\Lib\site-packages\torchvision\models\_utils.py:223: 
+UserWarning: Arguments other than a weight enum or `None` for 'weights' are 
+deprecated since 0.13 and may be removed in the future. The current behavior 
+is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also 
+use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+  loss: -573.4215
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  [postproc] gradient map failed: element 0 of tensors does not require grad and does not have a grad_fn
+  H_DifferNet  | raw   | pixel AUROC = 0.7395
+  H_DifferNet  | A     | pixel AUROC = 0.7348
+  H_DifferNet  | B     | pixel AUROC = 0.5000
+  H_DifferNet  | C     | pixel AUROC = 0.5965
+
+====== I_SEDifferNet ======
+
+[SEDifferNet] ep 1/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[SEDifferNet] ep 1/8:  12%|ÔûêÔûÄ        | 1/8 [00:00<00:01,  6.28it/s]
+[SEDifferNet] ep 1/8:  25%|ÔûêÔûêÔûî       | 2/8 [00:00<00:00,  7.09it/s]
+[SEDifferNet] ep 1/8:  62%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûÄ   | 5/8 [00:00<00:00, 
+15.08it/s]
+[SEDifferNet] ep 1/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+19.64it/s]
+[SEDifferNet] ep 1/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+15.83it/s]
+  loss: -29.4471
+
+[SEDifferNet] ep 2/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[SEDifferNet] ep 2/8:  38%|ÔûêÔûêÔûêÔûè      | 3/8 [00:00<00:00, 29.31it/s]
+[SEDifferNet] ep 2/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+25.46it/s]
+[SEDifferNet] ep 2/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+27.38it/s]
+  loss: -456.1658
+
+[SEDifferNet] ep 3/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[SEDifferNet] ep 3/8:  38%|ÔûêÔûêÔûêÔûè      | 3/8 [00:00<00:00, 27.83it/s]
+[SEDifferNet] ep 3/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+28.07it/s]
+[SEDifferNet] ep 3/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+28.53it/s]
+  loss: -777.4141
+
+[SEDifferNet] ep 4/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[SEDifferNet] ep 4/8:  38%|ÔûêÔûêÔûêÔûè      | 3/8 [00:00<00:00, 26.48it/s]
+[SEDifferNet] ep 4/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+27.52it/s]
+[SEDifferNet] ep 4/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+27.57it/s]
+  loss: -1053.5608
+
+[SEDifferNet] ep 5/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[SEDifferNet] ep 5/8:  38%|ÔûêÔûêÔûêÔûè      | 3/8 [00:00<00:00, 29.69it/s]
+[SEDifferNet] ep 5/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+28.40it/s]
+[SEDifferNet] ep 5/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+29.48it/s]
+  loss: -1206.9935
+
+[SEDifferNet] ep 6/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[SEDifferNet] ep 6/8:  50%|ÔûêÔûêÔûêÔûêÔûê     | 4/8 [00:00<00:00, 31.01it/s]
+[SEDifferNet] ep 6/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+29.29it/s]
+[SEDifferNet] ep 6/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+29.51it/s]
+  loss: -1344.3862
+
+[SEDifferNet] ep 7/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[SEDifferNet] ep 7/8:  38%|ÔûêÔûêÔûêÔûè      | 3/8 [00:00<00:00, 28.75it/s]
+[SEDifferNet] ep 7/8:  75%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûî  | 6/8 [00:00<00:00, 
+28.76it/s]
+[SEDifferNet] ep 7/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+29.06it/s]
+  loss: -1309.4543
+
+[SEDifferNet] ep 8/8:   0%|          | 0/8 [00:00<?, ?it/s]
+[SEDifferNet] ep 8/8:  50%|ÔûêÔûêÔûêÔûêÔûê     | 4/8 [00:00<00:00, 30.36it/s]
+[SEDifferNet] ep 8/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+29.81it/s]
+[SEDifferNet] ep 8/8: 100%|ÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûêÔûê| 8/8 [00:00<00:00, 
+29.87it/s]

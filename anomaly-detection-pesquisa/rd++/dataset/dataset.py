@@ -79,7 +79,7 @@ class MVTecDataset_train(torch.utils.data.Dataset):
 class MVTecDataset_test(torch.utils.data.Dataset):
     def __init__(self, root, transform, gt_transform):
         self.img_path = os.path.join(root, "test")
-        self.gt_path = r"c:\Users\Pichau\Pesquisa\pesquisa\data\insplad-seg\insplad-seg\glass-insulator\ground_truth"
+        self.gt_path = r"C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg\lightning-rod-suspension\ground_truth"
 
         print(self.img_path)
         print(self.gt_path)
