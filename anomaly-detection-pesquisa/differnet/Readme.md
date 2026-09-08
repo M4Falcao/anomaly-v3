@@ -24,6 +24,76 @@ All configurations concerning data, model, training, visualization etc. can be m
 To start the training, just run _main.py_! If training on the dummy data does not lead to an AUROC of 1.0, something seems to be wrong. Don't be worried if the loss is negative. The loss reflects the negative log likelihood which may be negative.
 Please report us if you have issues when using the code.
 
+> **Run every command from this directory** (`differnet/`). Scripts resolve their
+> imports from the project root and write their outputs to the folders listed below.
+
+## Project Structure
+
+```
+differnet/
+├── config.py                   # Single source of truth for all hyperparameters
+├── main.py                     # Entry point: image-level training
+│
+├── core/                       # Library code (imported, never run directly)
+│   ├── freia_funcs.py          # Normalizing-flow primitives (vendored FrEIA)
+│   ├── model.py                # DifferNet / SEDifferNet / CBAMDifferNet
+│   ├── utils.py                # Datasets, transforms, loss, Score_Observer
+│   ├── multi_transform_loader.py # ImageFolder yielding N transforms per image
+│   ├── localization.py         # Gradient-based anomaly map export
+│   ├── train.py                # Image-level training loop
+│   ├── eval_common.py          # Shared evaluation metrics + architecture lookup
+│   ├── mlflow_utils.py         # Checkpoint saving, MLflow UI, tracking export
+│   ├── xai.py                  # GradCAM target for flow models
+│   └── paths.py                # PROJECT_ROOT anchors
+│
+├── scripts/                    # Runnable entry points
+│   ├── train/
+│   │   └── pixel_train_from_pretrained.py  # CFLOW pixel head on frozen backbone
+│   ├── eval/
+│   │   ├── score_image_folder.py       # Score a folder of images
+│   │   ├── evaluate_full_pipeline.py   # Final combined image + pixel evaluation
+│   │   ├── evaluate_cflow_no_smoothing.py # CFLOW without Gaussian smoothing (ablation)
+│   │   ├── evaluate_cam_xai_metrics.py # GradCAM / XAI metrics
+│   │   ├── evaluate_cam_sanity_check.py # Weight-randomization sanity check
+│   │   ├── evaluate_model_roc.py       # ROC and score distribution for one model
+│   │   ├── test_model_grad_maps.py     # Single-model image + pixel metrics
+│   │   ├── test_single_checkpoint.py   # One checkpoint, full metric report
+│   │   ├── sweep_checkpoints.py        # Sweep a folder of checkpoints
+│   │   └── visualize_cam_metric_steps.py # Step-by-step metric visualization
+│   ├── analysis/
+│   │   ├── analyze_class.py            # Per-class deep-dive analysis
+│   │   └── smoke_test_baseline.py      # Trivial all-normal baseline
+│   └── tools/
+│       ├── export_mlflow.py            # Zip the mlruns store
+│       ├── batch_evaluate_cam_metrics.py # Run evaluate_cam_xai_metrics.py for all classes
+│       ├── read_checkpoint_auroc.py    # Print AUROC history from a checkpoint
+│       ├── generate_dummy_gt.py        # Placeholder masks for the dummy dataset
+│       └── print_output_log.py         # Print a UTF-16/UTF-8 log file
+│
+├── pixel_pipeline/             # Self-contained pixel-level package (run with -m)
+├── docs/                       # Method notes and derivations
+├── legacy/                     # Frozen older code, kept for reproducibility
+│
+└── checkpoints/ models/ weights/ mlruns/ results*/ gradient_maps/ ...   # Outputs
+```
+
+### Common commands
+
+| Task | Command |
+| --- | --- |
+| Image-level training | `python main.py` |
+| Pixel-level head training | `python scripts/train/pixel_train_from_pretrained.py` |
+| Final combined evaluation | `python scripts/eval/evaluate_full_pipeline.py` |
+| CFLOW without smoothing | `python scripts/eval/evaluate_cflow_no_smoothing.py` |
+| Smoothing ablation | `python scripts/eval/evaluate_cflow_no_smoothing.py --sigmas 0,2,4,6` |
+| Sweep all checkpoints | `python scripts/eval/sweep_checkpoints.py --help` |
+| Per-class analysis | `python scripts/analysis/analyze_class.py --help` |
+| Pixel pipeline | `python -m pixel_pipeline.run --help` |
+| Export MLflow runs | `python scripts/tools/export_mlflow.py` |
+
+Note that `pixel_pipeline` uses relative imports and must be launched with
+`python -m pixel_pipeline.<module>`, not by file path.
+
 ## Data
 
 The given dummy dataset shows how the implementation expects the construction of a dataset. Coincidentally, the [MVTec AD dataset](https://www.mvtec.com/company/research/datasets/mvtec-ad) is constructed in this way.

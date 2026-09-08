@@ -1,0 +1,2 @@
+class,image_auroc,image_ap,image_f1,pixel_auroc,pixel_ap,pixel_f1,aupro,fps_image,fps_pixel,latency_image_ms,latency_pixel_ms,image_threshold
+MÉDIA,0.918640,0.753687,0.750000,0.906435,0.076228,0.144506,0.712944,114.047269,14.108523,8.768294,70.879140,1.728755

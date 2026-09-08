@@ -1,0 +1,13 @@
+tag: norot
+class: vari-grip
+nf_head: C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\resultado_analise_final\ablacao_nf_head\run_20260904_092255\train\norot\run_20260904_100633\best_models\best_pixel_auroc.pt
+se_model: C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\SEDiffernet\vari-grip\vari-grip_se_differnet_vari_grip_200_1_epoch_163.pt
+head hparams: {"out_size": 96, "clamp_scale": 0.5, "n_blocks": 8, "cond_dim": 64, "hidden": 256, "levels": [0, 1, 2], "feat_pool": 0, "pad_mode": "reflect", "train_reflect_pad": 0, "feat_norm": false, "no_rotation": true, "attention": "se", "epoch": 5, "train_pixel_auroc": 0.8603758763931768}
+images: 154 (val 46, holdout 108), val_fraction=0.3
+grid size: 1920 | selection metric: pixel_auroc | pixel_stride (grid)=2
+SEDifferNet image AUROC (all): 0.9186
+
+BEST on val:      pad112-reflect|tta=flips|per_level_minmax|L=012|calib=none|s=4|m=0|img=topk  -> pixel_auroc=0.8946
+  -> holdout:     pixAUROC=0.8707 AP=0.0522 F1=0.1006 AUPRO=0.7315
+BASELINE holdout: pixAUROC=0.8543 AP=0.0453 F1=0.0902 AUPRO=0.6794
+DELTA (best - baseline, holdout): pixAUROC=+0.0164 AP=+0.0069 AUPRO=+0.0521

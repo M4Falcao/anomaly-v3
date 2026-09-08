@@ -1,0 +1,3 @@
+pad,pad_mode,tta,score_mode,levels,pos_calib,sigma,margin,image_score,pixel_auroc,pixel_ap,pixel_f1,image_auroc_map,latency_pixel_ms,name
+112,reflect,none,per_level_minmax,012,none,4.0,0,max,0.9652121609020309,0.0010743454286655564,0.002861230329041488,1.0,38.568299962207675,pad112-reflect|tta=none|per_level_minmax|L=012|calib=none|s=4|m=0|img=max
+0,-,none,per_level_minmax,012,none,4.0,0,max,0.9631841575137204,0.0010161690125992983,0.0026414263702399295,0.0,18.392516649328172,pad0--|tta=none|per_level_minmax|L=012|calib=none|s=4|m=0|img=max

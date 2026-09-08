@@ -1,0 +1,2 @@
+method,pixel_auroc,pixel_ap,pixel_f1,aupro,image_auroc,image_ap,image_f1
+CFLOW,0.849452,0.039144,0.082349,0.470447,0.472368,0.270866,0.421053

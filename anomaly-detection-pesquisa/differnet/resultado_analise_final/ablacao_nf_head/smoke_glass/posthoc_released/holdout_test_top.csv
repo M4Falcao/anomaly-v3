@@ -1,0 +1,5 @@
+pad,pad_mode,tta,score_mode,levels,pos_calib,sigma,margin,image_score,role,pixel_auroc,pixel_ap,pixel_f1,aupro,image_auroc_map,image_auroc_sediffernet,n_holdout,name
+112,reflect,none,per_level_minmax,012,none,4.0,0,max,top,0.840817770785882,0.00043868773826128413,0.001927782308890042,0.5149657803232544,0.75,1.0,4,pad112-reflect|tta=none|per_level_minmax|L=012|calib=none|s=4|m=0|img=max
+0,-,none,per_level_minmax,012,none,4.0,0,max,top,0.8249566661325798,0.0004253677442923548,0.002246026261230131,0.4908999577486171,1.0,1.0,4,pad0--|tta=none|per_level_minmax|L=012|calib=none|s=4|m=0|img=max
+0,-,none,per_level_minmax,012,none,4.0,0,max,baseline_producao,0.8249566661325798,0.0004253677442923548,0.002246026261230131,0.4908999577486171,1.0,1.0,4,pad0--|tta=none|per_level_minmax|L=012|calib=none|s=4|m=0|img=max
+112,reflect,none,per_level_minmax,012,none,4.0,8,max,producao_pad112_m8,0.8431347968730806,0.00048489658195217966,0.002208067940552017,0.5149657803232544,0.75,1.0,4,pad112-reflect|tta=none|per_level_minmax|L=012|calib=none|s=4|m=8|img=max

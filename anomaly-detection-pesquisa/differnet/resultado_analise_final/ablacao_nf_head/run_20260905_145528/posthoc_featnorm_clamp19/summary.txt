@@ -1,0 +1,13 @@
+tag: featnorm_clamp19
+class: lightning-rod-suspension
+nf_head: C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\resultado_analise_final\ablacao_nf_head\run_20260905_145528\train\featnorm_clamp19\run_20260905_162207\best_models\best_pixel_auroc.pt
+se_model: C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\SEDiffernet\lightning-rod-suspension\lightning-rod-suspension_se_differnet_lightning_rod_suspension_100_1_epoch_41.pt
+head hparams: {"out_size": 96, "clamp_scale": 1.9, "n_blocks": 8, "cond_dim": 64, "hidden": 256, "levels": [0, 1, 2], "feat_pool": 0, "pad_mode": "reflect", "train_reflect_pad": 0, "feat_norm": true, "no_rotation": false, "attention": "se", "epoch": 20, "train_pixel_auroc": 0.6721072805128379}
+images: 163 (val 65, holdout 98), val_fraction=0.4
+grid size: 224 | selection metric: pixel_auroc | pixel_stride (grid)=2
+SEDifferNet image AUROC (all): 0.9673
+
+BEST on val:      pad112-reflect|tta=flips|raw|L=012|calib=none|s=4|m=0|img=max  -> pixel_auroc=0.9012
+  -> holdout:     pixAUROC=0.8759 AP=0.0259 F1=0.0568 AUPRO=0.5238
+BASELINE holdout: pixAUROC=0.6189 AP=0.0080 F1=0.0233 AUPRO=0.4311
+DELTA (best - baseline, holdout): pixAUROC=+0.2569 AP=+0.0179 AUPRO=+0.0927

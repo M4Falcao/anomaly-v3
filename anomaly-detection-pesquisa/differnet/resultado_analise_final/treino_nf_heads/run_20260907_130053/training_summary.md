@@ -1,0 +1,6 @@
+# Resumo do Treinamento de NF Heads (Run: 20260907_130053)
+
+| class                    | status      | returncode | train_minutes | epochs | pixel_auroc | image_auroc | best_epoch | checkpoint                                                                                                                                                                                  |
+| ------------------------ | ----------- | ---------- | ------------- | ------ | ----------- | ----------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| glass-insulator          | SUCCESS     | 0          | 118.08        | 80     | 0.9187      | 0.7313      | 10.0       | C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\resultado_analise_final\treino_nf_heads\run_20260907_130053\glass-insulator\best_models\best_pixel_auroc.pt |
+| lightning-rod-suspension | INTERRUPTED | -1         | 0.1           | 80     |             |             |            |                                                                                                                                                                                             |

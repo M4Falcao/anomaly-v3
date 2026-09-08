@@ -1,0 +1,13 @@
+tag: combo_l23
+class: vari-grip
+nf_head: resultado_analise_final/ablacao_nf_head/smoke_retrain\train\combo_l23\run_20260904_001738\best_models\best_pixel_auroc.pt
+se_model: C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\SEDiffernet\vari-grip\vari-grip_se_differnet_vari_grip_200_1_epoch_163.pt
+head hparams: {"out_size": 96, "clamp_scale": 0.5, "n_blocks": 8, "cond_dim": 64, "hidden": 256, "levels": [1, 2], "feat_pool": 3, "pad_mode": "reflect", "train_reflect_pad": 112, "feat_norm": true, "no_rotation": true, "attention": "se", "epoch": 1, "train_pixel_auroc": 0.7094586738692409}
+images: 8 (val 2, holdout 6), val_fraction=0.3
+grid size: 32 | selection metric: pixel_auroc | pixel_stride (grid)=2
+SEDifferNet image AUROC (all): 0.8125
+
+BEST on val:      pad112-reflect|tta=none|per_level_prob|L=12|calib=none|s=4|m=0|img=max  -> pixel_auroc=0.9710
+  -> holdout:     pixAUROC=0.9302 AP=0.1250 F1=0.2478 AUPRO=0.6429
+BASELINE holdout: pixAUROC=0.7568 AP=0.0861 F1=0.1938 AUPRO=0.5522
+DELTA (best - baseline, holdout): pixAUROC=+0.1734 AP=+0.0388 AUPRO=+0.0907

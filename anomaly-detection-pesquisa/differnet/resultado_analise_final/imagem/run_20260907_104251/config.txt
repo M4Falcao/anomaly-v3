@@ -1,0 +1,12 @@
+dataset=C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg
+classes=vari-grip
+se_checkpoint=None
+limit=12
+n_transforms=1
+threshold_mode=best_f1
+quantile=0.99
+seed=42
+out_dir=None
+device=cuda
+img_size=(448, 448)
+n_scales=3

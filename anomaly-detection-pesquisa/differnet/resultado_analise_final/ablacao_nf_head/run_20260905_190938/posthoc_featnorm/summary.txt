@@ -1,0 +1,13 @@
+tag: featnorm
+class: glass-insulator
+nf_head: C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\resultado_analise_final\ablacao_nf_head\run_20260905_190938\train\featnorm\run_20260905_202613\best_models\best_pixel_auroc.pt
+se_model: C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\SEDiffernet\glass-insulator\glass-insulator_se_differnet_glass_insulator_200_1_epoch_170.pt
+head hparams: {"out_size": 96, "clamp_scale": 0.5, "n_blocks": 8, "cond_dim": 64, "hidden": 256, "levels": [0, 1, 2], "feat_pool": 0, "pad_mode": "reflect", "train_reflect_pad": 0, "feat_norm": true, "no_rotation": false, "attention": "se", "epoch": 30, "train_pixel_auroc": 0.8847870913893456}
+images: 678 (val 271, holdout 407), val_fraction=0.4
+grid size: 224 | selection metric: pixel_auroc | pixel_stride (grid)=4
+SEDifferNet image AUROC (all): 0.7850
+
+BEST on val:      pad112-reflect|tta=flips|raw|L=02|calib=none|s=2|m=0|img=max  -> pixel_auroc=0.9645
+  -> holdout:     pixAUROC=0.9542 AP=0.0058 F1=0.0291 AUPRO=0.7690
+BASELINE holdout: pixAUROC=0.8825 AP=0.0009 F1=0.0027 AUPRO=0.6571
+DELTA (best - baseline, holdout): pixAUROC=+0.0717 AP=+0.0048 AUPRO=+0.1120

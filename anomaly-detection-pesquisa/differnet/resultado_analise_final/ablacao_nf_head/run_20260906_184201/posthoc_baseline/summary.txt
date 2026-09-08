@@ -1,0 +1,13 @@
+tag: baseline
+class: polymer-insulator-upper-shackle
+nf_head: C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\resultado_analise_final\ablacao_nf_head\run_20260906_184201\train\baseline\run_20260906_184206\best_models\best_pixel_auroc.pt
+se_model: C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\SEDiffernet\polymer-insulator-upper-shackle\polymer-insulator-upper-shackle_se_differnet_polymer_insulator_upper_shackle_200_1_epoch_146.pt
+head hparams: {"out_size": 96, "clamp_scale": 0.5, "n_blocks": 8, "cond_dim": 64, "hidden": 256, "levels": [0, 1, 2], "feat_pool": 0, "pad_mode": "reflect", "train_reflect_pad": 0, "feat_norm": false, "no_rotation": false, "attention": "se", "epoch": 3, "train_pixel_auroc": 0.8653230252225296}
+images: 317 (val 127, holdout 190), val_fraction=0.4
+grid size: 96 | selection metric: pixel_auroc | pixel_stride (grid)=2
+SEDifferNet image AUROC (all): 0.9551
+
+BEST on val:      pad112-reflect|tta=flips|per_level_minmax|L=012|calib=none|s=8|m=0|img=max  -> pixel_auroc=0.8891
+  -> holdout:     pixAUROC=0.8767 AP=0.0273 F1=0.0593 AUPRO=0.6001
+BASELINE holdout: pixAUROC=0.8624 AP=0.0249 F1=0.0526 AUPRO=0.5753
+DELTA (best - baseline, holdout): pixAUROC=+0.0143 AP=+0.0024 AUPRO=+0.0248
