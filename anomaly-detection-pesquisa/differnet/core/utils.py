@@ -159,6 +159,9 @@ class AlignedTestDataset(Dataset):
             mask = Image.new('L', (c.img_size[1], c.img_size[0]), 0)
 
         # Apply transforms to image (n_transforms times)
+        if self.get_fixed and len(self.fixed_degrees) != self.n_transforms:
+            self.fixed_degrees = [i * 360.0 / self.n_transforms for i in range(self.n_transforms)]
+
         images = []
         for i in range(self.n_transforms):
             if self.get_fixed:

@@ -1,0 +1,3 @@
+name,levels,n_transforms,pad,pad_mode,masking_mode,z_score_mode,image_auroc_mean,image_auroc_std,image_ap_mean,image_ap_std,image_f1_mean,image_f1_std,fps_mean,fps_std
+TTA=32|pad=0(-)|L=012|mask=-|z=mean,012,32,0,-,-,mean,0.9769736842105263,0.0,0.9400645559324685,0.0,0.8888888838896511,0.0,3.911080971955252,0.2043973627134426
+TTA=16|pad=0(-)|L=012|mask=-|z=mean,012,16,0,-,-,mean,0.9758771929824561,0.0,0.9345859518996198,0.0,0.9069767392103841,0.0,7.515975094633234,0.28468739103656987

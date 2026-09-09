@@ -1,0 +1,14 @@
+method,pixel_agg,auroc,ap,f1
+MinMax Sum (a=0.25),topk0.05,0.9191,0.7605,0.7500
+MinMax Sum (a=0.25),max,0.9191,0.7605,0.7500
+MinMax Sum (a=0.75),max,0.9191,0.7605,0.7500
+MinMax Sum (a=0.50),topk0.05,0.9191,0.7605,0.7500
+MinMax Sum (a=0.50),max,0.9191,0.7605,0.7500
+MinMax Sum (a=0.75),topk0.05,0.9191,0.7605,0.7500
+Baseline Image (SEDifferNet),N/A,0.9186,0.7537,0.7500
+Z-Score Sum,max,0.8991,0.7539,0.7470
+Z-Score Sum,topk0.05,0.8987,0.7531,0.7470
+Rank Average,topk0.05,0.8399,0.7508,0.6667
+Rank Average,max,0.8377,0.7477,0.6753
+Baseline Pixel CFLOW,topk0.05,0.6338,0.4585,0.4754
+Baseline Pixel CFLOW,max,0.6336,0.4571,0.4706

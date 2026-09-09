@@ -1,0 +1,5 @@
+seed,n_transforms,pad,pad_mode,levels,masking_mode,z_score_mode,fps,name,image_auroc,image_ap,image_f1,image_threshold
+42,1,0,-,0,zero,mean,33.691331791481005,TTA=1|pad=0(-)|L=0|mask=zero|z=mean,0.75,0.8333333333333333,0.7999999952000001,10.9708890914917
+42,1,0,-,12,zero,mean,19.52829406164631,TTA=1|pad=0(-)|L=12|mask=zero|z=mean,0.5,0.75,0.6666666622222223,417.572998046875
+123,1,0,-,0,zero,mean,48.24921675239604,TTA=1|pad=0(-)|L=0|mask=zero|z=mean,1.0,1.0,0.999999995,15.491148948669434
+123,1,0,-,12,zero,mean,49.075057758754866,TTA=1|pad=0(-)|L=12|mask=zero|z=mean,0.0,0.41666666666666663,0.6666666622222223,170.66790771484375

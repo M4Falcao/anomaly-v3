@@ -1,0 +1,3 @@
+seed,n_transforms,pad,pad_mode,levels,masking_mode,z_score_mode,fps,image_auroc,image_ap,image_f1,image_threshold
+42,1,0,-,0,zero,mean,25.13995100092587,0.75,0.8333333333333333,0.7999999952000001,10.9708890914917
+123,1,0,-,0,zero,mean,40.84742053387077,1.0,1.0,0.999999995,15.491148948669434

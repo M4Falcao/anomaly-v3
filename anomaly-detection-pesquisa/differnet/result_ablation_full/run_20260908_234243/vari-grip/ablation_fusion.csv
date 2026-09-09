@@ -1,0 +1,14 @@
+class,n_transforms,method,pixel_agg,auroc,ap,f1
+vari-grip,32,Baseline Image (SEDifferNet),N/A,0.9770,0.9401,0.8889
+vari-grip,32,Baseline Pixel CFLOW,max,0.6336,0.4571,0.4706
+vari-grip,32,Baseline Pixel CFLOW,topk0.05,0.6338,0.4585,0.4754
+vari-grip,32,Z-Score Sum,max,0.9776,0.9409,0.8889
+vari-grip,32,Rank Average,max,0.8729,0.7800,0.7143
+vari-grip,32,MinMax Sum (a=0.25),max,0.9768,0.9394,0.8889
+vari-grip,32,MinMax Sum (a=0.50),max,0.9770,0.9401,0.8889
+vari-grip,32,MinMax Sum (a=0.75),max,0.9770,0.9401,0.8889
+vari-grip,32,Z-Score Sum,topk0.05,0.9772,0.9397,0.8889
+vari-grip,32,Rank Average,topk0.05,0.8749,0.7829,0.7246
+vari-grip,32,MinMax Sum (a=0.25),topk0.05,0.9768,0.9394,0.8889
+vari-grip,32,MinMax Sum (a=0.50),topk0.05,0.9770,0.9401,0.8889
+vari-grip,32,MinMax Sum (a=0.75),topk0.05,0.9770,0.9401,0.8889

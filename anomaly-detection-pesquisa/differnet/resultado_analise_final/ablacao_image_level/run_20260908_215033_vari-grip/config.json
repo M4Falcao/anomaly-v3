@@ -1,0 +1,16 @@
+{
+    "class_name": "vari-grip",
+    "dataset": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-detection-dataset\\insplad-seg\\insplad-seg",
+    "se_checkpoint": null,
+    "seed": 42,
+    "val_fraction": 0.4,
+    "limit": null,
+    "top_n": 10,
+    "select_metric": "image_auroc",
+    "n_transforms": "1,4,8,16,32,64",
+    "pads": "0,64,112",
+    "pad_modes": "reflect,replicate",
+    "level_sets": "012",
+    "masking_modes": "zero,mean_impute",
+    "z_score_modes": "mean,max,topk_0.1,topk_0.05"
+}
