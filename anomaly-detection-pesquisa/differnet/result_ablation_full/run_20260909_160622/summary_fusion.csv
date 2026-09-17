@@ -1,0 +1,14 @@
+n_transforms,method,pixel_agg,auroc,ap,f1
+32,Baseline Image (SEDifferNet),N/A,0.9502,0.7922,0.7675
+32,Z-Score Sum,max,0.9498,0.7900,0.7682
+32,Z-Score Sum,topk0.05,0.9497,0.7904,0.7679
+32,MinMax Sum (a=0.75),topk0.05,0.9362,0.7658,0.7390
+32,MinMax Sum (a=0.75),max,0.9361,0.7656,0.7390
+32,MinMax Sum (a=0.50),topk0.05,0.9067,0.6701,0.6798
+32,MinMax Sum (a=0.50),max,0.9061,0.6671,0.6784
+32,Rank Average,topk0.05,0.8892,0.6763,0.6395
+32,Rank Average,max,0.8879,0.6739,0.6374
+32,MinMax Sum (a=0.25),topk0.05,0.8647,0.5555,0.5925
+32,MinMax Sum (a=0.25),max,0.8636,0.5512,0.5946
+32,Baseline Pixel CFLOW,topk0.05,0.7038,0.3445,0.4331
+32,Baseline Pixel CFLOW,max,0.7024,0.3426,0.4311

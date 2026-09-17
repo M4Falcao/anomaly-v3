@@ -1,0 +1,14 @@
+class,n_transforms,method,pixel_agg,auroc,ap,f1
+lightning-rod-suspension,32,Baseline Image (SEDifferNet),N/A,0.9907,0.9795,0.9318
+lightning-rod-suspension,32,Baseline Pixel CFLOW,max,0.6929,0.3915,0.5487
+lightning-rod-suspension,32,Baseline Pixel CFLOW,topk0.05,0.6923,0.3922,0.5439
+lightning-rod-suspension,32,Z-Score Sum,max,0.9900,0.9782,0.9318
+lightning-rod-suspension,32,Rank Average,max,0.9243,0.8579,0.7857
+lightning-rod-suspension,32,MinMax Sum (a=0.25),max,0.7503,0.4649,0.5905
+lightning-rod-suspension,32,MinMax Sum (a=0.50),max,0.8216,0.5995,0.6538
+lightning-rod-suspension,32,MinMax Sum (a=0.75),max,0.9268,0.8476,0.7872
+lightning-rod-suspension,32,Z-Score Sum,topk0.05,0.9900,0.9782,0.9318
+lightning-rod-suspension,32,Rank Average,topk0.05,0.9243,0.8585,0.7857
+lightning-rod-suspension,32,MinMax Sum (a=0.25),topk0.05,0.7505,0.4641,0.5849
+lightning-rod-suspension,32,MinMax Sum (a=0.50),topk0.05,0.8222,0.6046,0.6538
+lightning-rod-suspension,32,MinMax Sum (a=0.75),topk0.05,0.9262,0.8473,0.7872
