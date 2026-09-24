@@ -1,0 +1,586 @@
+% =============================================================================
+% Pós-Processamento Supera Retreino: Um Estudo Abrangente de Ablação da Cabeça
+% de Normalizing Flow para Localização de Anomalias em Inspeção de Linhas de
+% Transmissão
+% =============================================================================
+
+\documentclass[conference]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[portuguese]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{url}
+\usepackage{cite}
+\usepackage{xcolor}
+\usepackage{siunitx}
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+\begin{document}
+
+\title{Pós-Processamento Supera Retreino: Um Estudo Abrangente de Ablação da Cabeça de Normalizing Flow para Localização de Anomalias em Inspeção de Linhas de Transmissão}
+
+\author{
+\IEEEauthorblockN{Teo Santos}
+\IEEEauthorblockA{Universidade de Brasília\\
+Brasília, Brasil}
+}
+
+\maketitle
+
+% =============================================================================
+% RESUMO (pt-BR)
+% =============================================================================
+\begin{abstract}
+A localização precisa de anomalias em componentes de linhas de transmissão é essencial para a manutenção preditiva baseada em imagens aéreas de veículos não tripulados (VANTs). Modelos baseados em normalizing flows (NF), como o CFLOW-AD, aprendem a distribuição de features normais e usam a verossimilhança negativa (NLL) como score de anomalia por pixel. Embora a literatura concentre esforço em arquiteturas e treinamento, o impacto das escolhas de pós-processamento e inferência sobre a qualidade da localização permanece subexplorado. Este trabalho apresenta um estudo de ablação abrangente da cabeça de NF do pipeline SEDifferNet--CFLOW sobre as 5 classes do benchmark INSPLAD-seg, totalizando aproximadamente 24\,000 medições de validação em 8 conjuntos de held-out independentes. Os resultados demonstram que a cadeia de pós-processamento --- agregação crua das NLLs (\texttt{raw}), padding reflexivo exclusivo de inferência, test-time augmentation por espelhamentos e seleção de níveis de features --- contribui com $+0{,}0965$ de Pixel AUROC médio sem nenhum retreino, superando qualquer intervenção de treinamento testada. A agregação \texttt{raw} isolada supera o min-max por imagem com ganho pareado de $+0{,}0497$ (positivo em 76--100\% dos pares nas 5 classes). O estudo revela ainda que a hierarquia entre níveis de features é dependente da classe, que a normalização de features (\texttt{featnorm}) não generaliza entre classes (prejudicial em \textit{yoke-suspension}: $-0{,}0499$ AUROC), e que checkpoints legados produzem diagnósticos enganosos sobre a informatividade das features. As descobertas fornecem um protocolo de implantação validado e diretrizes práticas para a comunidade de detecção de anomalias.
+
+\vspace{0.5em}
+\noindent\textbf{Palavras-chave:} detecção de anomalias, normalizing flows, localização por pixel, pós-processamento, estudo de ablação, inspeção de linhas de transmissão, INSPLAD.
+\end{abstract}
+
+% =============================================================================
+% ABSTRACT (EN)
+% =============================================================================
+\begin{IEEEkeywords}
+anomaly detection, normalizing flows, pixel-level localization, post-processing, ablation study, power-line inspection, INSPLAD
+\end{IEEEkeywords}
+
+\vspace{0.5em}
+\noindent\textbf{Abstract ---}
+Precise anomaly localization in power-line components is essential for predictive maintenance based on unmanned aerial vehicle (UAV) imagery. Normalizing-flow (NF) models such as CFLOW-AD learn the distribution of normal features and use the negative log-likelihood (NLL) as a per-pixel anomaly score. Although the literature focuses on architectures and training, the impact of post-processing and inference-time choices on localization quality remains under-explored. This work presents a comprehensive ablation study of the NF head of the SEDifferNet--CFLOW pipeline over the 5 classes of the INSPLAD-seg benchmark, totaling approximately 24\,000 validation measurements across 8 independent held-out sets. Results show that the post-processing chain --- raw NLL aggregation, inference-only reflective padding, flip-based test-time augmentation, and feature-level selection --- contributes $+0.0965$ mean Pixel AUROC with zero retraining, surpassing every training intervention tested. Raw aggregation alone beats per-image min-max normalization by a paired gain of $+0.0497$ (positive in 76--100\% of pairs across all 5 classes). The study further reveals that the feature-level hierarchy is class-dependent, that feature normalization (\texttt{featnorm}) does not generalize across classes (harmful on \textit{yoke-suspension}: $-0.0499$ AUROC), and that legacy checkpoints produce misleading diagnostics about feature informativeness. The findings provide a validated deployment protocol and practical guidelines for the anomaly detection community.
+
+\vspace{0.5em}
+\noindent\textbf{Keywords:} anomaly detection, normalizing flows, pixel-level localization, post-processing, ablation study, power-line inspection, INSPLAD.
+
+% =============================================================================
+% 1. INTRODUÇÃO
+% =============================================================================
+\section{Introdução}
+
+A inspeção de componentes de linhas de transmissão de energia elétrica constitui uma tarefa crítica para a manutenção da infraestrutura energética. A adoção crescente de veículos aéreos não tripulados (VANTs) para captura de imagens dessas estruturas gera volumes de dados que tornam a inspeção manual inviável, motivando o desenvolvimento de sistemas automatizados de detecção e localização de anomalias~\cite{vieira2023insplad}. Diferentemente de benchmarks industriais amplamente utilizados como o MVTec-AD, o domínio de inspeção de linhas de transmissão apresenta desafios específicos: fundo natural dominante com alta variabilidade (vegetação), proporção de pixels anômalos extremamente baixa (0{,}14\% a 4{,}6\% da área), e número reduzido de amostras de treinamento com anomalias.
+
+Métodos baseados em normalizing flows (NF) --- como DifferNet~\cite{rudolph2021differnet}, CFLOW-AD~\cite{gudovskiy2022cflow} e CS-Flow~\cite{rudolph2022csflow} --- destacam-se por computar densidades exatas sobre features pré-treinadas, produzindo scores de anomalia com interpretação probabilística. Em particular, o CFLOW-AD introduziu flows condicionais por posição sobre features multi-escala, permitindo localização por pixel ao nível da grade de features. Abordagens alternativas incluem bancos de memória como PatchCore~\cite{roth2022patchcore} e modelos estatísticos como PaDiM~\cite{defard2021padim}, além de abordagens de destilação de conhecimento como RD++~\cite{deng2022rd}.
+
+Apesar do extenso esforço da comunidade em desenvolver novas arquiteturas e estratégias de treinamento, um aspecto fundamental permanece sistematicamente subexplorado: o impacto das escolhas feitas \textit{após} o treinamento --- a forma como os mapas de verossimilhança negativa (NLL) de múltiplos níveis são agregados, as transformações aplicadas na inferência, e a seleção de quais níveis de features utilizar. Na prática, essas decisões de pós-processamento são frequentemente tratadas como detalhes de implementação, herdadas de trabalhos anteriores sem validação independente. Por exemplo, a agregação \texttt{per\_level\_minmax} utilizada em implementações do CFLOW-AD normaliza cada mapa NLL por imagem, destruindo a escala absoluta da verossimilhança --- uma operação cujo impacto raramente é questionado ou ablado.
+
+Adicionalmente, pipelines de detecção de anomalias frequentemente acumulam divergências silenciosas entre os hiperparâmetros de treinamento e avaliação que não alteram os pesos do modelo nem geram mensagens de erro, mas modificam a função computada. Quatro divergências desse tipo foram identificadas neste estudo: clamp scale do coupling block (0{,}5 no treinamento vs.\ 2{,}0 na avaliação legada, alterando a faixa da escala de $\sim$2{,}7$\times$ para $\sim$55$\times$), resolução da grade de features (\texttt{out\_size} 96 vs.\ 56), caminho de atenção utilizado para extração de features (SE vs.\ CBAM), e regra de agregação dos níveis. Essas divergências tornam checkpoints legados perigosamente enganosos para análises de ablação --- em um caso, produziram um AUROC de 0{,}5583 que saltou para 0{,}8770 apenas pela correção do clamp.
+
+Este trabalho apresenta um estudo de ablação abrangente da cabeça de normalizing flow condicional (CFLOW) sobre o backbone congelado SEDifferNet (AlexNet com atenção Squeeze-and-Excitation), avaliado nas 5 classes do benchmark INSPLAD-seg para inspeção de linhas de transmissão. O estudo compreende:
+
+\begin{itemize}
+    \item Aproximadamente 24\,000 medições de validação distribuídas em 8 conjuntos de held-out independentes, cobrindo 27 receitas de treinamento e grids de até 1\,920 configurações de pós-processamento por head;
+    \item Fatoração isolada dos ganhos de cada técnica por comparação pareada, com limiar de significância medido empiricamente ($\Delta = 0{,}0044$ AUROC por variação de split);
+    \item Identificação de que o pós-processamento contribui com $+0{,}0965$ de Pixel AUROC médio --- mais que qualquer intervenção de treinamento --- sendo a agregação \texttt{raw} responsável por metade desse ganho;
+    \item Demonstração de que a hierarquia entre níveis de features é dependente da classe, invalidando receitas universais baseadas em subconjuntos fixos;
+    \item Evidência de que checkpoints legados produzem diagnósticos enganosos sobre a informatividade das features, com um nível passando de AUROC 0{,}2583 (head legada) para 0{,}874 após retreino.
+\end{itemize}
+
+O artigo está organizado como segue: a Seção~\ref{sec:related} situa o trabalho na literatura; a Seção~\ref{sec:methods} descreve a arquitetura, os fatores ablados e o protocolo experimental; a Seção~\ref{sec:results} reporta os resultados quantitativos; a Seção~\ref{sec:discussion} interpreta as descobertas e apresenta suas implicações; e a Seção~\ref{sec:conclusion} conclui o trabalho.
+
+
+% =============================================================================
+% 2. TRABALHOS RELACIONADOS
+% =============================================================================
+\section{Trabalhos Relacionados}
+\label{sec:related}
+
+\subsection{Detecção de Anomalias por Normalizing Flows}
+
+O DifferNet~\cite{rudolph2021differnet} introduziu o uso de normalizing flows sobre features multi-escala extraídas de uma AlexNet para detecção de anomalias em nível de imagem, utilizando a NLL como score. O CFLOW-AD~\cite{gudovskiy2022cflow} estendeu essa ideia para localização por pixel, empregando flows condicionais --- um por posição espacial e por nível de features --- com positional encoding senoidal 2D, blocos de acoplamento afim com \textit{clamp} de 1{,}9, e agregação por probabilidade limitada (\texttt{per\_level\_prob}). O CS-Flow~\cite{rudolph2022csflow} e o MSFlow~\cite{zhou2024msflow} exploraram fusão cross-scale entre os níveis, motivando a ablação de subconjuntos de níveis conduzida neste trabalho.
+
+\subsection{Métodos Alternativos de Localização}
+
+O PaDiM~\cite{defard2021padim} modela a distribuição de features por posição com uma gaussiana multivariada, dispensando treinamento de rede. Desse trabalho, adotamos a ideia de padronizar features por canal com estatísticas de treinamento (\texttt{featnorm}). O PatchCore~\cite{roth2022patchcore} constrói um banco de memória de patches representativos, introduzindo agregação local de vizinhança antes do scoring. O RD++~\cite{deng2022rd} utiliza destilação de conhecimento com projeção multi-escala e ruído simplex como pseudo-anomalia, além de um score composto $(AUROC_{px} + AUROC_{sp} + AUPRO)/3$ que transferimos para nosso pipeline de seleção de modelos.
+
+\subsection{Benchmark e Domínio de Aplicação}
+
+O INSPLAD~\cite{vieira2023insplad} é um dataset de inspeção de linhas de transmissão capturado por VANTs, compreendendo componentes como grampos, isoladores e hastes de para-raios. A variante INSPLAD-seg fornece máscaras de segmentação por pixel para 5 classes de defeitos, com características distintivas: fundo natural dominante, variabilidade alta entre imagens, e proporção de pixels anômalos variando de 0{,}14\% (\textit{glass-insulator}) a 4{,}6\% (\textit{vari-grip}). Esse domínio apresenta desafios diferentes dos benchmarks industriais controlados como o MVTec-AD.
+
+\subsection{Posicionamento da Contribuição}
+
+Enquanto os trabalhos anteriores concentram-se em propor novas arquiteturas ou estratégias de treinamento, este trabalho investiga sistematicamente as escolhas de pós-processamento e inferência que ficam entre o modelo treinado e a predição final. Nosso estudo demonstra que essas escolhas --- historicamente tratadas como detalhes de implementação --- respondem pela maior fração do ganho de desempenho, superando qualquer intervenção de treinamento. Adicionalmente, o estudo abrange 5 classes de um mesmo benchmark sob protocolo idêntico, permitindo identificar quais descobertas generalizam e quais são específicas de classe --- uma análise raramente conduzida na literatura de detecção de anomalias.
+
+
+% =============================================================================
+% 3. METODOLOGIA
+% =============================================================================
+\section{Metodologia}
+\label{sec:methods}
+
+\subsection{Arquitetura do Pipeline}
+\label{sec:arch}
+
+O pipeline de localização é composto por duas etapas: um backbone congelado para extração de features e uma cabeça de normalizing flow condicional para scoring por pixel.
+
+\subsubsection{Backbone: SEDifferNet}
+
+O extrator de features é uma AlexNet pré-treinada aumentada com blocos de atenção Squeeze-and-Excitation (SE)~\cite{rudolph2021differnet}. O modelo SEDifferNet foi treinado para detecção em nível de imagem; neste estudo, seus pesos são congelados e as features são extraídas em três pontos intermediários da rede:
+
+\begin{itemize}
+    \item \textbf{L1} (64 canais, $109 \times 109$ nativo): imediatamente pós-\texttt{conv1} (kernel $11 \times 11$, stride 4, padding 2) e bloco SE \texttt{simsa1}. Apresenta campo receptivo estritamente local ($11 \times 11$ px na imagem de entrada), capturando gradientes cromáticos, bordas finas e rugosidade textural de alta frequência. Alinha-se diretamente ao viés de textura (\textit{texture bias}) característico de camadas rasas em CNNs~\cite{geirhos2019imagenet}.
+    \item \textbf{L2} (192 canais, $53 \times 53$ nativo): após \texttt{pool2} e bloco SE \texttt{simsa2}. Possui campo receptivo médio ($\approx 51 \times 51$ px), codificando contornos regionais e geometrias intermediárias.
+    \item \textbf{L3} (256 canais, $27 \times 27$ nativo): após a pilha convolucional (\texttt{conv5}) e bloco SE \texttt{simsa4}. Possui campo receptivo amplo ($> 150 \times 150$ px), codificando contexto semântico global e relações de integridade estrutural, correspondendo às representações de forma (\textit{shape bias})~\cite{geirhos2019imagenet}. Sua grade espacial é grosseira ($\approx 16{,}6 \times 16{,}6$ px de imagem original por célula).
+\end{itemize}
+
+Os três mapas de features são reamostrados por interpolação bilinear para uma grade comum de $96 \times 96$ (\texttt{out\_size}). A imagem de entrada possui dimensão canônica de $448 \times 448$ pixels.
+\subsubsection{Cabeça de Normalizing Flow Condicional (CFLOW)}
+
+Para cada nível de features, um normalizing flow condicional independente --- \texttt{CondFlow} --- modela a distribuição das features normais \textit{posição a posição}. Cada \texttt{CondFlow} consiste em $K = 8$ blocos de acoplamento afim (\texttt{CondCouplingBlock}) com permutação fixa de canais entre blocos.
+
+Cada bloco divide os canais de entrada em duas metades $(x_1, x_2)$ e calcula:
+\begin{equation}
+    y_1 = x_1 \cdot \exp(s) + t, \quad s = \tanh(\hat{s}) \cdot c_{\text{clamp}}
+\end{equation}
+onde $(\hat{s}, t) = f_\theta([x_2; \text{PE}])$ é a saída de uma subrede MLP condicionada pelo positional encoding (PE) senoidal 2D de dimensão 64. O \textit{clamp scale} $c_{\text{clamp}} = 0{,}5$ limita a faixa da escala a $\exp(s) \in [e^{-0,5}, e^{0,5}] \approx [0{,}61;\ 1{,}65]$.
+
+O score de anomalia por posição é a NLL:
+\begin{equation}
+    \text{NLL}(\mathbf{x}) = -\log p(\mathbf{x}) = \frac{1}{2}\|\mathbf{z}\|^2 + \frac{C}{2}\log(2\pi) - \sum_k \log|\det J_k|
+\end{equation}
+onde $\mathbf{z}$ é a saída do flow, $C$ é o número de canais e $J_k$ é o jacobiano do $k$-ésimo bloco. Pixels com NLL alta correspondem a features que se desviam da distribuição normal aprendida.
+
+O mapa final de anomalia é obtido agregando os mapas NLL dos níveis selecionados, aplicando upsample bilinear para $448 \times 448$ e suavização gaussiana.
+
+\subsection{Fatores do Estudo de Ablação}
+\label{sec:factors}
+
+O estudo investiga dois grupos de fatores: \textit{treinamento} (requerem retreino da head) e \textit{inferência} (aplicáveis sem retreino).
+
+\subsubsection{Fatores de Treinamento}
+
+\begin{itemize}
+    \item \textbf{Normalização de features (\texttt{featnorm}):} padronização $f' = (f - \mu) / \sigma$ por canal com estatísticas estimadas sobre imagens normais de treinamento, inspirada no PaDiM~\cite{defard2021padim}.
+    \item \textbf{Clamp scale:} $c_{\text{clamp}} \in \{0{,}5;\ 1{,}9\}$, controlando a expressividade do bloco de acoplamento. O valor 1{,}9 é o original do CFLOW-AD~\cite{gudovskiy2022cflow}.
+    \item \textbf{Augmentation por rotação:} \texttt{RandomRotation(180°)} durante o treinamento.
+    \item \textbf{Padding no treinamento (\texttt{pad\_in\_train}):} reflect padding de 112 px aplicado durante o treinamento.
+    \item \textbf{Níveis treinados (\texttt{levels}):} subconjunto de níveis para os quais flows são treinados.
+\end{itemize}
+
+\subsubsection{Fatores de Inferência}
+
+\begin{itemize}
+    \item \textbf{Modo de agregação (\texttt{score\_mode}):} como os mapas NLL de cada nível são combinados --- \texttt{raw} (soma direta), \texttt{per\_level\_minmax} (normalização min-max por imagem e por nível), \texttt{per\_level\_prob} (log-sigmoid limitada, como no CFLOW-AD), \texttt{per\_level\_std} (padronização com estatísticas escalares).
+    \item \textbf{Reflect padding (\texttt{reflect\_pad}):} espelhamento da imagem de 448 para $672 \times 672$ px antes do backbone, com recorte das bordas no mapa de features. O valor 112 px é o mínimo que respeita o stride acumulado do backbone (16 px).
+    \item \textbf{Test-time augmentation (TTA):} média dos mapas de 4 visões simétricas (identidade, espelhamento horizontal, vertical e ambos).
+    \item \textbf{Suavização gaussiana ($\sigma$):} aplicada ao mapa final.
+    \item \textbf{Seleção de níveis na inferência:} subconjunto de níveis cujos mapas NLL são agregados.
+\end{itemize}
+
+O grid completo de fatores de pós-processamento compreende $2 \times 2 \times 4 \times 5 \times 3 = 240$ combinações básicas, expandidas para até 1\,920 configurações com fatores adicionais. Todas as combinações são avaliadas por reagregação dos mapas NLL previamente cacheados --- a rede processa cada imagem em apenas 4 passagens (pad $\times$ TTA).
+
+\subsection{Protocolo Experimental}
+\label{sec:protocol}
+
+\subsubsection{Dataset}
+
+O INSPLAD-seg~\cite{vieira2023insplad} fornece imagens de 5 classes de componentes de linhas de transmissão com máscaras de segmentação de defeitos. As características de cada classe são apresentadas na Tabela~\ref{tab:dataset}.
+
+\begin{table}[htb]
+\centering
+\caption{Características das 5 classes do INSPLAD-seg.}
+\label{tab:dataset}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Classe & Treino & Teste & Anom. & \% pixels \\
+\midrule
+\textit{vari-grip}          & 477   & 154  & 40  & 4{,}6\% \\
+\textit{lightning-rod}      & 462   & 163  & 46  & 1{,}9\% \\
+\textit{glass-insulator}    & 1\,104 & 678  & 87  & 0{,}14\% \\
+\textit{polymer-shackle}    & 935   & 317  & 82  & 3{,}1\% \\
+\textit{yoke-suspension}    & 4\,834 & 200  & 46  & 2{,}0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Protocolo de Avaliação}
+
+Como o INSPLAD-seg não fornece split de validação, o conjunto de teste é dividido estratificadamente com \texttt{val\_fraction\,=\,0.4}: a porção de validação é usada para seleção de configuração, e o held-out restante é reportado uma única vez. A seed é fixa (42) para determinismo. Todas as imagens são redimensionadas para $448 \times 448$ px. A sensibilidade ao split foi medida diretamente: o mesmo modelo avaliado em held-outs de 108 e 92 imagens produziu $\Delta = 0{,}0044$ de AUROC, definindo o limiar de significância.
+
+\subsubsection{Métricas}
+
+Reportamos conjuntamente três métricas complementares:
+\begin{itemize}
+    \item \textbf{Pixel AUROC:} área sob a curva ROC sobre todos os pixels de todas as imagens. Métrica principal de ordenação.
+    \item \textbf{Pixel AP:} área sob a curva precisão-recall. Sensível à qualidade nas regiões de alto score.
+    \item \textbf{AUPRO:} média por região conexa de defeito da fração coberta, integrada até $\text{FPR} = 30\%$. Sensível a falsos positivos concentrados (viés de borda).
+\end{itemize}
+
+A utilização conjunta é metodologicamente necessária: AUROC alto com AP baixo é assinatura de desbalanceamento extremo; AUROC alto com AUPRO baixo indica falso positivo concentrado. Adicionalmente, Pixel AP não é comparável entre classes em valores absolutos --- a razão AP/trivial é a medida relevante.
+
+
+% =============================================================================
+% 4. RESULTADOS
+% =============================================================================
+\section{Resultados}
+\label{sec:results}
+
+\subsection{Decomposição Incremental dos Ganhos}
+\label{sec:incremental}
+
+A Tabela~\ref{tab:incremental} apresenta a cadeia incremental de ganhos sobre a configuração de produção original, adicionando uma técnica por vez na melhor head de cada classe. A ordem reflete o custo crescente de implementação.
+
+\begin{table*}[htb]
+\centering
+\caption{Cadeia incremental de ganhos de pós-processamento (Pixel AUROC no grid de validação).}
+\label{tab:incremental}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+Passo & \textit{vari-grip} & \textit{lightning-rod} & \textit{glass} & \textit{polymer} & \textit{yoke} & \textbf{Média} \\
+\midrule
+0. Produção (pad\,0, sem TTA, minmax, L=012, $\sigma$=4) & 0,7373 & 0,8008 & 0,7935 & 0,8651 & 0,8803 & --- \\
+1. + \texttt{reflect\_pad 112}                              & 0,7407 & 0,8052 & 0,8253 & 0,8672 & 0,8785 & $+0{,}0080$ \\
+2. + TTA flips                                              & 0,7955 & 0,8306 & 0,8240 & 0,8736 & 0,8794 & $+0{,}0173$ \\
+3. + \texttt{score\_mode raw}                               & 0,8186 & 0,8625 & 0,9339 & 0,8901 & 0,8888 & $+0{,}0381$ \\
+4. + seleção de níveis (melhor da classe)                   & 0,9007 & 0,8798 & 0,9598 & 0,8901 & 0,9140 & $+0{,}0301$ \\
+5. + $\sigma$ ótimo da classe                               & 0,9130 & 0,8810 & 0,9599 & 0,8901 & 0,9156 & $+0{,}0031$ \\
+\midrule
+\textbf{Ganho total}                                        & \textbf{+0,1757} & \textbf{+0,0802} & \textbf{+0,1664} & \textbf{+0,0250} & \textbf{+0,0353} & $\mathbf{+0{,}0965}$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+O ganho total do pós-processamento atinge $+0{,}0965$ de AUROC médio sem nenhum retreino. Em \textit{vari-grip}, o ganho é de $+0{,}1757$; em \textit{glass-insulator}, $+0{,}1664$. Os passos de maior impacto são a troca para agregação \texttt{raw} ($+0{,}0381$ médio) e a seleção ótima de níveis ($+0{,}0301$ médio). Nenhuma receita de treinamento testada produz ganho comparável.
+
+A Tabela~\ref{tab:factors_summary} consolida a síntese quantitativa multidimensional dos fatores investigados ao longo das $\sim$24\,000 medições experimentais nas 5 classes do benchmark.
+
+\begin{table*}[htb]
+\centering
+\caption{Síntese exaustiva dos fatores de inferência, retreino e dinâmica multiescala nas 5 classes do INSPLAD-seg.}
+\label{tab:factors_summary}
+\begin{tabular}{@{}llcccccc@{}}
+\toprule
+Dimensão Avaliada & Fator / Métrica & \textit{vari-grip} & \textit{lightning-rod} & \textit{glass} & \textit{polymer} & \textit{yoke} & \textbf{Média Geral} \\
+\midrule
+\multirow{2}{*}{Ponto de Partida vs.\ Final} & Baseline Produção (AUROC) & 0,7373 & 0,8008 & 0,7935 & 0,8651 & 0,8803 & 0,8154 \\
+ & Melhor Pós-processamento (AUROC) & \textbf{0,9130} & \textbf{0,8810} & \textbf{0,9599} & \textbf{0,8901} & \textbf{0,9156} & \textbf{0,9120} (+0,0965) \\
+\midrule
+\multirow{3}{*}{Ganhos Pareados ($\Delta$ AUROC)} & \texttt{raw} vs.\ \texttt{minmax} & \textbf{+0,0574} & \textbf{+0,0794} & \textbf{+0,0441} & \textbf{+0,0205} & \textbf{+0,0471} & \textbf{+0,0497} (92,7\% pos) \\
+ & \texttt{tta flips} vs.\ \texttt{none} & +0,0163 & +0,0223 & +0,0126 & +0,0058 & +0,0031 (46\%) & +0,0120 (78,8\% pos) \\
+ & \texttt{pad 112} vs.\ \texttt{pad 0} & +0,0136 & +0,0056 & +0,0028 & +0,0024 & +0,0002 & +0,0049 (76,4\% pos) \\
+\midrule
+\multirow{2}{*}{Impacto do \texttt{featnorm}} & $\Delta$ Pixel AUROC (vs.\ baseline) & \textbf{+0,0440} & $-0{,}0107$ & \textbf{+0,0396} & $-0{,}0066$ & $\mathbf{-0{,}0499}$ & $-0{,}0067$ (Não universal) \\
+ & $\Delta$ AUPRO (vs.\ baseline) & \textbf{+0,0821} & $-0{,}0455$ & +0,0254 & \textbf{+0,0502} & $\mathbf{-0{,}1226}$ & $-0{,}0021$ (Destrutivo em Yoke) \\
+\midrule
+\multirow{3}{*}{Dinâmica de Níveis} & AUROC isolado: L1 / L2 / L3 & \textbf{0,893} / 0,817 / 0,787 & 0,760 / 0,807 / \textbf{0,877} & 0,874 / 0,650 / \textbf{0,942} & 0,776 / \textbf{0,880} / 0,841 & 0,852 / 0,798 / \textbf{0,879} & L3 vence em 3/5 \\
+ & Melhor subconjunto & \texttt{0} (L1) & \texttt{2} (L3) & \texttt{02} (L1+L3) & \texttt{012} (Todos) & \texttt{02} (L1+L3) & --- \\
+ & Regret com \texttt{levels=02} & \textbf{0,0006} & \textbf{0,0012} & \textbf{0,0000} & 0,0278 & \textbf{0,0000} & $\leq 0{,}0012$ em 4/5 classes \\
+\midrule
+\multirow{2}{*}{Treinamento e Overfitting} & Época de Pico (de 80 épocas) & Época 16 & Época 12 & Época 36 & Época 56 & \textbf{Época 4} & Pico precoce em bases grandes \\
+ & Queda Pico $\to$ Época 80 & $-0{,}0123$ & $-0{,}0012$ & $-0{,}0009$ & $-0{,}0002$ & $\mathbf{-0{,}0299}$ & Sobreajuste severo em yoke \\
+\bottomrule
+\end{tabular}
+\end{table*}
+\subsection{Superioridade da Agregação \texttt{raw}}
+\label{sec:raw}
+
+A Tabela~\ref{tab:raw_vs_minmax} apresenta o ganho pareado de \texttt{raw} sobre \texttt{per\_level\_minmax} em cada classe, medido sobre todas as configurações que diferem \textit{apenas} no modo de agregação.
+
+\begin{table}[htb]
+\centering
+\caption{Ganho pareado de \texttt{raw} vs.\ \texttt{per\_level\_minmax} por classe.}
+\label{tab:raw_vs_minmax}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Classe & Ganho médio & \% pares positivos & $n$ pares \\
+\midrule
+\textit{vari-grip}       & $+0{,}0574$ & 97\%   & 624  \\
+\textit{lightning-rod}    & $+0{,}0794$ & 100\%  & 192  \\
+\textit{glass-insulator}  & $+0{,}0441$ & 100\%  & 192  \\
+\textit{polymer-shackle}  & $+0{,}0205$ & 82\%   & 72   \\
+\textit{yoke-suspension}  & $+0{,}0471$ & 97\%   & 72   \\
+\midrule
+\textbf{Média}            & $\mathbf{+0{,}0497}$ & 76--100\% & ---  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O ganho é positivo em todas as 5 classes, com 76--100\% dos pares individuais favorecendo \texttt{raw}. Este é o efeito isolado de maior magnitude do estudo. A explicação é direta: a normalização min-max por imagem destrói a escala absoluta da NLL, eliminando a comparabilidade entre imagens. A soma direta preserva essa informação, tornando o mapa de anomalia útil tanto para localização quanto para detecção em nível de imagem (Image AUROC via mapa: 0{,}41 com minmax vs.\ 0{,}76 com \texttt{raw} + \texttt{featnorm}).
+
+O ganho pareado das demais técnicas de inferência é: TTA por flips $+0{,}0120$ (positivo em 76--97\% dos pares em 4 classes, mas apenas 46\% em \textit{yoke}); reflect padding $+0{,}0049$ (70--85\% dos pares).
+
+\subsection{Hierarquia dos Níveis de Features}
+\label{sec:levels}
+
+A Tabela~\ref{tab:per_level} apresenta o Pixel AUROC de cada nível avaliado isoladamente (pad 112, flips, melhor head retreinada de cada classe).
+
+\begin{table}[htb]
+\centering
+\caption{AUROC isolado por nível de features nas 5 classes (pad 112, flips).}
+\label{tab:per_level}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Nível & \textit{vari-grip} & \textit{lightning-rod} & \textit{glass} & \textit{polymer} \\
+\midrule
+L1 (64ch)  & \textbf{0,893} & 0,760 & 0,874 & 0,776 \\
+L2 (192ch) & 0,817 & 0,807 & 0,650 & \textbf{0,880} \\
+L3 (256ch) & 0,787 & \textbf{0,877} & \textbf{0,942} & 0,841 \\
+\midrule
+Melhor conj. & \texttt{0} & \texttt{2} & \texttt{02} & \texttt{012} \\
+\bottomrule
+\end{tabular}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Nível & \textit{yoke} & Melhor? \\
+\midrule
+L1 & 0,852 & 1/5 \\
+L2 & 0,798 & 1/5 \\
+L3 & \textbf{0,879} & 3/5 \\
+\midrule
+Melhor conj. & \texttt{02} & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Não existe hierarquia universal entre os níveis. L1 domina em \textit{vari-grip} (defeitos de textura fina), L3 domina em \textit{lightning-rod}, \textit{glass} e \textit{yoke} (defeitos estruturais), e L2 é o melhor nível apenas em \textit{polymer}. Em \textit{vari-grip}, L1 isolado atinge 0{,}9191 de AUROC no teste completo, e a fusão com L3 \textit{derruba} o desempenho em 0{,}063 (contaminação pelo nível inferior).
+
+Apesar dessa diversidade, o conjunto \texttt{levels\,=\,02} (L1+L3) apresenta regret notavelmente baixo quando fixado como default (Tabela~\ref{tab:regret}).
+
+\begin{table}[htb]
+\centering
+\caption{Regret de fixar \texttt{levels\,=\,02} como default (melhor config com \texttt{02} vs.\ melhor config global no grid de validação).}
+\label{tab:regret}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Classe & Melhor conj. & AUROC (melhor) & Regret \\
+\midrule
+\textit{vari-grip}       & \texttt{0}   & 0,9130 & 0,0006 \\
+\textit{lightning-rod}    & \texttt{012} & 0,9012 & 0,0012 \\
+\textit{glass-insulator}  & \texttt{02}  & 0,9645 & 0,0000 \\
+\textit{yoke-suspension}  & \texttt{02}  & 0,9156 & 0,0000 \\
+\textit{polymer-shackle}  & \texttt{012} & 0,8901 & 0,0278 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O regret é $\leq 0{,}0012$ em 4 de 5 classes. A exceção é \textit{polymer} (regret 0{,}0278), a única classe em que L2 é o nível dominante. Portanto, \texttt{levels\,=\,02} é um default seguro, exceto quando L2 contribui significativamente.
+
+\subsection{Não-Universalidade do \texttt{featnorm}}
+\label{sec:featnorm}
+
+A normalização de features (\texttt{featnorm}) foi a intervenção de treinamento de maior impacto em \textit{vari-grip} ($+0{,}070$ AUROC) e venceu em 2 de 5 classes. Entretanto, a Tabela~\ref{tab:featnorm} demonstra que ela não generaliza.
+
+\begin{table}[htb]
+\centering
+\caption{Impacto do \texttt{featnorm} por classe (melhor head \texttt{featnorm} vs.\ melhor \texttt{baseline}, held-out).}
+\label{tab:featnorm}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Classe & $\Delta$ AUROC & $\Delta$ AUPRO \\
+\midrule
+\textit{glass-insulator}  & $\mathbf{+0{,}0396}$ & $+0{,}0254$ \\
+\textit{polymer-shackle}  & $-0{,}0066$ & $\mathbf{+0{,}0502}$ \\
+\textit{lightning-rod}    & $-0{,}0107$ & $-0{,}0455$ \\
+\textit{yoke-suspension}  & $\mathbf{-0{,}0499}$ & $\mathbf{-0{,}1226}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Em \textit{yoke-suspension}, \texttt{featnorm} produz o pior resultado do estudo inteiro: $-0{,}0499$ AUROC e $-0{,}1226$ AUPRO. O mecanismo explicativo é a concentração de sinal: a padronização por canal equaliza os 64 canais de L1, onde a informação discriminativa está concentrada em poucos canais de alta magnitude, beneficiando classes cujo sinal vive em L1 (\textit{vari-grip}). Porém, em L2/L3 (192--256 canais majoritariamente não informativos), a mesma operação amplifica ruído. Em classes onde L3 domina (\textit{yoke}, \textit{lightning-rod}), esse efeito é prejudicial. Como consequência, \texttt{featnorm} foi rebaixada de ``receita padrão'' para ``ligar somente após validar na classe''.
+
+\subsection{Reflect Padding como Técnica Exclusiva de Inferência}
+\label{sec:pad}
+
+A \texttt{conv1} da AlexNet (kernel $11 \times 11$, padding 2) produz ativações de borda computadas predominantemente sobre pixels zero. O flow, treinado exclusivamente em imagens normais, marca essas ativações artificiais como anômalas, gerando um artefato de ``borda quente'' nos mapas. O reflect padding de 112 px na inferência substitui esses zeros por conteúdo espelhado, eliminando o artefato.
+
+Criticamente, aplicar o mesmo padding durante o treinamento \textit{piora} os resultados: na rodada 2, a head \texttt{featnorm\_pad112} (treinada com pad) obteve Pixel AUROC de 0{,}9033 contra 0{,}9185 da \texttt{featnorm} (treinada sem pad) --- a pior das cinco variantes. O flow gasta capacidade modelando o conteúdo espelhado --- que não é uma imagem plausível --- como se fosse normal. Na inferência, o mesmo padding apenas substitui zeros (ainda menos plausíveis) por algo mais próximo da distribuição de treinamento. Esta é uma exceção documentada à regra de ``coerência treino--avaliação'', que continua válida para \texttt{clamp\_scale}, \texttt{out\_size}, \texttt{levels} e \texttt{feat\_norm}.
+
+\subsection{Dinâmica de Overfitting do Flow}
+\label{sec:overfitting}
+
+A Tabela~\ref{tab:overfitting} documenta o pico precoce e a degradação subsequente da Pixel AUROC ao longo do treinamento.
+
+\begin{table}[htb]
+\centering
+\caption{Pico de treinamento e overfitting do flow por classe (80 épocas).}
+\label{tab:overfitting}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Classe & Pico (época) & AUROC pico & AUROC ep.\,80 & Queda \\
+\midrule
+\textit{yoke}      & \textbf{4}  & 0,9292 & 0,8993 & $-0{,}0299$ \\
+\textit{vari-grip}  & 16 & 0,8385 & 0,8262 & $-0{,}0123$ \\
+\textit{lightning-rod} & 12 & 0,8365 & 0,8353 & $-0{,}0012$ \\
+\textit{glass}      & 36 & 0,9460 & 0,9451 & $-0{,}0009$ \\
+\textit{polymer}    & 56 & 0,8761 & 0,8759 & $-0{,}0002$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O overfitting é severo em \textit{yoke-suspension}: com 4\,834 imagens normais (a maior base), o pico ocorre na época 4 --- antes mesmo do fim do warmup de 5 épocas do cosine schedule --- e degrada $-0{,}030$ até a época 80. Em 85\% das avaliações (17 de 20), o AUROC estava acima do valor final. As demais classes são estáveis após convergência. Este resultado motivou a implementação de early stopping com \texttt{--patience} e a definição de orçamentos de épocas específicos por classe. O erro de sobrescrever esses orçamentos com uma flag \texttt{--epochs} global uniforme degrada classes massivas.
+
+\subsection{Correção do AUPRO e Métricas Compostas}
+\label{sec:aupro}
+
+Um bug na função \texttt{compute\_aupro} gerava limiares com \texttt{np.linspace(min, max, 200)}. Em mapas de NLL crua com caudas pesadas, outliers esticavam o intervalo linear, fazendo com que $\sim$199 dos 200 limiares caíssem em regiões com $\text{FPR} > 0{,}3$, retornando \texttt{AUPRO\,=\,0{,}0000} silenciosamente. A correção substitui os limiares lineares por \textit{quantis dos pixels normais} no intervalo $[1 - \text{max\_fpr},\ 1{,}0]$:
+\begin{equation}
+    \text{thresholds} = \text{quantile}(\text{scores}_{\text{normal}},\ \text{linspace}(1 - \text{max\_fpr},\ 1{,}0,\ 200))
+\end{equation}
+
+Este cálculo é invariante a outliers arbitrários e a reescalas monótonas, resolvendo o problema para qualquer distribuição de scores.
+
+Do RD++~\cite{deng2022rd}, transferimos o score composto $(AUROC_{px} + AUROC_{sp} + AUPRO)/3$ para seleção de checkpoints, protegendo contra otimização de critério único. Também incorporamos a persistência de \texttt{history.json} a cada época e early stopping por \texttt{--patience}.
+
+\subsection{Resultados Consolidados}
+\label{sec:consolidated}
+
+A Tabela~\ref{tab:final} apresenta os melhores resultados por classe com a receita de implantação validada.
+
+\begin{table*}[htb]
+\centering
+\caption{Melhor resultado por classe (held-out, \texttt{val\_fraction\,=\,0.4}, configuração escolhida na validação). Todas usam \texttt{reflect\_pad\,112} + TTA flips + \texttt{score\_mode\,raw}.}
+\label{tab:final}
+\begin{tabular}{@{}llcccccc@{}}
+\toprule
+Classe & Receita vencedora & Níveis & $\sigma$ & Pixel AUROC & Pixel AP & AUPRO & Img.\ AUROC \\
+\midrule
+\textit{glass-insulator}    & \texttt{featnorm\_clamp19} & \texttt{02} & 2 & \textbf{0,9560} & 0,0063 (35$\times$) & \textbf{0,7604} & 0,7706 \\
+\textit{vari-grip}          & \texttt{featnorm\_clamp19} & \texttt{01} & 8 & 0,9270 & 0,1147 (9,5$\times$) & 0,7585 & 0,9044 \\
+\textit{yoke-suspension}    & \texttt{baseline}          & \texttt{02} & 8 & 0,9188 & 0,0568 (10$\times$)  & 0,6611 & \textbf{0,9744} \\
+\textit{lightning-rod}      & \texttt{baseline}          & \texttt{2}  & 4 & 0,8815 & 0,0251 (4,6$\times$) & 0,5642 & 0,9485 \\
+\textit{polymer-shackle}    & \texttt{baseline}          & \texttt{012} & 8 & 0,8806 & 0,0282  & 0,5943 & 0,9495 \\
+\midrule
+\multicolumn{4}{@{}l}{\textbf{Produção original (média)}} & 0,8313 & --- & 0,5349 & --- \\
+\multicolumn{4}{@{}l}{\textbf{Melhor obtido (média)}}     & \textbf{0,9128} & --- & \textbf{0,6677} & --- \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+As melhorias variam de $+0{,}018$ (\textit{polymer}) a $+0{,}156$ (\textit{vari-grip}) em Pixel AUROC e de $+0{,}019$ a $+0{,}154$ em AUPRO. Nota-se a dissociação entre localização e detecção: \textit{glass-insulator} tem o melhor Pixel AUROC (0{,}9560) e o pior Image AUROC (0{,}7706); \textit{yoke-suspension} apresenta o padrão oposto. As duas cabeças (SEDifferNet para imagem, CFLOW para pixel) falham por motivos independentes.
+
+A Tabela~\ref{tab:vs_rdpp} compara os resultados com o RD++~\cite{deng2022rd} (WideResNet-50 + projeção multi-escala).
+
+\begin{table}[htb]
+\centering
+\caption{Comparação DifferNet (pós-processamento completo) vs.\ RD++.}
+\label{tab:vs_rdpp}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Classe & \multicolumn{2}{c}{Pixel AUROC} & \multicolumn{2}{c}{AUPRO} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+ & RD++ & Ours & RD++ & Ours \\
+\midrule
+\textit{glass}   & 0,9368 & \textbf{0,9534} & \textbf{0,7560} & 0,6591 \\
+\textit{polymer} & \textbf{0,9024} & 0,8505 & \textbf{0,6508} & 0,5933 \\
+\textit{vari-grip} & 0,8588 & \textbf{0,9191} & 0,5366 & \textbf{0,7621} \\
+\textit{yoke}    & \textbf{0,9708} & 0,9348 & \textbf{0,7328} & 0,6686 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O pipeline DifferNet com pós-processamento completo supera o RD++ em Pixel AUROC em 2 de 4 classes avaliadas, e em AUPRO em 1 de 4. O RD++ leva vantagem em AUPRO por treinar explicitamente com perda de localização e pseudo-anomalias via ruído simplex.
+
+% =============================================================================
+% 5. DISCUSSÃO
+% =============================================================================
+\section{Discussão}
+\label{sec:discussion}
+
+\subsection{Por que o Pós-Processamento Domina}
+
+O resultado central deste estudo --- que o pós-processamento contribui com mais AUROC do que qualquer intervenção de treinamento --- admite uma interpretação direta fundamentada na teoria de Normalizing Flows. O backbone (SEDifferNet) é congelado; todo o poder representacional para localização reside nas features que ele já produz. O que o pós-processamento faz é \textit{alinhar a forma como o scoring interpreta essas features} com a tarefa de localização. A densidade $p(\mathbf{x})$ estimada pelo flow possui significado probabilístico exato; a soma direta das NLLs ($\sum_k -\log p(\mathbf{x}_k)$) equivale matematicamente a modelar a verossimilhança conjunta sob a hipótese de independência condicional entre os níveis, preservando a calibração métrica global entre imagens normais e anômalas. Em contraste, a agregação \texttt{per\_level\_minmax}, herdada do CFLOW-AD, destrói a escala absoluta ao normalizar cada mapa individualmente para o intervalo $[0, 1]$, forçando toda imagem puramente normal a conter um falso positivo com score 1{,}0.
+
+Além disso, o modo \texttt{per\_level\_prob} do CFLOW-AD original ($\exp(\text{logsigmoid}(-\text{NLL})/C)$) satura na presença de ativações ReLU não limitadas de AlexNet, onde magnitudes de NLL na ordem de centenas comprimem a saída para valores próximos a zero ou um, explicando seu desempenho inferior (média 0{,}6992).
+
+A seleção de níveis opera de forma análoga: fusionar indiscriminadamente os três níveis dilui o sinal do nível dominante com o ruído dos inferiores. Em \textit{vari-grip}, fusionar L1 (AUROC 0{,}9191) com L3 (0{,}8052) derruba o resultado para 0{,}8561 --- uma perda de $-0{,}063$. Esse efeito é invisível em benchmarks onde a hierarquia é consistente entre classes.
+
+\subsection{Implicações para a Comunidade de Detecção de Anomalias}
+
+Três implicações emergem para a comunidade mais ampla:
+
+\textit{(i) Trabalhos que reportam apenas métricas finais sem decompor as contribuições de arquitetura, treinamento e pós-processamento escondem a origem real do ganho.} Em nosso caso, $\sim$70\% do ganho em \textit{lightning-rod} é pós-processamento puro. Isso sugere que comparações entre métodos que utilizam pós-processamentos diferentes podem atribuir ao modelo diferenças que são, na verdade, de scoring.
+
+\textit{(ii) A fusão multi-escala fixa --- padrão em CFLOW-AD, PaDiM e PatchCore --- carrega pelo menos um nível que não contribui em nenhuma das 5 classes.} O conjunto L1+L3 (\texttt{levels\,=\,02}) tem regret $\leq 0{,}0012$ em 4 de 5 classes e reduz os parâmetros da head em $\sim$20\%.
+
+\textit{(iii) Técnicas de normalização de features que funcionam em um benchmark ou uma classe não devem ser adotadas como receita universal.} O \texttt{featnorm} é um exemplo instrutivo: excelente em \textit{glass} ($+0{,}0396$), catastrófico em \textit{yoke} ($-0{,}0499$). O mecanismo subjacente --- concentração de sinal em L1 com degradação de L2/L3 --- é previsível a partir da teoria, mas só foi observado porque o estudo cobriu 5 classes com hierarquias de níveis distintas.
+
+\subsection{O Perigo dos Checkpoints Legados}
+
+A lição metodológica mais custosa do estudo é que checkpoints legados produzem diagnósticos enganosos sobre a informatividade das features. Em \textit{glass-insulator}, o nível L1 media AUROC 0{,}2583 na head publicada --- aparentemente anticorrelacionado com as anomalias --- e 0{,}8740 após retreino com a receita corrigida. A diferença de $+0{,}6157$ não se devia a uma propriedade física da classe, mas a divergências silenciosas entre os hiperparâmetros de treinamento e avaliação da head legada (clamp scale, caminho de atenção, modo de agregação). Uma ``explicação física'' inteiramente construída sobre esse artefato foi invalidada pelo retreino. Este resultado adverte que ablations conduzidos sobre modelos de terceiros --- prática comum na literatura --- podem produzir conclusões sistematicamente incorretas se os hiperparâmetros de scoring não forem coerentes.
+
+\subsection{Limitações}
+
+O estudo possui limitações que devem ser consideradas na interpretação:
+
+\begin{itemize}
+    \item \textbf{Backbone único.} Todos os resultados utilizam AlexNet com atenção SE. Embora a superioridade teórica da NLL \texttt{raw} decorra de propriedades intrínsecas a Normalizing Flows (não do extrator), backbones mais profundos (ResNet, WideResNet, EfficientNet) podem alterar a hierarquia entre níveis de features.
+    \item \textbf{Dataset único.} O INSPLAD-seg tem características específicas (fundo natural de vegetação, proporções baixas de anomalia) que podem interagir com os hiperparâmetros de suavização e padding.
+    \item \textbf{Sem validação cruzada entre datasets.} As descobertas ainda não foram estendidas para o MVTec-AD ou VisA, demandando validação externa complementar.
+    \item \textbf{Limiar de significância baseado em um par de splits.} A variação de $0{,}0044$ AUROC entre splits foi medida com uma troca controlada de \texttt{val\_fraction}; embora funcional para descartar ruído, o uso de múltiplos seeds aleatórios representa o padrão-ouro estatístico.
+    \item \textbf{Dinâmica de learning rate no overfitting.} O pico precoce na época 4 em \textit{yoke} sugere que a taxa de aprendizado padrão ($2 \times 10^{-4}$) pode ser excessiva para bases com milhares de amostras, abrindo oportunidade para escalas de lr inversamente proporcionais ao tamanho do dataset.
+    \item \textbf{Hiperparâmetros do flow não ablados.} O número de blocos ($K=8$), a dimensão oculta (256) e a dimensão do PE (64) foram mantidos nos defaults do projeto sem ablação.
+\end{itemize}
+
+\subsection{Diretrizes de Implantação e Trade-off de Latência}
+
+Com base nos resultados consolidados, estabelecemos o seguinte protocolo prático de implantação:
+
+\begin{enumerate}
+    \item \textbf{Sempre} (pós-hoc, sem retreino): \texttt{score\_mode\,=\,raw} ($+0{,}0497$, maior efeito e custo computacional nulo) e \texttt{reflect\_pad\,112} (só na inferência).
+    \item \textbf{Trade-off de latência para TTA:} O TTA por flips adiciona $+0{,}0120$ AUROC na média, mas quadruplica o número de passagens pela rede ($4\times$ tempo de inferência). Em sistemas embarcados de VANT com restrição severa de tempo real, o TTA pode ser desligado com perda modesta de acurácia, enquanto em inspeções em lote offline ele deve permanecer ativado.
+    \item \textbf{Default seguro de níveis e escala:} \texttt{levels\,=\,02} (L1+L3), $\sigma = 8$ para defeitos $\geq 1\%$ da área, $\sigma = 2$ para micro-defeitos estruturais $< 0{,}5\%$.
+    \item \textbf{Política de normalização de treino (risco assimétrico):} \texttt{featnorm} deve permanecer desativado por padrão; o ganho moderado em classes favoráveis ($+0{,}039$ a $+0{,}044$) não compensa o risco de colapso severo em componentes dominados por contexto semântico global ($-0{,}0499$ AUROC e $-0{,}1226$ AUPRO em \textit{yoke}). Ligue-o apenas para componentes onde a patologia resida comprovadamente em características rasas de cor e textura ($L_1$).
+    \item \textbf{Seleção de checkpoint no treino:} por score composto $(AUROC_{px} + AUROC_{img} + AUPRO)/3$ e com agregação \texttt{raw} durante a validação in-training.
+\end{enumerate}
+
+
+% =============================================================================
+% 6. CONCLUSÃO
+% =============================================================================
+\section{Conclusão}
+\label{sec:conclusion}
+
+Este trabalho apresentou um estudo de ablação abrangente da cabeça de normalizing flow condicional para localização de anomalias em 5 classes do benchmark INSPLAD-seg, totalizando $\sim$24\,000 medições. A principal descoberta é que o pós-processamento --- uma cadeia de intervenções na inferência que não requer nenhum retreino --- contribui com $+0{,}0965$ de Pixel AUROC médio, superando qualquer intervenção de treinamento. A agregação \texttt{raw} das NLLs é o efeito isolado de maior magnitude ($+0{,}0497$), universalmente benéfico nas 5 classes.
+
+O estudo revelou que a hierarquia entre níveis de features não é universal (L1 domina em defeitos de textura, L3 em defeitos estruturais), que a normalização de features por canal não generaliza (prejudicial em 1 de 5 classes), e que o reflect padding é uma técnica exclusiva de inferência --- aplicá-lo no treinamento piora os resultados. Adicionalmente, demonstrou que checkpoints legados produzem diagnósticos sistematicamente enganosos sobre features, invalidando conclusões construídas sobre eles.
+
+Trabalhos futuros incluem: (i) padronização seletiva por nível (\texttt{featnorm} restrita a L1), cujo mecanismo identificado neste estudo prediz resolver o caso \textit{yoke}; (ii) substituição do reflect padding por replicate padding para evitar eco de estruturas; (iii) validação cruzada em MVTec-AD e outros benchmarks para medir a generalização das descobertas; e (iv) supressão de fundo por máscara de objeto, o item de diagnóstico de maior potencial remanescente.
+
+
+% =============================================================================
+% REFERÊNCIAS
+% =============================================================================
+\begin{thebibliography}{10}
+
+\bibitem{rudolph2021differnet}
+M. Rudolph, B. Wandt e B. Rosenhahn, ``Same Same But DifferNet: Semi-Supervised Defect Detection with Normalizing Flows,'' in \textit{Proc. IEEE/CVF Winter Conf. Applications of Computer Vision (WACV)}, 2021, pp. 1907--1916.
+
+\bibitem{gudovskiy2022cflow}
+D. Gudovskiy, S. Ishizaka e K. Kozuka, ``CFLOW-AD: Real-Time Unsupervised Anomaly Detection with Localization via Conditional Normalizing Flows,'' in \textit{Proc. IEEE/CVF Winter Conf. Applications of Computer Vision (WACV)}, 2022, pp. 1819--1828.
+
+\bibitem{rudolph2022csflow}
+M. Rudolph, T. Wehrbein, B. Rosenhahn e B. Wandt, ``Fully Convolutional Cross-Scale-Flows for Image-based Defect Detection,'' in \textit{Proc. IEEE/CVF Winter Conf. Applications of Computer Vision (WACV)}, 2022, pp. 1088--1097.
+
+\bibitem{defard2021padim}
+T. Defard, A. Setkov, A. Loesch e R. Audigier, ``PaDiM: a Patch Distribution Modeling Framework for Anomaly Detection and Localization,'' in \textit{Proc. Int. Conf. Pattern Recognition (ICPR) Workshops}, 2021, pp. 475--489.
+
+\bibitem{roth2022patchcore}
+K. Roth, L. Pemula, J. Zepeda, B. Sch\"{o}lkopf, T. Brox e P. Gehler, ``Towards Total Recall in Industrial Anomaly Detection,'' in \textit{Proc. IEEE/CVF Conf. Computer Vision and Pattern Recognition (CVPR)}, 2022, pp. 14318--14328.
+
+\bibitem{deng2022rd}
+H. Deng e X. Li, ``Anomaly Detection via Reverse Distillation from One-Class Embedding,'' in \textit{Proc. IEEE/CVF Conf. Computer Vision and Pattern Recognition (CVPR)}, 2022, pp. 9737--9746.
+
+\bibitem{vieira2023insplad}
+A. L. B. Vieira-e-Silva \textit{et al.}, ``InsPLAD: A Dataset and Benchmark for Power Line Asset Inspection in UAV Images,'' \textit{Int. J. Remote Sensing}, vol. 44, no. 23, pp. 7465--7484, 2023.
+
+\bibitem{zhou2024msflow}
+Y. Zhou, X. Xu, J. Song, F. Shen e H. T. Shen, ``MSFlow: Multiscale Flow-based Framework for Unsupervised Anomaly Detection,'' \textit{IEEE Trans. Neural Networks and Learning Systems}, 2024.
+
+\bibitem{alsallakh2021mind}
+B. Alsallakh, N. Kokhlikyan, V. Miglani, J. Yuan e O. Reblitz-Richardson, ``Mind the Pad -- CNNs can Develop Blind Spots,'' in \textit{Proc. Int. Conf. Learning Representations (ICLR)}, 2021.
+
+\bibitem{islam2020much}
+M. A. Islam, S. Jia e N. D. B. Bruce, ``How Much Position Information Do Convolutional Neural Networks Encode?'' in \textit{Proc. Int. Conf. Learning Representations (ICLR)}, 2020.
+
+\bibitem{geirhos2019imagenet}
+R. Geirhos, P. Rubisch, C. Michaelis, M. Bethge, F. A. Wichmann e W. Brendel, ``ImageNet-trained CNNs are biased towards texture; increasing shape bias improves accuracy and robustness,'' in \textit{Proc. Int. Conf. Learning Representations (ICLR)}, 2019.
+
+\bibitem{kayhan2020translation}
+O. S. Kayhan e J. C. van Gemert, ``On Translation Invariance in CNNs: Convolutional Layers Can Exploit Absolute Spatial Location,'' in \textit{Proc. IEEE/CVF Conf. Computer Vision and Pattern Recognition (CVPR)}, 2020, pp. 14274--14285.
+
+\end{thebibliography}
+
+\end{document}

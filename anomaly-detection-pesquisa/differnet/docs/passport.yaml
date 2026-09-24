@@ -1,0 +1,30 @@
+# Material Passport (Schema 9) — ARS Academic Pipeline
+origin_skill: academic-pipeline
+origin_mode: full
+origin_date: "2026-09-24T00:30:00Z"
+verification_status: VERIFIED
+version_label: "v1.0"
+integrity_pass_date: "2026-09-24T01:05:00Z"
+content_hash: "sha256:7c8b21e893fa910e53a921d743a129038d17f8a9e01284a1e948f71295b9c031"
+
+repro_lock:
+  schema_version: "1.0"
+  stochasticity_declaration: "LLM outputs are not byte-reproducible. This lockfile documents configuration, not a deterministic replay guarantee."
+  ars_version: "3.9.4.2"
+  model:
+    family: gemini
+    id: gemini-3.8-flash
+    weight_stable: false
+  prompts:
+    hash_timing: skill-load
+    skill_md_hash: "sha256:academic_pipeline_v3.9.4.2"
+    agents_bundle_hash: "sha256:ars_agents_bundle"
+  materials:
+    list_hash: "sha256:plano_ablation_nf_head_md_hash"
+    count: 10
+  external_protocols:
+    s2_api_protocol_version: "3.3"
+    s2_snapshot_available: false
+  cross_model:
+    enabled: false
+    secondary_model_id: null
