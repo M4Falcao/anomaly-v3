@@ -166,8 +166,33 @@ Investigamos seis fatores primários de inferência e sua interação com interv
    Convolução espacial 2D pós-agregação. Sintonizada de acordo com o tamanho esperado da patologia: $\sigma=2$ para micro-defeitos ($<0{,}5\%$ da imagem) e $\sigma=8$ para defeitos extensos ($>1{,}5\%$).
 
 ---
+### 3.4 Lógica do Desenho de Ablação e Regras de Decisão
 
-### 3.4 Protocolo Experimental e Métricas
+O estudo não trata todos os hiperparâmetros como intercambiáveis. A escolha dos fatores partiu de uma pergunta operacional: dado um backbone congelado e uma cabeça de fluxo já treinada, qual decisão altera (i) a distribuição de features apresentada ao fluxo, (ii) a interpretação da NLL produzida por ele, ou (iii) a correspondência espacial entre mapa e máscara? Essa separação é necessária porque alterações do segundo e terceiro grupos podem ser avaliadas pós-hoc, enquanto alterações do primeiro exigem retreino e são muito mais caras.
+
+O protocolo foi executado em três estágios, nesta ordem:
+
+1. **Auditoria de compatibilidade.** Antes de atribuir uma diferença a uma escolha de modelagem, verificamos se treino e avaliação usavam a mesma transformação: arquitetura de atenção, `out_size`, `clamp_scale`, níveis treinados e estatísticas de `featnorm`. As heads legadas foram mantidas apenas para estimar o potencial de pós-processamento; não foram usadas para inferir a informatividade intrínseca de um nível.
+2. **Ablação pós-hoc pareada.** Sobre mapas de NLL cacheados, variamos `score_mode`, `reflect_pad`, TTA, subconjunto de níveis e $\sigma$. Duas configurações formam um par somente quando diferem no fator analisado. Isso mantém a head, as imagens, a condição de padding/TTA e os demais fatores constantes, isolando o efeito operacional do fator sem executar novas passagens de treino.
+3. **Retreino focal.** Só fatores que mudam a distribuição de entrada do fluxo ou sua capacidade — `featnorm`, `clamp_scale`, rotação, padding no treino e níveis treinados — foram retreinados. O conjunto de receitas não é um fatorial completo: foi uma sequência deliberada de testes de hipóteses gerados pelos resultados pós-hoc e pelos diagnósticos por nível. Portanto, os deltas de retreino são evidência comparativa dentro de cada rodada, não estimativas independentes de todos os efeitos e interações.
+
+**Tabela 3a: Matriz de decisão da ablação.**
+
+| Fator | Valores avaliados | Hipótese que motivou a escolha | Como foi decidido |
+|---|---|---|---|
+| `score_mode` | `raw`, `minmax`, `prob`, `std` | A NLL tem escala absoluta; normalizar cada imagem pode remover informação entre amostras | Comparações pós-hoc pareadas em todas as classes |
+| `levels` | `0`, `1`, `2`, `01`, `02`, `12`, `012` | Uma escala irrelevante pode diluir a NLL do nível informativo | AUROC por nível, grid de validação e *regret* do default |
+| `reflect_pad` | 0, 112 px | `zero-padding` pode gerar NLL artificial nas bordas | Efeito pareado, perfil de borda e AUPRO; treino testado separadamente |
+| TTA por flips | desligado, 4 vistas | A média de vistas pode reduzir dependência do prior posicional | Efeito pareado; mantido como trade-off de latência, não como garantia universal |
+| $\sigma$ | 0, 2, 4, 8 | O filtro deve acompanhar a extensão espacial esperada do defeito | Seleção na validação, estratificada pela escala da patologia |
+| `featnorm` | desligado, por canal | Equalizar escalas pode estabilizar o fluxo, mas pode elevar ruído de canais fracos | Retreino por classe; aceito somente se o ganho se mantivesse em held-out |
+| `clamp_scale` | 0,5; 1,9 | Clamp maior aumenta a expressividade do acoplamento ao custo de estabilidade e tempo | Retreino condicional ao `featnorm`, comparado ao baseline da mesma rodada |
+| rotação e pad no treino | ligado/desligado; 0/112 px | Regularização e coerência treino--inferência podem alterar a generalização | Retreino controlado; decisão exige AUROC, AP e AUPRO consistentes |
+
+As regras de seleção foram fixadas para separar escolha de estimação. A configuração foi escolhida exclusivamente em `grid_val.csv`, com `margin=0`; o held-out foi consultado uma vez para o reporte final. A margem de borda foi removida do grid porque pode inflar AUROC ao excluir justamente a região em que o viés deve ser medido. A sensibilidade observada de 0,0044 em Pixel AUROC entre dois held-outs do mesmo modelo é usada como limiar prático de resolução: diferenças menores não sustentam ranking entre receitas. AUROC, AP e AUPRO são avaliados conjuntamente; em caso de discordância, o score composto evita trocar cobertura regional por uma pequena melhora na ordenação global.
+
+### 3.5 Protocolo Experimental e Métricas
+
 
 O benchmark INSPLAD-seg [8] reúne 5 classes com imagens em resolução $448 \times 448$:
 
@@ -227,17 +252,36 @@ A Tabela 3 reúne **todos os valores exatos** medidos nas cerca de 24.000 config
 | **Resultado Held-out** | **Melhor Obtido Final (AUROC / AUPRO)** | **0,9270 / 0,7585** | **0,8815 / 0,5642** | **0,9560 / 0,7604** | **0,8806 / 0,5943** | **0,9188 / 0,6611** | **0,9128 / 0,6677** |
 | **Ganho Final Total** | **$\Delta$ Pixel AUROC / $\Delta$ AUPRO Final** | **+0,1563 / +0,1333** | **+0,1146 / +0,1762** | **+0,0739 / +0,1535** | **+0,0182 / +0,0190** | **+0,0852 / +0,0821** | **+0,0897 / +0,1128** |
 
----
+### 4.2 Como as Evidências Reduziram o Espaço de Decisão
 
-### 4.2 Decomposição Incremental e a Primazia da NLL `raw`
+Os valores da Tabela 3 são o resultado de uma sequência de decisão, não de uma busca cega por máximo. A cadeia incremental comunica o ganho acumulado de uma receita, mas **não** estima isoladamente o efeito causal de cada passo: a magnitude de um fator depende dos anteriores. Para estimar robustez, usamos os efeitos pareados da própria tabela; para escolher uma receita, usamos o grid de validação; para comunicar generalização, usamos o held-out mantido fora da seleção.
+
+O primeiro resultado da auditoria foi metodológico. A aparente anticorrelação de $L_1$ em `glass-insulator` na head legada (AUROC 0,2583) desapareceu após alinhar a receita de treino e avaliação: $L_1$ atingiu 0,8740. Esse contraste invalidou a hipótese inicial de “sinal invertido” e redefiniu a ordem da ablação: primeiro corrigir e registrar a função computada; depois interpretar níveis e patologia. Pelo mesmo motivo, resultados de heads legadas são reportados como diagnóstico de pós-processamento, não como evidência sobre a semântica de features.
+
+**Tabela 3b: Trajetória de decisão e disposição final de cada escolha.**
+
+| Decisão | Evidência que a motivou | Resultado observado | Disposição no protocolo final |
+|---|---|---|---|
+| Preservar a NLL `raw` | A NLL é comparável entre posições e imagens enquanto sua escala não é destruída | Maior efeito pareado: +0,0497 AUROC; 82--100% de pares positivos conforme a classe | Default de inferência para as heads avaliadas |
+| Usar padding somente na inferência | Bordas com zeros formam ativações fora da distribuição; imagens refletidas não são amostras naturais de treino | +0,0049 AUROC pareado em média; treino com pad piorou 0,9185 para 0,9033 no teste controlado | `reflect_pad=112` na inferência; desligado no treino |
+| Tratar TTA como compromisso, não como regra | Flips reduzem assimetria posicional, mas multiplicam o custo de backbone | +0,0120 em média; em `yoke`, 46% dos pares favorecem TTA | Ativo em avaliação offline; opcional em VANT em tempo real |
+| Selecionar níveis, não fundi-los cegamente | Níveis descrevem escalas diferentes e podem adicionar ruído | $L_1$ domina `vari-grip`, $L_3$ domina três classes e $L_2$ domina `polymer` | `02` como default de baixo *regret*; validar por classe/head quando possível |
+| Ajustar $\sigma$ à escala do defeito | Suavização reduz ruído, mas pode apagar microdefeitos | $\sigma=2$ para `glass` (0,14% da área); $\sigma=8$ nos defeitos maiores; ganho médio pequeno | Hiperparâmetro por escala, escolhido na validação |
+| Rejeitar `featnorm` como default | A normalização poderia estabilizar escalas, mas a profundidade altera a concentração de sinal | Ganhos em `vari-grip` e `glass`; perda de 0,0499 AUROC e 0,1226 AUPRO em `yoke` | Desligado por default; testar apenas sob evidência de benefício por classe |
+| Manter `clamp=0,5` | Clamp 1,9 aumenta a capacidade do flow e quase dobra o custo de treino | Efeito condicionado ao `featnorm` e dentro do ruído de split em casos relevantes | Valor conservador; não escalar sem ganho sustentado |
+| Substituir época fixa por seleção de checkpoint | A densidade pode sobreajustar antes de a loss convergir | `yoke` atingiu pico na época 4 e perdeu 0,0299 até a 80 | `CLASS_BUDGETS`, early stopping e score composto |
+
+Esse percurso também delimita o escopo das conclusões. `raw`, padding de inferência e TTA foram comparados com pares em múltiplas combinações; as escolhas de treino foram comparadas entre receitas específicas e, portanto, possuem evidência menos generalizável. A recomendação final preserva essa assimetria: defaults robustos são separados explicitamente de decisões que exigem validação por classe e por checkpoint.
+
+### 4.3 Decomposição Incremental e a Primazia da NLL `raw`
 
 Como ilustrado na Tabela 3, o pós-processamento confere **+0,0965 de AUROC médio**. A transição da normalização `minmax` para `raw` responde sozinha por **+0,0381** na cadeia incremental e **+0,0497** em comparações pareadas diretas. 
 
-A superioridade de `raw` é matematicamente absoluta: obteve taxas de vitória pareada de **100%** em `lightning-rod` e `glass-insulator`, **97,2%** em `vari-grip` e `yoke-suspension`, e **81,9%** em `polymer-shackle`. A normalização min-max introduz distorção estocástica grave: ao mapear o pixel de maior score de cada imagem para 1,0, toda imagem sem anomalias (100% normal) ganha falsos positivos com confiança máxima, destruindo o limiar global de classificação.
+A superioridade de `raw` é empiricamente consistente no escopo avaliado: obteve taxas de vitória pareada de **100%** em `lightning-rod` e `glass-insulator`, **97,2%** em `vari-grip` e `yoke-suspension`, e **81,9%** em `polymer-shackle`. A normalização min-max introduz distorção: ao mapear o pixel de maior score de cada imagem para 1,0, uma imagem normal sempre contém um máximo relativo, reduzindo a utilidade de limiares comparáveis entre imagens.
 
 ---
 
-### 4.3 Comportamento dos Níveis e o Fenômeno da Contaminação Multiescala
+### 4.4 Comportamento dos Níveis e o Fenômeno da Contaminação Multiescala
 
 A análise isolada da NLL revela uma especialização funcional das camadas convolucionais estritamente correlacionada à escala da patologia:
 * **Classes dominadas por $L_1$ (`vari-grip`):** A falha consiste em oxidação severa espalhada ao longo dos cabos de aço. A resolução de $L_1$ ($109 \times 109$) captura o padrão textural microscópico da ferrugem com AUROC de **0,893**. Em contrapartida, $L_3$ atinge apenas **0,787**.
@@ -248,7 +292,7 @@ A análise isolada da NLL revela uma especialização funcional das camadas conv
 
 ---
 
-### 4.4 Mecanismo de Falha da Padronização por Canal (`featnorm`)
+### 4.5 Mecanismo de Falha da Padronização por Canal (`featnorm`)
 
 A técnica `featnorm` exibe comportamento conflitante: confere **+0,0396** em `glass` e **+0,0440** em `vari-grip`, mas causa degradação crítica em `yoke-suspension` (**−0,0499 de AUROC** e **−0,1226 de AUPRO**).
 
@@ -266,7 +310,7 @@ Em `yoke-suspension`, a anomalia reside na integridade mecânica de $L_3$. A amp
 
 ---
 
-### 4.5 Dinâmica de Overfitting em Grandes Datasets
+### 4.6 Dinâmica de Overfitting em Grandes Datasets
 
 A imposição de uma rotina fixa de 80 épocas para todas as classes revelou um sobreajuste dramático no *flow* em bases volumosas. Em `yoke-suspension` (4.834 imagens normais de treino), o pico de Pixel AUROC ocorreu na **época 4** (0,9292), degradando de forma contínua até **0,8993** na época 80 (queda de $-0,0299$). Em 85% das avaliações pós-pico, o modelo superava o checkpoint final. 
 
@@ -274,7 +318,7 @@ Esse fenômeno comprova que orçamentos de época uniformes são danosos: bases 
 
 ---
 
-### 4.6 Resolução Numérica do AUPRO e Métricas Compostas
+### 4.7 Resolução Numérica do AUPRO e Métricas Compostas
 
 Identificou-se que a rotina tradicional de cálculo de AUPRO via limiares lineares `np.linspace(min, max, 200)` falhava catastroficamente em mapas de NLL crua (`raw`), retornando silenciosamente `AUPRO = 0.0000` em `vari-grip`. Em virtude de caudas pesadas com valores extremos esparsos ($>10^4$), 199 dos 200 limiares lineares caíam em taxas de falsos alarmes superiores a $\text{FPR} > 0{,}30$, inviabilizando a integração da curva. A substituição por **quantis dos pixels normais** dentro do intervalo $[1 - \text{FPR}_{\text{max}}, 1{,}0]$ resolveu a patologia, garantindo amostragem uniforme de pontos úteis e tornando a métrica invariante a transformações monotônicas de escala.
 
@@ -282,7 +326,7 @@ Adicionalmente, a adoção do score composto $(AUROC_{px} + AUROC_{img} + AUPRO)
 
 ---
 
-### 4.7 Desempenho Frente ao Estado da Arte (DifferNet vs. RD++)
+### 4.8 Desempenho Frente ao Estado da Arte (DifferNet vs. RD++)
 
 A Tabela 4 contrasta o pipeline otimizado SEDifferNet + CFLOW frente ao Reverse Distillation (RD++):
 

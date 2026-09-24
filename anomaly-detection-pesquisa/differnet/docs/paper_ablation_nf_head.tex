@@ -172,6 +172,35 @@ O estudo investiga dois grupos de fatores: \textit{treinamento} (requerem retrei
 
 O grid completo de fatores de pós-processamento compreende $2 \times 2 \times 4 \times 5 \times 3 = 240$ combinações básicas, expandidas para até 1\,920 configurações com fatores adicionais. Todas as combinações são avaliadas por reagregação dos mapas NLL previamente cacheados --- a rede processa cada imagem em apenas 4 passagens (pad $\times$ TTA).
 
+\subsection{Estratégia de Ablação, Hipóteses e Regras de Decisão}
+\label{sec:ablation_design}
+
+Os fatores não foram tratados como hiperparâmetros intercambiáveis. A escolha de cada um partiu de uma pergunta operacional: a intervenção altera (i) a distribuição de features apresentada ao flow, (ii) a interpretação da NLL que o flow já produz, ou (iii) o registro espacial entre mapa e máscara? Fatores dos grupos (ii) e (iii) podem ser avaliados pós-hoc; fatores do grupo (i) exigem retreino e têm custo substancialmente maior. Essa distinção determina a ordem do estudo e evita atribuir a uma mudança de arquitetura um ganho produzido apenas pelo scoring.
+
+O protocolo tem três estágios. Primeiro, uma \textit{auditoria de compatibilidade} verifica que treino e avaliação usam a mesma arquitetura de atenção, \texttt{out\_size}, \texttt{clamp\_scale}, conjunto de níveis e estatísticas de \texttt{featnorm}. As heads legadas são úteis para medir o potencial de pós-processamento, mas não para inferir a informatividade intrínseca de um nível. Segundo, a \textit{ablação pós-hoc pareada} varia \texttt{score\_mode}, padding, TTA, níveis e $\sigma$ sobre mapas de NLL cacheados. Um par difere somente no fator avaliado; head, imagens, condição de padding/TTA e demais opções são mantidos fixos. Terceiro, o \textit{retreino focal} testa apenas escolhas que alteram a entrada ou a capacidade do flow: \texttt{featnorm}, \texttt{clamp\_scale}, rotação, padding no treino e níveis treinados.
+
+O retreino não é um fatorial completo. As 27 receitas constituem uma sequência de testes de hipóteses motivados pelos resultados pós-hoc e pelos diagnósticos por nível. Assim, deltas entre receitas são comparações dentro de cada rodada, e não estimativas independentes de todos os efeitos e interações. Esta limitação é intencional: um fatorial que combinasse todas as receitas de treino com todo o grid de inferência multiplicaria o custo sem aumentar proporcionalmente a evidência sobre decisões de implantação.
+
+\begin{table*}[htb]
+\centering
+\small
+\caption{Racional de inclusão e método de decisão dos fatores ablados.}
+\label{tab:ablation_rationale}
+\begin{tabular}{@{}p{0.15\textwidth}p{0.23\textwidth}p{0.26\textwidth}p{0.28\textwidth}@{}}
+\toprule
+\textbf{Fator} & \textbf{Valores} & \textbf{Hipótese} & \textbf{Critério de decisão} \\
+\midrule
+\texttt{score\_mode} & \texttt{raw}, min--max, prob., std. & A NLL contém escala absoluta; normalizar cada imagem pode eliminar informação entre amostras. & Comparação pós-hoc pareada em todas as classes. \\
+\texttt{levels} & \texttt{0}, \texttt{1}, \texttt{2}, \texttt{01}, \texttt{02}, \texttt{12}, \texttt{012} & Uma escala não informativa pode diluir a NLL do nível dominante. & AUROC por nível, grid de validação e \textit{regret} do default. \\
+\texttt{reflect\_pad} e TTA & 0/112 px; nenhuma/4 vistas & Padding por zeros e prior posicional podem criar scores espúrios. & Efeito pareado, perfil de borda e AUPRO; custo de inferência reportado separadamente. \\
+$\sigma$ & 0, 2, 4, 8 & O filtro deve reduzir ruído sem apagar defeitos cuja escala é pequena. & Seleção no grid de validação, condicionada à escala da patologia. \\
+\texttt{featnorm}, clamp, rotação e pad no treino & ligado/desligado; clamp 0,5/1,9 & A estabilidade e a expressividade do flow podem variar com a escala e a profundidade das features. & Retreino contra baseline da mesma rodada; AUROC, AP e AUPRO devem concordar. \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+A configuração é escolhida apenas em \texttt{grid\_val.csv}, com \texttt{margin=0}; o held-out é usado uma única vez no reporte final. A margem de borda foi retirada do grid porque pode inflar AUROC ao remover justamente a região em que o viés deve ser detectado. A variação observada de 0{,}0044 em Pixel AUROC entre dois held-outs do mesmo modelo é empregada como resolução prática: diferenças menores não sustentam um ranking entre receitas. AUROC, AP e AUPRO são avaliados conjuntamente; quando divergem, o score composto evita trocar cobertura regional por pequena melhora na ordenação global.
+
 \subsection{Protocolo Experimental}
 \label{sec:protocol}
 
@@ -251,6 +280,7 @@ A Tabela~\ref{tab:factors_summary} consolida a síntese quantitativa multidimens
 \centering
 \caption{Síntese exaustiva dos fatores de inferência, retreino e dinâmica multiescala nas 5 classes do INSPLAD-seg.}
 \label{tab:factors_summary}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}llcccccc@{}}
 \toprule
 Dimensão Avaliada & Fator / Métrica & \textit{vari-grip} & \textit{lightning-rod} & \textit{glass} & \textit{polymer} & \textit{yoke} & \textbf{Média Geral} \\
@@ -272,8 +302,37 @@ Dimensão Avaliada & Fator / Métrica & \textit{vari-grip} & \textit{lightning-r
 \multirow{2}{*}{Treinamento e Overfitting} & Época de Pico (de 80 épocas) & Época 16 & Época 12 & Época 36 & Época 56 & \textbf{Época 4} & Pico precoce em bases grandes \\
  & Queda Pico $\to$ Época 80 & $-0{,}0123$ & $-0{,}0012$ & $-0{,}0009$ & $-0{,}0002$ & $\mathbf{-0{,}0299}$ & Sobreajuste severo em yoke \\
 \bottomrule
+\end{tabular}%
+}
+\end{table*}
+
+\subsection{Da Evidência à Receita de Implantação}
+\label{sec:decision_trace}
+
+Os valores incrementais da Tabela~\ref{tab:incremental} descrevem o ganho acumulado de uma cadeia de decisões; não constituem efeitos causais isolados, pois cada passo é avaliado depois dos anteriores. A robustez de uma escolha é estabelecida pelos efeitos pareados da Tabela~\ref{tab:factors_summary}; a seleção de receita é feita no grid de validação; e a generalização é comunicada pelo held-out, que não participa da seleção. Essa separação evita interpretar um máximo de grid como evidência de generalização.
+
+O primeiro resultado da auditoria foi uma correção metodológica. Em \textit{glass-insulator}, a head legada indicava AUROC de 0{,}2583 para L1, aparentemente um sinal invertido. Depois de alinhar a receita de treino e avaliação, L1 atingiu 0{,}8740. Portanto, a observação legada foi tratada como artefato de incompatibilidade, não como evidência sobre a patologia; a interpretação de níveis foi feita exclusivamente em heads retreinadas com receita rastreável.
+
+\begin{table*}[htb]
+\centering
+\small
+\caption{Rastreabilidade das decisões de ablação até a receita final.}
+\label{tab:decision_trace}
+\begin{tabular}{@{}p{0.18\textwidth}p{0.25\textwidth}p{0.26\textwidth}p{0.23\textwidth}@{}}
+\toprule
+\textbf{Decisão} & \textbf{Motivação} & \textbf{Evidência observada} & \textbf{Disposição final} \\
+\midrule
+NLL \texttt{raw} & Preservar comparabilidade entre imagens. & Maior ganho pareado: $+0{,}0497$ AUROC; 82--100\% de pares positivos. & Default para as heads avaliadas. \\
+Padding só na inferência & Substituir borda com zeros sem ensinar o espelhamento como normal. & $+0{,}0049$ pareado; pad no treino caiu de 0{,}9185 para 0{,}9033 no teste controlado. & \texttt{reflect\_pad=112} na inferência; desligado no treino. \\
+TTA como trade-off & Reduzir assimetria do prior posicional. & $+0{,}0120$ médio; em \textit{yoke}, 46\% dos pares favorecem TTA. & Ativo offline; opcional sob restrição de latência. \\
+Seleção de níveis & Evitar ruído de escalas irrelevantes. & L1 domina \textit{vari-grip}, L3 domina três classes e L2 domina \textit{polymer}. & \texttt{02} é default de baixo regret; revalidar por classe/head. \\
+\texttt{featnorm} seletivo & Testar estabilização sem supor universalidade. & Benefício em \textit{vari-grip} e \textit{glass}; $-0{,}0499$ AUROC e $-0{,}1226$ AUPRO em \textit{yoke}. & Desligado por default; requer validação por classe. \\
+Checkpoint em vez de época fixa & Evitar confundir redução da loss com generalização. & \textit{Yoke} teve pico na época 4 e queda de 0{,}0299 até a 80. & Orçamentos por classe, early stopping e score composto. \\
+\bottomrule
 \end{tabular}
 \end{table*}
+
+As forças de evidência não são homogêneas. \texttt{raw}, padding de inferência e TTA foram testados em pares sob múltiplas configurações. Escolhas de treino foram comparadas em receitas específicas e, por isso, devem ser entendidas como condicionais à classe e à head. Essa distinção sustenta a separação, nas diretrizes finais, entre defaults robustos e escolhas que obrigatoriamente requerem validação local.
 \subsection{Superioridade da Agregação \texttt{raw}}
 \label{sec:raw}
 
