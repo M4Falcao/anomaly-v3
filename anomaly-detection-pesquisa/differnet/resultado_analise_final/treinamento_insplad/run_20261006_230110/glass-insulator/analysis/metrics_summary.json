@@ -1,0 +1,30 @@
+{
+    "class_name": "glass-insulator",
+    "test_samples_total": 10,
+    "test_samples_normal": 5,
+    "test_samples_anomaly": 5,
+    "image_auroc": 0.76,
+    "image_ap": 0.7962,
+    "image_f1": 0.8333,
+    "image_threshold": 1.5671,
+    "pixel_auroc": 0.9695,
+    "pixel_ap": 0.0363,
+    "pixel_f1": 0.1239,
+    "aupro": 0.6722,
+    "confusion_matrix": {
+        "tp": 5,
+        "tn": 3,
+        "fp": 2,
+        "fn": 0,
+        "precision": 0.7142857142857143,
+        "recall": 1.0,
+        "specificity": 0.6,
+        "balanced_acc": 0.8
+    },
+    "plots": {
+        "roc": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\treinamento_insplad\\run_20261006_230110\\glass-insulator\\analysis\\plots\\roc_curves.png",
+        "pr": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\treinamento_insplad\\run_20261006_230110\\glass-insulator\\analysis\\plots\\pr_curves.png",
+        "distribution": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\treinamento_insplad\\run_20261006_230110\\glass-insulator\\analysis\\plots\\score_distribution.png",
+        "gallery": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\treinamento_insplad\\run_20261006_230110\\glass-insulator\\analysis\\plots\\inspection_gallery.png"
+    }
+}

@@ -1,0 +1,4 @@
+Classe,N_Total,N_Norm,N_Anom,Image_AUROC,Image_AP,Image_F1,Pixel_AUROC,Pixel_AP,AUPRO,TP,TN,FP,FN,Precision,Recall,Specificity
+glass-insulator,10,5,5,0.76,0.7962,0.8333,0.9695,0.0363,0.6722,5,3,2,0,0.7143,1.0,0.6
+vari-grip,10,5,5,1.0,1.0,1.0,0.8931,0.1266,0.6904,5,5,0,0,1.0,1.0,1.0
+MÉDIA GLOBAL,20,10,10,0.88,0.8981,0.9166,0.9313,0.0814,0.6813,10,8,2,0,0.8572,1.0,0.8

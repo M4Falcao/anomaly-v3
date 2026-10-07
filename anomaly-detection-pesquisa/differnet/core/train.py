@@ -144,10 +144,16 @@ print(f'TRAINING ON : {c.device}, cause cuda is {torch.cuda.is_available()}')
 def train(train_loader, test_loader):
     # Create execution specific checkpoint directory
     run_timestamp = time.strftime('%Y%m%d_%H%M%S')
-    run_checkpoint_dir = os.path.join(c.checkpoint_path, f"run_{run_timestamp}")
+    run_checkpoint_dir = os.path.join(c.checkpoint_path, f"run_{run_timestamp}_{c.class_name}")
     best_models_dir = os.path.join(run_checkpoint_dir, "best_models")
+    checkpoints_dir = os.path.join(run_checkpoint_dir, "checkpoints")
     os.makedirs(run_checkpoint_dir, exist_ok=True)
     os.makedirs(best_models_dir, exist_ok=True)
+    os.makedirs(checkpoints_dir, exist_ok=True)
+    
+    metrics_file = os.path.join(run_checkpoint_dir, "metrics_history.txt")
+    with open(metrics_file, "w") as f:
+        f.write("Epoch\tTrain_Loss\tTest_Loss\tImage_AUROC\n")
 
     # MLflow Setup
     if c.use_mlflow:
@@ -322,11 +328,14 @@ def train(train_loader, test_loader):
         train_losses.append(avg_train_loss)
         test_losses.append(avg_test_loss)
         image_aurocs.append(image_auroc)
+        
+        with open(metrics_file, "a") as f:
+            f.write(f"{meta_epoch + 1}\t{avg_train_loss:.6f}\t{avg_test_loss:.6f}\t{image_auroc:.6f}\n")
 
         # --- Save checkpoint ---
         if (meta_epoch + 1) % c.checkpoint_interval == 0 or image_auroc > best_img_auroc:
             weights_filename = os.path.join(
-                run_checkpoint_dir, f"{c.class_name}_{c.modelname}_epoch_{meta_epoch + 1}.pt")
+                checkpoints_dir, f"{c.class_name}_{c.modelname}_latest.pt")
             checkpoint_data = {
                 'epoch': meta_epoch + 1,
                 'model_state_dict': model.state_dict(),
@@ -382,15 +391,6 @@ def train(train_loader, test_loader):
         mlflow.pytorch.log_model(model, "final_model")
         mlflow.end_run()
 
-    # Save metrics history
-    metrics_file = os.path.join(run_checkpoint_dir, "metrics_history.txt")
-    with open(metrics_file, "w") as f:
-        f.write("Epoch\tTrain_Loss\tTest_Loss\tImage_AUROC\n")
-        for i in range(len(train_losses)):
-            tr = train_losses[i] if i < len(train_losses) else 0.0
-            te = test_losses[i] if i < len(test_losses) else 0.0
-            ia = image_aurocs[i] if i < len(image_aurocs) else 0.0
-            f.write(f"{start_epoch + i + 1}\t{tr:.6f}\t{te:.6f}\t{ia:.6f}\n")
-    print(f"Metrics history saved to {metrics_file}")
+
 
     return model

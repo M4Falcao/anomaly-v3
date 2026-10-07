@@ -22,9 +22,9 @@ torch.cuda.empty_cache()
 torch.cuda.set_device(0)
 
 # data settings
-dataset_path = r"C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg"
+dataset_path = r"C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg-no-back-treino"
 class_name = "lightning-rod-suspension"
-modelname = "se_differnet_pix_200"
+modelname = "se_differnet_no_bg"
 
 img_size = (448, 448)
 img_dims = [3] + list(img_size)
