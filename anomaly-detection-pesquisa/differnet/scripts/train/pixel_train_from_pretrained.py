@@ -31,7 +31,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.cuda.amp import GradScaler
 from torch.amp import autocast
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 from torchvision import transforms
 from sklearn.metrics import (
     roc_auc_score, roc_curve, precision_recall_curve,
@@ -229,6 +229,26 @@ def compute_best_f1(labels, scores):
     f1_scores = 2 * (precision * recall) / (precision + recall + 1e-8)
     best_idx = np.argmax(f1_scores)
     return f1_scores[best_idx], thresholds[min(best_idx, len(thresholds)-1)]
+
+
+def stratified_test_split(labels, val_fraction, seed):
+    """Split labeled test indices so epoch selection and final reporting differ."""
+    labels = np.asarray(labels, dtype=np.uint8)
+    if val_fraction <= 0:
+        indices = np.arange(len(labels))
+        return indices, indices
+
+    rng = np.random.default_rng(seed)
+    val_indices, holdout_indices = [], []
+    for label in (0, 1):
+        indices = np.flatnonzero(labels == label)
+        rng.shuffle(indices)
+        if len(indices) < 2:
+            raise ValueError(f"Need at least two test images with label {label} for a split")
+        n_val = min(len(indices) - 1, max(1, int(round(len(indices) * val_fraction))))
+        val_indices.extend(indices[:n_val].tolist())
+        holdout_indices.extend(indices[n_val:].tolist())
+    return np.asarray(sorted(val_indices)), np.asarray(sorted(holdout_indices))
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -464,8 +484,20 @@ def main():
     # Output
     parser.add_argument('--out_dir', type=str, default='./pixel_head_runs')
     parser.add_argument('--seed', type=int, default=42)
+    parser.add_argument('--val_fraction', type=float, default=0.4,
+                        help='Fraction of the labeled test split used for epoch selection; '
+                             'the remaining images are reserved for final reporting.')
+    parser.add_argument('--split_seed', type=int, default=None,
+                        help='Seed of the validation/holdout split (default: --seed). Keep it fixed '
+                             'across training seeds so every head is scored on the same holdout.')
     
     args = parser.parse_args()
+    if args.split_seed is None:
+        args.split_seed = args.seed
+    if not 0 <= args.val_fraction < 1:
+        parser.error('--val_fraction must be in [0, 1)')
+    if args.val_fraction == 0:
+        print('WARNING: val_fraction=0 reuses the full test split for selection and final reporting.')
     
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
@@ -516,6 +548,8 @@ def main():
         'out_size': args.out_size,
         'epochs': args.epochs,
         'lr': args.lr,
+        'val_fraction': args.val_fraction,
+        'split_seed': args.split_seed,
         'cond_dim': args.cond_dim,
         'n_blocks': args.n_blocks,
         'hidden': args.hidden,
@@ -580,10 +614,29 @@ def main():
         transforms.Normalize(c.norm_mean, c.norm_std),
     ])
     train_loader, _ = make_dataloaders(trainset, testset)
-    # Use a small batch size for test_loader to avoid OOM during dense CFLOW pixel evaluation
-    test_loader = DataLoader(testset, batch_size=1, shuffle=False, pin_memory=True)
+    test_labels = np.asarray([1 if sample[1] > 0 else 0 for sample in testset.samples], dtype=np.uint8)
+    val_indices, holdout_indices = stratified_test_split(
+        test_labels, args.val_fraction, args.split_seed)
+    val_set = Subset(testset, val_indices.tolist())
+    holdout_set = Subset(testset, holdout_indices.tolist())
+    test_loader = DataLoader(val_set, batch_size=1, shuffle=False, pin_memory=True)
+    holdout_loader = DataLoader(holdout_set, batch_size=1, shuffle=False, pin_memory=True)
+    split_manifest = {
+        'class_name': args.class_name,
+        'seed': args.split_seed,
+        'train_seed': args.seed,
+        'val_fraction': args.val_fraction,
+        'validation_indices': val_indices.tolist(),
+        'holdout_indices': holdout_indices.tolist(),
+        'test_samples': [{'path': os.path.relpath(sample[0], args.dataset), 'label': int(label)}
+                         for sample, label in zip(testset.samples, test_labels)],
+    }
+    split_manifest_path = os.path.join(run_dir, 'split_manifest.json')
+    with open(split_manifest_path, 'w', encoding='utf-8') as split_file:
+        json.dump(split_manifest, split_file, indent=2)
     print(f"  Train: {len(trainset)} samples")
-    print(f"  Test:  {len(testset)} samples (batch_size=1 for eval)")
+    print(f"  Epoch selection: {len(val_set)} validation images | "
+          f"final holdout: {len(holdout_set)} images (batch_size=1)")
     print(f"  Rotation augmentation: {'OFF' if args.no_rotation else 'ON'}")
 
     # ─── Feature standardization (optional) ──────────────────────────────────
@@ -646,6 +699,15 @@ def main():
     }
     # Feature statistics travel with every checkpoint (None when --feat_norm is off).
     ckpt_extra = {'feat_stats': feat_stats}
+    ckpt_extra.update({
+        'selection_split_seed': args.split_seed,
+        'selection_train_seed': args.seed,
+        'selection_val_fraction': args.val_fraction,
+        'selection_split_manifest': split_manifest_path,
+        # Lets the ablation prove its holdout never influenced checkpoint selection.
+        'selection_validation_paths': [split_manifest['test_samples'][i]['path']
+                                       for i in val_indices.tolist()],
+    })
     
     optimizer = torch.optim.Adam(cflow.parameters(), lr=args.lr)
     scaler = GradScaler(enabled=args.use_amp)
@@ -864,10 +926,10 @@ def main():
     mlflow.log_artifact(os.path.join(plots_dir, "training_curves.png"))
     
     # ═══════════════════════════════════════════════════════════════════════════
-    # FINAL VALIDATION
+    # FINAL HOLDOUT EVALUATION
     # ═══════════════════════════════════════════════════════════════════════════
     print(f"\n{'='*60}")
-    print("FINAL VALIDATION")
+    print("FINAL HOLDOUT EVALUATION")
     print(f"{'='*60}")
     
     # Load best pixel model
@@ -885,9 +947,9 @@ def main():
     all_image_scores_patchcore = []
     all_image_labels = []
     
-    print("\nRunning inference on test set...")
+    print(f"\nRunning final inference on held-out split ({len(holdout_set)} images)...")
     with torch.no_grad():
-        for data in tqdm(test_loader, desc="Final eval"):
+        for data in tqdm(holdout_loader, desc="Final eval"):
             if len(data) == 3:
                 images, labels, masks = data
             else:

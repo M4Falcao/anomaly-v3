@@ -165,6 +165,7 @@ def build_class_cmd(class_name, se_ckpt, class_out_dir, args):
         '--dataset', args.dataset,
         '--epochs', str(epochs),
         '--eval_interval', str(eval_interval),
+        '--val_fraction', str(args.val_fraction),
         '--out_dir', class_out_dir,
         '--score_norm', args.score_norm,
         '--clamp_scale', str(clamp_scale),
@@ -309,6 +310,9 @@ def main():
     parser.add_argument('--disable_patchcore', action='store_true', default=True,
                         help='Disable PatchCore during training to conserve memory and speed up runs (default: True).')
     parser.add_argument('--seed', type=int, default=42)
+    parser.add_argument('--val_fraction', type=float, default=0.4,
+                        help='Fraction of the labeled test split used for epoch selection; '
+                             'the remainder is reserved for final reporting.')
 
     # Operational controls
     parser.add_argument('--out_dir', type=str, default=None,
@@ -323,6 +327,8 @@ def main():
                         help='Copy successful best_models into final_models/NF Head/<class>/best_models/ with backup.')
 
     args = parser.parse_args()
+    if not 0 <= args.val_fraction < 1:
+        parser.error('--val_fraction must be in [0, 1)')
 
     class_list = (
         [cls.strip() for cls in args.classes.split(',') if cls.strip()]

@@ -18,18 +18,35 @@ Two stages, both driven from this one entry point:
     The flow is run once per (padding, TTA) pair and the per-level NLL maps
     are cached at native resolution, so the whole grid is re-aggregated from
     identical network outputs. Metrics for the grid are computed on a
-    stratified *validation* subset of the test split (``--val_fraction``);
-    only the top configurations (``--top_n``) are then scored once, at full
-    resolution and with AUPRO, on the held-out remainder. This is the
-    selection protocol requested in ``docs/cflow_correcoes_e_fase3.md``.
+    stratified *validation* subset of the test split (``--val_fraction``,
+    ``--split_seed``); the configuration is selected there by
+    ``--select_metric`` (default: mean of pixel AUROC and CFLOW-AD AUPRO).
+    The held-out remainder is then scored once, at full resolution, for:
+
+    * the top validation configurations (``--top_n``) and the references;
+    * OFAT - the baseline with exactly one factor changed, for every value
+      in the grid (marginal effect of each factor);
+    * a ladder - the baseline moved factor by factor (``FACTORS`` order)
+      to the validation winner (cumulative, order-dependent path).
+
+    Every held-out row carries its paired difference to the baseline with a
+    stratified image-level bootstrap 95% CI (``--bootstrap``). Nothing
+    measured on the held-out split feeds back into any choice.
+
+    A head whose checkpoint does not prove that its epoch was selected
+    without the held-out images (``selection_validation_paths``) is marked
+    ``holdout_clean=False``: its numbers are diagnostic only. The released
+    heads predate the split and are always in this case.
 
 ``--stage retrain``
     Retrain the head under named training variants (see ``TRAIN_VARIANTS``)
-    through ``scripts/train/pixel_train_from_pretrained.py`` - always on top of
-    the frozen SEDifferNet *final model* of the class - and run the post-hoc
-    stage on every resulting ``best_pixel_auroc.pt``.
+    and training seeds (``--train_seeds``) through
+    ``scripts/train/pixel_train_from_pretrained.py`` - always on top of the
+    frozen SEDifferNet *final model* of the class and on the same split - and
+    run the post-hoc stage on every resulting ``best_pixel_auroc.pt``.
 
-``--stage all`` runs both.
+``--stage all`` runs the retrain stage (plus the released head only with
+``--include_released``).
 
 Usage:
     # Post-hoc ablation of the released vari-grip head
@@ -38,18 +55,22 @@ Usage:
     # Smoke test (small grid, few images)
     python scripts/eval/ablation_nf_head.py --class_name vari-grip --quick --limit 16
 
-    # Retrain three variants for 40 epochs and ablate each
+    # Retrain three variants x two seeds for 40 epochs and ablate each
     python scripts/eval/ablation_nf_head.py --class_name vari-grip --stage retrain `
-        --variants baseline,norot,norot_pad112 --epochs 40
+        --variants baseline,norot,norot_pad112 --train_seeds 42,43 --epochs 40
 
 Outputs (under ``resultado_analise_final/ablacao_nf_head/run_<timestamp>/``):
     grid_val.csv            every grid configuration, validation metrics
-    holdout_test_top.csv    top-N (+ reference configs) on the held-out split
-    per_level_auroc.csv     single-level AUROC per (padding, TTA) - diagnostic
-    main_effects.png        marginal effect of each factor on val pixel AUROC
+    holdout_test_top.csv    selection top-N, references, OFAT and ladder on held-out
+    per_level_auroc.csv     single-level AUROC per (padding, TTA), validation only
+    main_effects.png        marginal effect of each factor on the validation metric
     border_profile.png      mean score vs distance to the border (normals)
     maps_comparison.png     input | GT | baseline map | best map
     summary.txt             human-readable recap
+    ablation_summary.csv / ablation_summary_by_variant.csv   (run level)
+
+AUPRO (``aupro``) follows the official CFLOW-AD implementation; the former
+per-image RD++ variant is kept as ``aupro_rd_legacy`` for continuity only.
 """
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
@@ -84,6 +105,7 @@ from core.model import SEDifferNet, load_weights
 from core.utils import load_datasets
 from core.paths import project_path, PROJECT_ROOT
 from core.cflow import (
+    ABLATION_SCORE_MODES,
     DEFAULT_ATTENTION,
     PAD_MODES,
     SCORE_MODES,
@@ -103,6 +125,7 @@ from core.cflow import (
     select_levels,
     snap_reflect_pad,
 )
+from core.eval_pipeline import cflow_aupro_regions, compute_aupro_cflow
 from evaluate_full_pipeline import (
     DEVICE,
     compute_best_f1,
@@ -114,16 +137,24 @@ from evaluate_full_pipeline import (
 LEVEL_NAMES = {0: 'L1', 1: 'L2', 2: 'L3'}
 POS_CALIB_MODES = {'none': set(), 'l23': {1, 2}, 'all': {0, 1, 2}}
 FACTORS = ['pad', 'pad_mode', 'tta', 'score_mode', 'levels', 'pos_calib',
-           'sigma', 'margin', 'image_score']
+           'align_corners', 'sigma', 'margin', 'image_score']
+DEFAULT_SCORE_MODES = ('cflow_original',) + tuple(
+    mode for mode in ABLATION_SCORE_MODES if mode != 'cflow_original')
 
-# Reference configurations that are always carried into the held-out evaluation.
+# The official score is the primary reference; retain historical production for comparison.
 REFERENCE_CONFIGS = {
+    'baseline_cflow_original': dict(pad=0, pad_mode='reflect', tta='none',
+                                    score_mode='cflow_original', levels='012',
+                                    pos_calib='none', align_corners=True,
+                                    sigma=0.0, margin=0, image_score='max'),
     'baseline_producao': dict(pad=0, pad_mode='reflect', tta='none',
                               score_mode='per_level_minmax', levels='012',
-                              pos_calib='none', sigma=4.0, margin=0, image_score='max'),
+                              pos_calib='none', align_corners=False,
+                              sigma=4.0, margin=0, image_score='max'),
     'producao_pad112_m8': dict(pad=112, pad_mode='reflect', tta='none',
                                score_mode='per_level_minmax', levels='012',
-                               pos_calib='none', sigma=4.0, margin=8, image_score='max'),
+                               pos_calib='none', align_corners=False,
+                               sigma=4.0, margin=8, image_score='max'),
 }
 
 # Training variants for --stage retrain. Every one trains on the frozen
@@ -209,7 +240,9 @@ def stratified_split(labels, val_fraction, seed):
     for lbl in (0, 1):
         idx = np.flatnonzero(labels == lbl)
         rng.shuffle(idx)
-        n_val = max(1, int(round(len(idx) * val_fraction))) if len(idx) > 1 else 0
+        if len(idx) < 2:
+            raise ValueError(f"Need at least two test images with label {lbl} for a split")
+        n_val = min(len(idx) - 1, max(1, int(round(len(idx) * val_fraction))))
         val.extend(idx[:n_val].tolist())
         hold.extend(idx[n_val:].tolist())
     return np.array(sorted(val)), np.array(sorted(hold))
@@ -220,7 +253,13 @@ def stratified_split(labels, val_fraction, seed):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def load_head(nf_ckpt_path, args):
-    """Load a CFLOW head with the hyperparameters it was trained with."""
+    """Load a CFLOW head with the hyperparameters it was trained with.
+
+    Returns:
+        ``(cflow, feat_stats, info, selection_paths)``; ``selection_paths`` is
+        the list of test images used to pick the checkpoint epoch, or ``None``
+        when the checkpoint predates that metadata.
+    """
     nf_data = torch.load(nf_ckpt_path, map_location=DEVICE, weights_only=False)
     if 'cflow_state_dict' in nf_data:
         sd = nf_data['cflow_state_dict']
@@ -250,6 +289,9 @@ def load_head(nf_ckpt_path, args):
         'attention': hp.get('attention') or DEFAULT_ATTENTION,
         'epoch': nf_data.get('epoch'),
         'train_pixel_auroc': nf_data.get('pixel_auroc'),
+        'selection_split_seed': nf_data.get('selection_split_seed'),
+        'selection_train_seed': nf_data.get('selection_train_seed'),
+        'selection_val_fraction': nf_data.get('selection_val_fraction'),
     }
 
     channels = select_levels([64, 192, 256], levels)
@@ -257,7 +299,7 @@ def load_head(nf_ckpt_path, args):
                            hidden=hidden, clamp_scale=clamp).to(DEVICE)
     cflow.load_state_dict(sd)
     cflow.eval()
-    return cflow, feat_stats, info
+    return cflow, feat_stats, info, nf_data.get('selection_validation_paths')
 
 
 def build_backbone(model, info, pad, pad_mode):
@@ -324,21 +366,25 @@ def collect_nll(model, backbone, cflow, loader, levels, feat_stats, tta, desc,
 # Metrics
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def fast_binary_metrics(scores, labels, n_bins=65536):
-    """Histogram-based AUROC / AP / best-F1 in O(N + n_bins).
+def fast_binary_metrics(scores, labels, n_bins=16384, sample_size=500_000, seed=0):
+    """Histogram-based AUROC / AP / best-F1.
 
-    Scores are quantized to ``n_bins`` equal-width bins on their own range,
-    so the quantization error is bounded by 1/n_bins of the score range.
-    Ties inside a bin are resolved the same way scikit-learn resolves ties
-    (trapezoid on the ROC, step on the PR curve).
+    Bin edges are score quantiles, so each bin holds ~1/n_bins of the pixels
+    whatever the tail: equal-width bins collapsed the heavy NLL tail and the
+    near-tied top of ``cflow_original`` into a single bin. Pixels sharing a
+    bin count as tied (trapezoid on the ROC, step on the PR curve), so the
+    AUROC error is bounded by the fraction of pairs that share a bin.
     """
-    s = scores.astype(np.float64, copy=False)
-    mn, mx = s.min(), s.max()
-    if mx - mn < 1e-12 or labels.sum() == 0 or labels.sum() == labels.size:
+    s = np.asarray(scores).reshape(-1)
+    if labels.sum() == 0 or labels.sum() == labels.size or s.max() == s.min():
         return float('nan'), float('nan'), float('nan')
-    b = ((s - mn) / (mx - mn) * (n_bins - 1)).astype(np.int64)
-    pos = np.bincount(b[labels == 1], minlength=n_bins).astype(np.float64)
-    neg = np.bincount(b[labels == 0], minlength=n_bins).astype(np.float64)
+    sample = s
+    if s.size > sample_size:
+        sample = s[np.random.default_rng(seed).integers(0, s.size, sample_size)]
+    edges = np.unique(np.quantile(sample, np.linspace(0.0, 1.0, n_bins + 1)[1:-1]))
+    b = np.searchsorted(edges, s, side='right')
+    pos = np.bincount(b[labels == 1], minlength=edges.size + 1).astype(np.float64)
+    neg = np.bincount(b[labels == 0], minlength=edges.size + 1).astype(np.float64)
     P, N = pos.sum(), neg.sum()
     tp = np.cumsum(pos[::-1])
     fp = np.cumsum(neg[::-1])
@@ -371,9 +417,53 @@ def pixel_metrics(maps, masks, margin, stride=1, exact=False):
     return {'pixel_auroc': auroc, 'pixel_ap': ap, 'pixel_f1': f1}
 
 
-def aupro_rd(maps, masks, labels):
+def aupro_rd_legacy(maps, masks, labels):
+    """Former per-image RD++ AUPRO (ignores normal images); not comparable to the literature."""
     vals = [compute_pro_rd_style(masks[i], maps[i]) for i in range(len(labels)) if labels[i] > 0]
     return float(np.mean(vals)) if vals else float('nan')
+
+
+def stratified_bootstrap_weights(labels, n_boot, seed):
+    """``(n_boot, N)`` image multiplicities; normals and anomalies resampled separately."""
+    rng = np.random.default_rng(seed)
+    weights = np.zeros((n_boot, len(labels)))
+    rows = np.arange(n_boot)[:, None]
+    for lbl in (0, 1):
+        idx = np.flatnonzero(labels == lbl)
+        draws = idx[rng.integers(0, len(idx), size=(n_boot, len(idx)))]
+        np.add.at(weights, (np.broadcast_to(rows, draws.shape), draws), 1.0)
+    return weights
+
+
+def bootstrap_pixel_auroc(maps, masks, margin, weights, n_bins=4096):
+    """Pixel AUROC of every bootstrap resample, from per-image score histograms."""
+    keep = border_mask(masks.shape[-1], margin)
+    sample = np.concatenate([maps[i][keep][::17] for i in range(maps.shape[0])])
+    edges = np.unique(np.quantile(sample, np.linspace(0.0, 1.0, n_bins + 1)[1:-1]))
+    n_slots = edges.size + 1
+    pos = np.zeros((maps.shape[0], n_slots))
+    neg = np.zeros((maps.shape[0], n_slots))
+    for i in range(maps.shape[0]):
+        b = np.searchsorted(edges, maps[i][keep], side='right')
+        y = masks[i][keep] > 0
+        pos[i] = np.bincount(b[y], minlength=n_slots)
+        neg[i] = np.bincount(b[~y], minlength=n_slots)
+    tp = np.cumsum((weights @ pos)[:, ::-1], axis=1)
+    fp = np.cumsum((weights @ neg)[:, ::-1], axis=1)
+    zeros = np.zeros((weights.shape[0], 1))
+    tpr = np.hstack([zeros, tp / np.maximum(tp[:, -1:], 1e-12)])
+    fpr = np.hstack([zeros, fp / np.maximum(fp[:, -1:], 1e-12)])
+    trapezoid = getattr(np, 'trapezoid', None) or np.trapz
+    return trapezoid(tpr, fpr, axis=1)
+
+
+def paired_ci(boot, ref_boot):
+    """95% percentile CI and P(delta <= 0) of a paired bootstrap difference."""
+    if boot is None or ref_boot is None:
+        return float('nan'), float('nan'), float('nan')
+    diff = boot - ref_boot
+    return (float(np.percentile(diff, 2.5)), float(np.percentile(diff, 97.5)),
+            float(np.mean(diff <= 0)))
 
 
 def image_auroc_from_map(maps, labels, mode, topk=1.0):
@@ -413,10 +503,29 @@ def parse_level_set(name, trained_levels):
     return [trained_levels.index(l) for l in wanted]
 
 
-def build_map(cache, pos_cache, cfg, trained_levels, channels, img_size):
-    """Aggregate cached NLL maps for one configuration -> (N, S, S) float32."""
+def is_valid_cfg(cfg, trained_levels):
+    """False for configurations the head cannot run or that duplicate another one."""
+    if parse_level_set(cfg['levels'], trained_levels) is None:
+        return False
+    calib = POS_CALIB_MODES[cfg['pos_calib']]
+    if not calib:
+        return True
+    if cfg['score_mode'] == 'cflow_original':
+        return False  # positional calibration is not part of the CFLOW-AD score
+    return bool(calib & {int(ch) for ch in cfg['levels']})
+
+
+def build_map(cache, pos_cache, cfg, trained_levels, channels, img_size, cohort_idx=None):
+    """Aggregate cached NLL maps for one configuration -> (N, S, S) float32.
+
+    ``cohort_idx`` scopes cohort-dependent normalization to one evaluation
+    partition, so validation maxima cannot include held-out images.
+    """
     nll = cache['nll']
     mode = cfg['score_mode']
+    if cohort_idx is not None:
+        cohort_idx = torch.as_tensor(cohort_idx, dtype=torch.long)
+        nll = [level.index_select(0, cohort_idx) for level in nll]
     if mode == 'per_level_minmax':
         nll = [m / C for m, C in zip(nll, channels)]
 
@@ -444,8 +553,9 @@ def build_map(cache, pos_cache, cfg, trained_levels, channels, img_size):
     sel = parse_level_set(cfg['levels'], trained_levels)
     smap = CFlowPixelHead.aggregate_nll(
         nll, channels, img_size, mode=mode, level_stats=level_stats,
-        levels=sel, pos_stats=pos_stats)
-    return smap.numpy().astype(np.float32)
+        levels=sel, pos_stats=pos_stats, align_corners=cfg.get('align_corners'))
+    # cflow_original stays float64: casting max - sum back to float32 re-creates the ties.
+    return smap.numpy() if mode == 'cflow_original' else smap.numpy().astype(np.float32)
 
 
 def smooth(maps, sigma):
@@ -540,11 +650,12 @@ def plot_map_comparison(images, masks, named_maps, indices, save_path):
 
 def cfg_name(cfg):
     return (f"pad{cfg['pad']}-{cfg['pad_mode']}|tta={cfg['tta']}|{cfg['score_mode']}|"
+            f"up={cfg['align_corners']}|"
             f"L={cfg['levels']}|calib={cfg['pos_calib']}|s={cfg['sigma']:g}|"
             f"m={cfg['margin']}|img={cfg['image_score']}")
 
 
-def run_posthoc(args, nf_ckpt_path, out_dir, tag):
+def run_posthoc(args, nf_ckpt_path, out_dir, tag, variant=None, train_seed=None):
     os.makedirs(out_dir, exist_ok=True)
     img_size = c.img_size[0]
     print(f"\n{'=' * 70}\n  POST-HOC ABLATION [{tag}]\n{'=' * 70}")
@@ -559,18 +670,52 @@ def run_posthoc(args, nf_ckpt_path, out_dir, tag):
     model, _ = load_weights(model, se_ckpt)
     model.to(DEVICE).eval()
 
-    cflow, feat_stats, info = load_head(nf_ckpt_path, args)
+    cflow, feat_stats, info, selection_paths = load_head(nf_ckpt_path, args)
     trained_levels = info['levels']
     channels = select_levels([64, 192, 256], trained_levels)
     print("  Head: " + ", ".join(f"{k}={v}" for k, v in info.items()))
 
-    trainset, testset, labels = build_datasets(args.class_name, args.dataset, args.limit, args.seed)
+    trainset, testset, labels = build_datasets(args.class_name, args.dataset, args.limit,
+                                               args.split_seed)
     test_loader = DataLoader(testset, batch_size=1, shuffle=False, num_workers=0, pin_memory=True)
     stats_loader = DataLoader(trainset, batch_size=4, shuffle=False, num_workers=0)
-    val_idx, hold_idx = stratified_split(labels, args.val_fraction, args.seed)
+    val_idx, hold_idx = stratified_split(labels, args.val_fraction, args.split_seed)
     print(f"  Test images: {len(labels)} ({labels.sum()} anomalous) | "
           f"val={len(val_idx)} holdout={len(hold_idx)}"
           + ("  [val == holdout: no split requested]" if args.val_fraction <= 0 else ""))
+    if isinstance(testset, Subset):
+        sample_records = [testset.dataset.samples[index] for index in testset.indices]
+    else:
+        sample_records = testset.samples
+    split_manifest = {
+        'class_name': args.class_name,
+        'seed': args.split_seed,
+        'val_fraction': args.val_fraction,
+        'validation_indices': val_idx.tolist(),
+        'holdout_indices': hold_idx.tolist(),
+        'test_samples': [{'path': os.path.relpath(sample[0], args.dataset), 'label': int(label)}
+                         for sample, label in zip(sample_records, labels)],
+    }
+    with open(os.path.join(out_dir, 'split_manifest.json'), 'w', encoding='utf-8') as split_file:
+        json.dump(split_manifest, split_file, indent=2)
+
+    # ── Was the held-out split untouched by the checkpoint selection? ────────
+    def _norm_path(path):
+        return path.replace('\\', '/')
+    hold_paths = {_norm_path(split_manifest['test_samples'][i]['path']) for i in hold_idx}
+    if args.val_fraction <= 0:
+        holdout_clean, clean_reason = False, 'val_fraction=0: selection and report share images'
+    elif selection_paths is None:
+        holdout_clean, clean_reason = False, ('checkpoint has no selection_validation_paths '
+                                              '(older heads picked their epoch on the full test split)')
+    else:
+        overlap = hold_paths & {_norm_path(p) for p in selection_paths}
+        holdout_clean = not overlap
+        clean_reason = ('epoch selected on images disjoint from this holdout' if holdout_clean else
+                        f'{len(overlap)} held-out images were used to select the epoch')
+    print(f"  Holdout clean for this head: {holdout_clean} ({clean_reason})")
+    if not holdout_clean:
+        print("  WARNING: held-out numbers of this head are optimistic - diagnostic only.")
 
     # ── Grid definition ──────────────────────────────────────────────────────
     pads = sorted({int(p) for p in args.pads.split(',')} | {info['train_reflect_pad']})
@@ -579,13 +724,25 @@ def run_posthoc(args, nf_ckpt_path, out_dir, tag):
     pad_modes = [m for m in args.pad_modes.split(',') if m]
     ttas = [t for t in args.ttas.split(',') if t]
     score_modes = [m for m in args.score_modes.split(',') if m]
+    align_values = []
+    for value in args.align_corners_modes.split(','):
+        normalized = value.strip().lower()
+        if normalized not in ('true', 'false'):
+            raise ValueError("--align_corners_modes accepts only 'true' and/or 'false'")
+        align_values.append(normalized == 'true')
     level_sets = [l for l in args.level_sets.split(',') if l and parse_level_set(l, trained_levels) is not None]
+    if not level_sets:
+        fallback_levels = ''.join(str(level) for level in trained_levels)
+        level_sets = [fallback_levels]
+        print(f"  AVISO: nenhum --level_sets solicitado pertence a {trained_levels}; "
+              f"usando levels={fallback_levels} para evitar grid vazio.")
     pos_calibs = [p for p in args.pos_calibs.split(',') if p]
     sigmas = [float(s) for s in args.sigmas.split(',') if s]
     margins = [int(m) for m in args.margins.split(',') if m]
     image_scores = [s for s in args.image_scores.split(',') if s]
     grid = {'pad': pads, 'pad_mode': pad_modes, 'tta': ttas, 'score_mode': score_modes,
-            'levels': level_sets, 'pos_calib': pos_calibs, 'sigma': sigmas,
+            'levels': level_sets, 'pos_calib': pos_calibs, 'align_corners': align_values,
+            'sigma': sigmas,
             'margin': margins, 'image_score': image_scores}
     n_total = int(np.prod([len(v) for v in grid.values()]))
     print("  Grid: " + " x ".join(f"{k}={v}" for k, v in grid.items()) + f"  -> {n_total} configs")
@@ -594,6 +751,7 @@ def run_posthoc(args, nf_ckpt_path, out_dir, tag):
     caches, pos_caches = {}, {}
     se_scores, images_u8 = None, None
     per_level_rows = []
+    val_tensor = torch.as_tensor(val_idx, dtype=torch.long)
 
     def positional(backbone, pad, pad_mode):
         pos = compute_positional_stats(backbone, cflow, stats_loader, DEVICE, per_channel=False,
@@ -616,10 +774,16 @@ def run_posthoc(args, nf_ckpt_path, out_dir, tag):
                 images_u8 = cache.pop('images')
             caches[(pad, pad_mode, tta)] = cache
             for i, lvl in enumerate(trained_levels):
-                up = CFlowPixelHead.aggregate_nll([cache['nll'][i]], [channels[i]], img_size, mode='raw')
-                m = pixel_metrics(up.numpy(), cache['masks'], 0, stride=args.pixel_stride)
-                per_level_rows.append({'pad': pad, 'pad_mode': pad_mode, 'tta': tta,
-                                       'level': LEVEL_NAMES[lvl], **m})
+                level_val = cache['nll'][i].index_select(0, val_tensor)
+                for align_corners in align_values:
+                    up = CFlowPixelHead.aggregate_nll(
+                        [level_val], [channels[i]], img_size, mode='raw',
+                        align_corners=align_corners)
+                    m = pixel_metrics(up.numpy(), cache['masks'][val_idx], 0,
+                                      stride=args.pixel_stride)
+                    per_level_rows.append({'pad': pad, 'pad_mode': pad_mode, 'tta': tta,
+                                           'align_corners': align_corners,
+                                           'level': LEVEL_NAMES[lvl], **m})
         del backbone
         torch.cuda.empty_cache() if DEVICE == 'cuda' else None
 
@@ -627,28 +791,42 @@ def run_posthoc(args, nf_ckpt_path, out_dir, tag):
     pd.DataFrame(per_level_rows).to_csv(os.path.join(out_dir, 'per_level_auroc.csv'), index=False)
     se_auroc = float(roc_auc_score(labels, se_scores)) if len(np.unique(labels)) > 1 else float('nan')
     print(f"  SEDifferNet image AUROC (all {len(labels)} images): {se_auroc:.4f}")
-    print("  Single-level pixel AUROC:")
-    print(pd.DataFrame(per_level_rows).pivot_table(index=['pad', 'pad_mode', 'tta'], columns='level',
-                                                    values='pixel_auroc').round(4).to_string())
+    print("  Single-level pixel AUROC (validation only):")
+    print(pd.DataFrame(per_level_rows).pivot_table(
+        index=['pad', 'pad_mode', 'tta', 'align_corners'], columns='level',
+        values='pixel_auroc').round(4).to_string())
 
     # ── Grid evaluation on the validation subset ─────────────────────────────
+    stride = args.pixel_stride
+    masks_val, labels_val = masks[val_idx], labels[val_idx]
+    masks_val_s = masks_val[:, ::stride, ::stride]
+    val_valid, val_regions = {}, {}
+    for margin in margins:
+        val_valid[margin] = border_mask(img_size, margin)[::stride, ::stride] if margin > 0 else None
+        val_regions[margin] = cflow_aupro_regions(masks_val_s, val_valid[margin])
+
     rows = []
     pbar = tqdm(total=n_total, desc='  grid (val)')
-    for pad, pad_mode, tta, score_mode, lv, calib in itertools.product(
-            pads, pad_modes, ttas, score_modes, level_sets, pos_calibs):
+    for pad, pad_mode, tta, score_mode, lv, calib, align_corners in itertools.product(
+            pads, pad_modes, ttas, score_modes, level_sets, pos_calibs, align_values):
         n_inner = len(sigmas) * len(margins) * len(image_scores)
-        if pad == 0 and pad_mode != pad_modes[0]:
+        cfg = dict(pad=pad, pad_mode=pad_mode if pad > 0 else '-', tta=tta,
+                   score_mode=score_mode, levels=lv, pos_calib=calib,
+                   align_corners=align_corners)
+        if (pad == 0 and pad_mode != pad_modes[0]) or not is_valid_cfg(cfg, trained_levels):
             pbar.update(n_inner)
             continue
         key = (pad, pad_mode, tta)
-        cfg = dict(pad=pad, pad_mode=pad_mode if pad > 0 else '-', tta=tta,
-                   score_mode=score_mode, levels=lv, pos_calib=calib)
-        full = build_map(caches[key], pos_caches[(pad, pad_mode)], cfg, trained_levels, channels, img_size)
-        maps_val, masks_val, labels_val = full[val_idx], masks[val_idx], labels[val_idx]
+        maps_val = build_map(caches[key], pos_caches[(pad, pad_mode)], cfg,
+                             trained_levels, channels, img_size, cohort_idx=val_idx)
         for sigma in sigmas:
             sm = smooth(maps_val, sigma)
             for margin in margins:
-                pm = pixel_metrics(sm, masks_val, margin, stride=args.pixel_stride)
+                pm = pixel_metrics(sm, masks_val, margin, stride=stride)
+                pm['aupro'] = compute_aupro_cflow(sm[:, ::stride, ::stride], masks_val_s,
+                                                  valid=val_valid[margin],
+                                                  regions=val_regions[margin])
+                pm['auroc_aupro'] = (pm['pixel_auroc'] + pm['aupro']) / 2
                 for img_mode in image_scores:
                     row = dict(cfg, sigma=sigma, margin=margin, image_score=img_mode, **pm)
                     row['image_auroc_map'] = image_auroc_from_map(sm, labels_val, img_mode, args.topk_percent)
@@ -659,101 +837,218 @@ def run_posthoc(args, nf_ckpt_path, out_dir, tag):
     pbar.close()
 
     df = pd.DataFrame(rows)
-    df = df.sort_values(args.select_metric, ascending=False).reset_index(drop=True)
+    df = df.sort_values([args.select_metric, 'image_auroc_map'],
+                        ascending=False).reset_index(drop=True)
     df.to_csv(os.path.join(out_dir, 'grid_val.csv'), index=False)
     plot_main_effects(df, args.select_metric, os.path.join(out_dir, 'main_effects.png'))
+    ranked = df
+    if args.select_metric != 'image_auroc_map':
+        # image_score leaves pixel metrics untouched: one row per pixel configuration.
+        ranked = df.drop_duplicates(subset=[f for f in FACTORS if f != 'image_score'])
+    ranked = ranked.reset_index(drop=True)
 
-    print(f"\n  Top {min(10, len(df))} on validation by {args.select_metric}:")
-    print(df.head(10)[FACTORS + ['pixel_auroc', 'pixel_ap', 'pixel_f1', 'image_auroc_map']]
-          .round(4).to_string(index=False))
+    print(f"\n  Top {min(10, len(ranked))} on validation by {args.select_metric}:")
+    print(ranked.head(10)[FACTORS + ['pixel_auroc', 'aupro', 'auroc_aupro', 'pixel_ap',
+                                     'image_auroc_map']].round(4).to_string(index=False))
 
-    # ── Held-out evaluation: top-N + references, full resolution + AUPRO ────
-    chosen = []
-    for _, r in df.head(args.top_n).iterrows():
-        chosen.append(('top', {f: r[f] for f in FACTORS}))
-    for name, ref in REFERENCE_CONFIGS.items():
+    # ── Held-out evaluation (full resolution) ────────────────────────────────
+    masks_hold, labels_hold = masks[hold_idx], labels[hold_idx]
+    se_hold_auroc = (float(roc_auc_score(labels_hold, se_scores[hold_idx]))
+                     if len(np.unique(labels_hold)) > 1 else float('nan'))
+    boot_weights = (stratified_bootstrap_weights(labels_hold, args.bootstrap, args.split_seed)
+                    if args.bootstrap > 0 else None)
+    normal_hold_idx = np.flatnonzero(labels_hold == 0)
+    anom_hold = np.flatnonzero(labels_hold == 1)[:6]
+    hold_regions, hold_cache, kept_by_name = {}, {}, {}
+    profiles, comparison_maps = {}, {}
+
+    def canon(cfg):
+        cfg = {f: cfg[f] for f in FACTORS}
+        cfg['pad'] = int(cfg['pad'])
+        if cfg['pad'] == 0:
+            cfg['pad_mode'] = '-'
+        elif cfg['pad_mode'] in ('-', None):
+            cfg['pad_mode'] = pad_modes[0]
+        cfg['sigma'] = float(cfg['sigma'])
+        cfg['margin'] = int(cfg['margin'])
+        cfg['align_corners'] = bool(cfg['align_corners'])
+        cfg['levels'] = str(cfg['levels'])
+        return cfg
+
+    def evaluate_holdout(cfg, keep_map_as=None):
+        name = cfg_name(cfg)
+        if name in hold_cache:
+            if keep_map_as is not None and name in kept_by_name:
+                profiles[keep_map_as] = profiles[kept_by_name[name]]
+                comparison_maps[keep_map_as] = comparison_maps[kept_by_name[name]]
+            return hold_cache[name]
+        pad_mode = cfg['pad_mode'] if cfg['pad'] > 0 else pad_modes[0]
+        key = (cfg['pad'], pad_mode, cfg['tta'])
+        if key not in caches:
+            backbone = build_backbone(model, info, cfg['pad'], pad_mode)
+            caches[key] = collect_nll(model, backbone, cflow, test_loader, trained_levels,
+                                      feat_stats, cfg['tta'], desc=f'  infer {key}')
+            if (cfg['pad'], pad_mode) not in pos_caches:
+                positional(backbone, cfg['pad'], pad_mode)
+            del backbone
+        sm = smooth(build_map(caches[key], pos_caches[(cfg['pad'], pad_mode)], cfg,
+                              trained_levels, channels, img_size, cohort_idx=hold_idx),
+                    cfg['sigma'])
+        valid = border_mask(img_size, cfg['margin']) if cfg['margin'] > 0 else None
+        if cfg['margin'] not in hold_regions:
+            hold_regions[cfg['margin']] = cflow_aupro_regions(masks_hold, valid)
+        metrics = dict(cfg, **pixel_metrics(sm, masks_hold, cfg['margin'], stride=1, exact=True))
+        metrics['aupro'] = compute_aupro_cflow(sm, masks_hold, valid=valid,
+                                               regions=hold_regions[cfg['margin']])
+        metrics['aupro_rd_legacy'] = aupro_rd_legacy(sm, masks_hold, labels_hold)
+        metrics['image_auroc_map'] = image_auroc_from_map(sm, labels_hold, cfg['image_score'],
+                                                          args.topk_percent)
+        metrics['image_auroc_sediffernet'] = se_hold_auroc
+        metrics['n_holdout'] = len(hold_idx)
+        metrics['name'] = name
+        boot = (bootstrap_pixel_auroc(sm, masks_hold, cfg['margin'], boot_weights)
+                if boot_weights is not None else None)
+        hold_cache[name] = (metrics, boot)
+        if keep_map_as is not None:
+            kept_by_name[name] = keep_map_as
+            profiles[keep_map_as] = border_profile(sm[normal_hold_idx])
+            comparison_maps[keep_map_as] = sm[anom_hold]
+        return hold_cache[name]
+
+    references = {}
+    for ref_name, ref in REFERENCE_CONFIGS.items():
         ref = dict(ref)
         ref['pad'] = snap_reflect_pad(ref['pad'], info['out_size'], img_size) if ref['pad'] > 0 else 0
         if parse_level_set(ref['levels'], trained_levels) is None:
             ref['levels'] = ''.join(str(l) for l in trained_levels)
-        chosen.append((name, ref))
+        references[ref_name] = canon(ref)
+    base_cfg = references['baseline_cflow_original']
+    base_eval = evaluate_holdout(base_cfg, keep_map_as='baseline_cflow_original')
 
-    hold_rows, hold_maps = [], {}
-    for role, cfg in tqdm(chosen, desc='  holdout (full-res + AUPRO)'):
-        pad_mode = cfg['pad_mode'] if cfg['pad'] > 0 and cfg['pad_mode'] != '-' else pad_modes[0]
-        cfg = dict(cfg, pad=int(cfg['pad']), margin=int(cfg['margin']), sigma=float(cfg['sigma']),
-                   pad_mode=pad_mode if cfg['pad'] > 0 else '-')
-        key = (cfg['pad'], pad_mode, cfg['tta'])
-        if key not in caches:
-            backbone = build_backbone(model, info, cfg['pad'], pad_mode)
-            caches[key] = collect_nll(model, backbone, cflow, test_loader, trained_levels, feat_stats,
-                                      cfg['tta'], desc=f'  infer {key}')
-            if (cfg['pad'], pad_mode) not in pos_caches:
-                positional(backbone, cfg['pad'], pad_mode)
-            del backbone
-        full = build_map(caches[key], pos_caches[(cfg['pad'], pad_mode)], cfg, trained_levels, channels, img_size)
-        sm = smooth(full, cfg['sigma'])
-        pm = pixel_metrics(sm[hold_idx], masks[hold_idx], cfg['margin'], stride=1, exact=True)
-        row = dict(cfg, role=role, **pm)
-        row['aupro'] = aupro_rd(sm[hold_idx], masks[hold_idx], labels[hold_idx])
-        row['image_auroc_map'] = image_auroc_from_map(sm[hold_idx], labels[hold_idx],
-                                                      cfg['image_score'], args.topk_percent)
-        row['image_auroc_sediffernet'] = (float(roc_auc_score(labels[hold_idx], se_scores[hold_idx]))
-                                          if len(np.unique(labels[hold_idx])) > 1 else float('nan'))
-        row['n_holdout'] = len(hold_idx)
-        row['name'] = cfg_name(cfg)
+    hold_rows = []
+
+    def add_row(study, role, cfg, keep_map_as=None, prev=None):
+        metrics, boot = evaluate_holdout(canon(cfg), keep_map_as)
+        row = dict(metrics, study=study, role=role)
+        lo, hi, p_le0 = paired_ci(boot, base_eval[1])
+        row.update(delta_auroc_vs_baseline=metrics['pixel_auroc'] - base_eval[0]['pixel_auroc'],
+                   delta_auroc_ci_low=lo, delta_auroc_ci_high=hi, p_boot_delta_le0=p_le0,
+                   delta_ap_vs_baseline=metrics['pixel_ap'] - base_eval[0]['pixel_ap'],
+                   delta_aupro_vs_baseline=metrics['aupro'] - base_eval[0]['aupro'])
+        if prev is not None:
+            lo, hi, _ = paired_ci(boot, prev[1])
+            row.update(delta_auroc_vs_prev=metrics['pixel_auroc'] - prev[0]['pixel_auroc'],
+                       delta_auroc_prev_ci_low=lo, delta_auroc_prev_ci_high=hi,
+                       delta_aupro_vs_prev=metrics['aupro'] - prev[0]['aupro'])
         hold_rows.append(row)
-        if role != 'top':
-            hold_maps[role] = sm
-        elif 'best' not in hold_maps:
-            hold_maps['best'] = sm
+        return metrics, boot
+
+    for ref_name, ref in references.items():
+        add_row('reference', ref_name, ref, keep_map_as=ref_name)
+    for rank, (_, r) in enumerate(ranked.head(args.top_n).iterrows(), start=1):
+        add_row('selection', f'top{rank}', {f: r[f] for f in FACTORS},
+                keep_map_as='best' if rank == 1 else None)
+
+    # OFAT: the baseline with exactly one factor moved to each grid value.
+    for factor in tqdm(FACTORS, desc='  holdout OFAT'):
+        for value in grid[factor]:
+            cfg = canon(dict(base_cfg, **{factor: value}))
+            if cfg_name(cfg) != cfg_name(base_cfg) and is_valid_cfg(cfg, trained_levels):
+                add_row('ofat', f'{factor}={value}', cfg)
+
+    # Ladder: cumulative path baseline -> validation winner; steps that are not
+    # runnable on their own (e.g. pos_calib before leaving cflow_original) merge
+    # with the next factor.
+    best_cfg = canon({f: ranked.iloc[0][f] for f in FACTORS})
+    current, prev, pending, step = dict(base_cfg), base_eval, [], 0
+    for factor in FACTORS:
+        if current[factor] == best_cfg[factor]:
+            continue
+        current = canon(dict(current, **{factor: best_cfg[factor]}))
+        pending.append(factor)
+        if not is_valid_cfg(current, trained_levels):
+            continue
+        step += 1
+        prev = add_row('ladder', f"step{step}:{'+'.join(pending)}", current, prev=prev)
+        pending = []
 
     hold_df = pd.DataFrame(hold_rows)
     hold_df.to_csv(os.path.join(out_dir, 'holdout_test_top.csv'), index=False)
-    print("\n  Held-out results (full resolution):")
-    print(hold_df[['role'] + FACTORS + ['pixel_auroc', 'pixel_ap', 'pixel_f1', 'aupro', 'image_auroc_map']]
+    print("\n  Held-out results (full resolution, deltas vs CFLOW-AD-score baseline):")
+    print(hold_df[['study', 'role', 'pixel_auroc', 'pixel_ap', 'aupro', 'delta_auroc_vs_baseline',
+                   'delta_auroc_ci_low', 'delta_auroc_ci_high', 'delta_aupro_vs_baseline']]
           .round(4).to_string(index=False))
 
     # ── Diagnostics: border profile + visual comparison ──────────────────────
-    normal_idx = np.flatnonzero(labels == 0)
-    profiles = {name: border_profile(m[normal_idx]) for name, m in hold_maps.items()}
     plot_border_profiles(profiles, os.path.join(out_dir, 'border_profile.png'))
-    anom_hold = [i for i in hold_idx if labels[i] == 1][:6]
-    plot_map_comparison(images_u8, masks, hold_maps, anom_hold, os.path.join(out_dir, 'maps_comparison.png'))
+    plot_map_comparison(images_u8[hold_idx][anom_hold], masks_hold[anom_hold], comparison_maps,
+                        np.arange(len(anom_hold)), os.path.join(out_dir, 'maps_comparison.png'))
 
     # ── Summary ──────────────────────────────────────────────────────────────
-    best_val = df.iloc[0]
-    best_hold = hold_df[hold_df['role'] == 'top'].iloc[0]
-    base_hold = hold_df[hold_df['role'] == 'baseline_producao'].iloc[0]
+    best_val = ranked.iloc[0]
+    best_hold = hold_df[hold_df['role'] == 'top1'].iloc[0]
+    base_hold = hold_df[hold_df['role'] == 'baseline_cflow_original'].iloc[0]
+
+    def delta_line(row, suffix='baseline'):
+        if suffix == 'baseline':
+            d, lo, hi = row['delta_auroc_vs_baseline'], row['delta_auroc_ci_low'], row['delta_auroc_ci_high']
+            d_aupro = row['delta_aupro_vs_baseline']
+        else:
+            d, lo, hi = row['delta_auroc_vs_prev'], row['delta_auroc_prev_ci_low'], row['delta_auroc_prev_ci_high']
+            d_aupro = row['delta_aupro_vs_prev']
+        return (f"dAUROC={d:+.4f} [95% CI {lo:+.4f}, {hi:+.4f}] dAUPRO={d_aupro:+.4f} "
+                f"(AUROC={row['pixel_auroc']:.4f} AUPRO={row['aupro']:.4f})")
+
     lines = [
         f"tag: {tag}", f"class: {args.class_name}", f"nf_head: {nf_ckpt_path}", f"se_model: {se_ckpt}",
         "head hparams: " + json.dumps(info, default=str),
-        f"images: {len(labels)} (val {len(val_idx)}, holdout {len(hold_idx)}), val_fraction={args.val_fraction}",
-        f"grid size: {len(df)} | selection metric: {args.select_metric} | pixel_stride (grid)={args.pixel_stride}",
+        f"images: {len(labels)} (val {len(val_idx)}, holdout {len(hold_idx)}), "
+        f"val_fraction={args.val_fraction}, split_seed={args.split_seed}, train_seed={train_seed}",
+        f"holdout_clean: {holdout_clean} ({clean_reason})",
+        f"grid size: {len(df)} ({len(ranked)} distinct pixel configs) | selection metric: "
+        f"{args.select_metric} | pixel_stride (grid)={args.pixel_stride} | bootstrap={args.bootstrap}",
         f"SEDifferNet image AUROC (all): {se_auroc:.4f}",
+        "AUPRO = official CFLOW-AD protocol; aupro_rd_legacy in the CSV is the old per-image variant.",
         "",
         f"BEST on val:      {best_val['name']}  -> {args.select_metric}={best_val[args.select_metric]:.4f}",
         f"  -> holdout:     pixAUROC={best_hold['pixel_auroc']:.4f} AP={best_hold['pixel_ap']:.4f} "
         f"F1={best_hold['pixel_f1']:.4f} AUPRO={best_hold['aupro']:.4f}",
-        f"BASELINE holdout: pixAUROC={base_hold['pixel_auroc']:.4f} AP={base_hold['pixel_ap']:.4f} "
+        f"BASELINE (CFLOW-AD score on the local head, not CFLOW-AD) holdout: "
+        f"pixAUROC={base_hold['pixel_auroc']:.4f} AP={base_hold['pixel_ap']:.4f} "
         f"F1={base_hold['pixel_f1']:.4f} AUPRO={base_hold['aupro']:.4f}",
-        f"DELTA (best - baseline, holdout): pixAUROC={best_hold['pixel_auroc'] - base_hold['pixel_auroc']:+.4f} "
-        f"AP={best_hold['pixel_ap'] - base_hold['pixel_ap']:+.4f} AUPRO={best_hold['aupro'] - base_hold['aupro']:+.4f}",
+        f"DELTA best - baseline (holdout): {delta_line(best_hold)} "
+        f"dAP={best_hold['delta_ap_vs_baseline']:+.4f}",
+        "",
+        "OFAT (baseline with one factor changed, holdout):",
+        *[f"  {r['role']:<32} {delta_line(r)}" for _, r in hold_df[hold_df['study'] == 'ofat'].iterrows()],
+        "",
+        "LADDER (baseline -> validation winner, cumulative in FACTORS order; delta vs previous step):",
+        *[f"  {r['role']:<32} {delta_line(r, 'prev')}"
+          for _, r in hold_df[hold_df['study'] == 'ladder'].iterrows()],
     ]
+    if not holdout_clean:
+        lines.insert(0, "WARNING: holdout NOT clean for this head - every held-out number is diagnostic only.")
     with open(os.path.join(out_dir, 'summary.txt'), 'w', encoding='utf-8') as f:
         f.write("\n".join(lines) + "\n")
     print("\n" + "\n".join(lines))
 
     del model, cflow, caches
     torch.cuda.empty_cache() if DEVICE == 'cuda' else None
-    return {'tag': tag, 'nf_head': nf_ckpt_path, **{k: info[k] for k in ('levels', 'train_reflect_pad',
-            'feat_pool', 'feat_norm', 'feat_norm_levels', 'no_rotation', 'epoch', 'train_pixel_auroc')},
+    return {'tag': tag, 'variant': variant or tag, 'train_seed': train_seed,
+            'holdout_clean': holdout_clean, 'nf_head': nf_ckpt_path,
+            **{k: info[k] for k in ('levels', 'train_reflect_pad', 'feat_pool', 'feat_norm',
+                                    'feat_norm_levels', 'no_rotation', 'epoch', 'train_pixel_auroc')},
             'best_val_name': best_val['name'], 'best_val_metric': float(best_val[args.select_metric]),
             'holdout_best_pixel_auroc': float(best_hold['pixel_auroc']),
             'holdout_best_pixel_ap': float(best_hold['pixel_ap']),
             'holdout_best_aupro': float(best_hold['aupro']),
             'holdout_baseline_pixel_auroc': float(base_hold['pixel_auroc']),
-            'holdout_baseline_aupro': float(base_hold['aupro'])}
+            'holdout_baseline_pixel_ap': float(base_hold['pixel_ap']),
+            'holdout_baseline_aupro': float(base_hold['aupro']),
+            'holdout_delta_pixel_auroc': float(best_hold['delta_auroc_vs_baseline']),
+            'holdout_delta_ci_low': float(best_hold['delta_auroc_ci_low']),
+            'holdout_delta_ci_high': float(best_hold['delta_auroc_ci_high']),
+            'holdout_delta_aupro': float(best_hold['delta_aupro_vs_baseline'])}
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -771,17 +1066,20 @@ def run_retrain(args, run_dir):
 
     train_script = project_path('scripts', 'train', 'pixel_train_from_pretrained.py')
     heads, rows = [], []
-    for variant in variants:
-        out_dir = os.path.join(run_dir, 'train', variant)
+    for variant, train_seed in itertools.product(variants, args.train_seeds):
+        tag = f'{variant}_s{train_seed}'
+        out_dir = os.path.join(run_dir, 'train', tag)
         os.makedirs(out_dir, exist_ok=True)
         cmd = [sys.executable, train_script,
                '--checkpoint', se_ckpt, '--class_name', args.class_name,
                '--dataset', args.dataset, '--epochs', str(args.epochs),
                '--eval_interval', str(args.eval_interval), '--disable_patchcore',
-               '--out_dir', out_dir, '--seed', str(args.seed),
+               '--val_fraction', str(args.val_fraction),
+               '--split_seed', str(args.split_seed),
+               '--out_dir', out_dir, '--seed', str(train_seed),
                '--sigma', '4', '--score_norm', args.train_score_mode,
                *TRAIN_VARIANTS[variant]]
-        print(f"\n{'=' * 70}\n  RETRAIN [{variant}]\n{'=' * 70}\n  " + " ".join(cmd))
+        print(f"\n{'=' * 70}\n  RETRAIN [{tag}]\n{'=' * 70}\n  " + " ".join(cmd))
         t0 = time.time()
         ret = subprocess.run(cmd, cwd=PROJECT_ROOT)
         elapsed = time.time() - t0
@@ -790,12 +1088,13 @@ def run_retrain(args, run_dir):
         if run_dirs:
             cand = os.path.join(out_dir, run_dirs[-1], 'best_models', 'best_pixel_auroc.pt')
             head = cand if os.path.exists(cand) else None
-        rows.append({'variant': variant, 'flags': " ".join(TRAIN_VARIANTS[variant]),
+        rows.append({'variant': variant, 'train_seed': train_seed,
+                     'flags': " ".join(TRAIN_VARIANTS[variant]),
                      'returncode': ret.returncode, 'train_minutes': elapsed / 60, 'head': head})
         if head is None:
-            print(f"  WARNING: no best_pixel_auroc.pt produced for {variant} (returncode {ret.returncode})")
+            print(f"  WARNING: no best_pixel_auroc.pt produced for {tag} (returncode {ret.returncode})")
             continue
-        heads.append((variant, head))
+        heads.append((variant, train_seed, head))
     pd.DataFrame(rows).to_csv(os.path.join(run_dir, 'retrain_variants.csv'), index=False)
     return heads
 
@@ -813,15 +1112,29 @@ def main():
                         help='SEDifferNet final model. Default: final_models/SEDiffernet/<class>/*.pt')
     parser.add_argument('--nf_checkpoint', type=str, default=None,
                         help='NF head to ablate (posthoc). Default: final_models/NF Head/<class>/best_models/best_pixel_auroc.pt')
-    parser.add_argument('--limit', type=int, default=None, help='Balanced cap on test images')
-    parser.add_argument('--seed', type=int, default=42)
-    parser.add_argument('--val_fraction', type=float, default=0.3,
+    parser.add_argument('--limit', type=int, default=None,
+                        help='Balanced cap on test images (changes the split: heads trained on the '
+                             'full split will be reported as holdout_clean=False)')
+    parser.add_argument('--seed', type=int, default=42,
+                        help='Training seed when --train_seeds is not given')
+    parser.add_argument('--train_seeds', type=str, default=None,
+                        help='Comma-separated training seeds for --stage retrain (default: --seed)')
+    parser.add_argument('--split_seed', type=int, default=42,
+                        help='Seed of the validation/holdout split, fixed across training seeds')
+    parser.add_argument('--val_fraction', type=float, default=0.4,
                         help='Fraction of test images (stratified) used to SELECT the configuration; '
                              'the rest is reported once. 0 = select and report on the same images.')
-    parser.add_argument('--select_metric', type=str, default='pixel_auroc',
-                        choices=['pixel_auroc', 'pixel_ap', 'pixel_f1', 'image_auroc_map'])
+    parser.add_argument('--select_metric', type=str, default='auroc_aupro',
+                        choices=['auroc_aupro', 'pixel_auroc', 'aupro', 'pixel_ap', 'pixel_f1',
+                                 'image_auroc_map'],
+                        help='auroc_aupro = mean of pixel AUROC and CFLOW-AD AUPRO on validation')
     parser.add_argument('--top_n', type=int, default=12,
                         help='Number of best validation configs re-scored on the held-out split')
+    parser.add_argument('--bootstrap', type=int, default=1000,
+                        help='Stratified image-level bootstrap resamples for the paired held-out '
+                             'CIs (0 disables)')
+    parser.add_argument('--include_released', action='store_true',
+                        help='With --stage all, also ablate the released head (diagnostic only)')
     parser.add_argument('--pixel_stride', type=int, default=2,
                         help='Pixel subsampling for the grid metrics (held-out uses stride 1)')
     parser.add_argument('--topk_percent', type=float, default=1.0)
@@ -832,12 +1145,20 @@ def main():
     parser.add_argument('--pads', type=str, default='0,112')
     parser.add_argument('--pad_modes', type=str, default='reflect', help=f"Subset of {PAD_MODES}")
     parser.add_argument('--ttas', type=str, default='none,flips', help=f"Subset of {list(TTA_MODES)}")
-    parser.add_argument('--score_modes', type=str, default=','.join(SCORE_MODES))
+    parser.add_argument('--score_modes', type=str, default=','.join(DEFAULT_SCORE_MODES),
+                        help='Score modes to compare. `cflow_original` uses the official '
+                             'cohort-normalized probability aggregation; its maxima are '
+                             'estimated separately over validation and held-out cohorts (transductive).')
+    parser.add_argument('--align_corners_modes', type=str, default='true,false',
+                        help='Bilinear interpolation variants shared across all score modes; '
+                             'use both values to isolate aggregation from interpolation.')
     parser.add_argument('--level_sets', type=str, default='012,12,01,02,0,2',
                         help='Original level ids to sum (0=L1,1=L2,2=L3); sets not covered by the head are skipped')
     parser.add_argument('--pos_calibs', type=str, default='none,l23', help=f"Subset of {list(POS_CALIB_MODES)}")
     parser.add_argument('--sigmas', type=str, default='0,4,8')
-    parser.add_argument('--margins', type=str, default='0,8')
+    parser.add_argument('--margins', type=str, default='0',
+                        help='Border frames excluded from the metrics; >0 changes the evaluated '
+                             'pixel set, so keep it out of selection unless studied on purpose')
     parser.add_argument('--image_scores', type=str, default='max,topk')
     parser.add_argument('--quick', action='store_true', help='Small grid for smoke tests')
     # Retrain
@@ -853,13 +1174,20 @@ def main():
     parser.add_argument('--out_dir', type=str, default=None)
     args = parser.parse_args()
 
+    if not 0 <= args.val_fraction < 1:
+        parser.error('--val_fraction must be in [0, 1)')
+    if args.bootstrap < 0:
+        parser.error('--bootstrap must be >= 0')
+    args.train_seeds = ([int(s) for s in args.train_seeds.split(',') if s.strip()]
+                        if args.train_seeds else [args.seed])
+
     if args.quick:
         args.ttas = 'none'
-        args.score_modes = 'per_level_minmax,per_level_prob'
+        args.score_modes = ','.join(DEFAULT_SCORE_MODES)
         args.level_sets = '012,12'
         args.pos_calibs = 'none,l23'
         args.sigmas = '0,4'
-        args.margins = '0,8'
+        args.margins = '0'
         args.image_scores = 'max'
         args.top_n = min(args.top_n, 4)
 
@@ -878,24 +1206,40 @@ def main():
     original = (c.class_name, c.n_transforms_test, c.transf_rotations)
     summaries = []
     try:
-        if args.stage in ('posthoc', 'all'):
+        if args.stage == 'posthoc' or (args.stage == 'all' and args.include_released):
             nf = args.nf_checkpoint or find_nf_head_checkpoint(args.class_name)
             if nf is None:
                 raise FileNotFoundError(f"NF head not found for {args.class_name}")
-            summaries.append(run_posthoc(args, nf, os.path.join(run_dir, 'posthoc_released'), 'released'))
+            summaries.append(run_posthoc(args, nf, os.path.join(run_dir, 'posthoc_released'),
+                                         'released'))
         if args.stage in ('retrain', 'all'):
-            for variant, head in run_retrain(args, run_dir):
-                summaries.append(run_posthoc(args, head, os.path.join(run_dir, f'posthoc_{variant}'), variant))
+            for variant, train_seed, head in run_retrain(args, run_dir):
+                tag = f'{variant}_s{train_seed}'
+                summaries.append(run_posthoc(args, head, os.path.join(run_dir, f'posthoc_{tag}'),
+                                             tag, variant=variant, train_seed=train_seed))
     finally:
         c.class_name, c.n_transforms_test, c.transf_rotations = original
 
     if summaries:
         summary_df = pd.DataFrame(summaries)
         summary_df.to_csv(os.path.join(run_dir, 'ablation_summary.csv'), index=False)
+        cols = ['tag', 'holdout_clean', 'best_val_metric', 'holdout_baseline_pixel_auroc',
+                'holdout_best_pixel_auroc', 'holdout_delta_pixel_auroc', 'holdout_delta_ci_low',
+                'holdout_delta_ci_high', 'holdout_baseline_aupro', 'holdout_best_aupro']
         print(f"\n{'=' * 70}\n  ABLATION SUMMARY\n{'=' * 70}")
-        print(summary_df[['tag', 'best_val_metric', 'holdout_baseline_pixel_auroc',
-                          'holdout_best_pixel_auroc', 'holdout_best_pixel_ap',
-                          'holdout_baseline_aupro', 'holdout_best_aupro']].round(4).to_string(index=False))
+        print(summary_df[cols].round(4).to_string(index=False))
+        clean = summary_df[summary_df['holdout_clean']]
+        if len(clean) < len(summary_df):
+            print("  Rows with holdout_clean=False are diagnostic only and excluded below.")
+        if len(clean):
+            metrics = ['holdout_baseline_pixel_auroc', 'holdout_best_pixel_auroc',
+                       'holdout_delta_pixel_auroc', 'holdout_baseline_aupro', 'holdout_best_aupro',
+                       'holdout_delta_aupro']
+            by_variant = clean.groupby('variant')[metrics].agg(['mean', 'std', 'count'])
+            by_variant.columns = ['_'.join(col) for col in by_variant.columns]
+            by_variant.to_csv(os.path.join(run_dir, 'ablation_summary_by_variant.csv'))
+            print("\n  Clean heads, mean/std across training seeds:")
+            print(by_variant.round(4).to_string())
     print(f"\nResults: {run_dir}")
 
 

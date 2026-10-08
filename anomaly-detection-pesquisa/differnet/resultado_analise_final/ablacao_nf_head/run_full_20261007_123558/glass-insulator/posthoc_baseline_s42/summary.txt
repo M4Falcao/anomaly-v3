@@ -1,0 +1,44 @@
+tag: baseline_s42
+class: glass-insulator
+nf_head: C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\resultado_analise_final\ablacao_nf_head\run_full_20261007_123558\glass-insulator\train\baseline_s42\run_20261007_123610\best_models\best_pixel_auroc.pt
+se_model: C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\SEDiffernet\glass-insulator\glass-insulator_se_differnet_glass_insulator_200_1_epoch_170.pt
+head hparams: {"out_size": 96, "clamp_scale": 0.5, "n_blocks": 8, "cond_dim": 64, "hidden": 256, "levels": [0, 1, 2], "feat_pool": 0, "pad_mode": "reflect", "train_reflect_pad": 0, "feat_norm": false, "feat_norm_levels": null, "no_rotation": false, "attention": "se", "epoch": 15, "train_pixel_auroc": 0.8807073452132419, "selection_split_seed": 42, "selection_train_seed": 42, "selection_val_fraction": 0.4}
+images: 678 (val 271, holdout 407), val_fraction=0.4, split_seed=42, train_seed=42
+holdout_clean: True (epoch selected on images disjoint from this holdout)
+grid size: 10620 (5310 distinct pixel configs) | selection metric: auroc_aupro | pixel_stride (grid)=2 | bootstrap=1000
+SEDifferNet image AUROC (all): 0.7850
+AUPRO = official CFLOW-AD protocol; aupro_rd_legacy in the CSV is the old per-image variant.
+
+BEST on val:      pad112-reflect|tta=flips|per_level_std|up=False|L=02|calib=none|s=0|m=0|img=topk  -> auroc_aupro=0.8960
+  -> holdout:     pixAUROC=0.9156 AP=0.0028 F1=0.0199 AUPRO=0.7829
+BASELINE (CFLOW-AD score on the local head, not CFLOW-AD) holdout: pixAUROC=0.8761 AP=0.0011 F1=0.0064 AUPRO=0.6710
+DELTA best - baseline (holdout): dAUROC=+0.0395 [95% CI +0.0292, +0.0500] dAUPRO=+0.1118 (AUROC=0.9156 AUPRO=0.7829) dAP=+0.0017
+
+OFAT (baseline with one factor changed, holdout):
+  pad=112                          dAUROC=-0.0002 [95% CI -0.0026, +0.0018] dAUPRO=+0.0001 (AUROC=0.8759 AUPRO=0.6712)
+  tta=hflip                        dAUROC=+0.0012 [95% CI -0.0015, +0.0040] dAUPRO=+0.0045 (AUROC=0.8773 AUPRO=0.6755)
+  tta=flips                        dAUROC=+0.0032 [95% CI -0.0011, +0.0072] dAUPRO=-0.0080 (AUROC=0.8793 AUPRO=0.6631)
+  score_mode=raw                   dAUROC=-0.0145 [95% CI -0.0263, -0.0048] dAUPRO=-0.0963 (AUROC=0.8617 AUPRO=0.5748)
+  score_mode=per_level_minmax      dAUROC=+0.0096 [95% CI -0.0334, +0.0450] dAUPRO=-0.0517 (AUROC=0.8858 AUPRO=0.6193)
+  score_mode=per_level_prob        dAUROC=-0.2034 [95% CI -0.2482, -0.1552] dAUPRO=-0.3298 (AUROC=0.6727 AUPRO=0.3413)
+  score_mode=per_level_std         dAUROC=+0.0140 [95% CI +0.0041, +0.0232] dAUPRO=+0.0067 (AUROC=0.8901 AUPRO=0.6777)
+  levels=0                         dAUROC=-0.0225 [95% CI -0.0416, -0.0020] dAUPRO=+0.0376 (AUROC=0.8536 AUPRO=0.7087)
+  levels=1                         dAUROC=-0.1524 [95% CI -0.1849, -0.1252] dAUPRO=-0.4833 (AUROC=0.7237 AUPRO=0.1878)
+  levels=2                         dAUROC=+0.0232 [95% CI -0.0028, +0.0464] dAUPRO=-0.0739 (AUROC=0.8993 AUPRO=0.5972)
+  levels=01                        dAUROC=-0.0296 [95% CI -0.0417, -0.0184] dAUPRO=-0.0487 (AUROC=0.8465 AUPRO=0.6223)
+  levels=02                        dAUROC=+0.0165 [95% CI +0.0081, +0.0264] dAUPRO=+0.0945 (AUROC=0.8926 AUPRO=0.7656)
+  levels=12                        dAUROC=-0.0595 [95% CI -0.0891, -0.0371] dAUPRO=-0.3354 (AUROC=0.8167 AUPRO=0.3357)
+  align_corners=False              dAUROC=-0.0008 [95% CI -0.0021, +0.0005] dAUPRO=-0.0021 (AUROC=0.8753 AUPRO=0.6690)
+  sigma=2.0                        dAUROC=+0.0015 [95% CI +0.0003, +0.0026] dAUPRO=-0.0012 (AUROC=0.8776 AUPRO=0.6698)
+  sigma=4.0                        dAUROC=+0.0019 [95% CI -0.0020, +0.0055] dAUPRO=-0.0081 (AUROC=0.8780 AUPRO=0.6630)
+  sigma=8.0                        dAUROC=-0.0041 [95% CI -0.0138, +0.0048] dAUPRO=-0.0320 (AUROC=0.8720 AUPRO=0.6390)
+  sigma=12.0                       dAUROC=-0.0141 [95% CI -0.0287, -0.0007] dAUPRO=-0.0531 (AUROC=0.8621 AUPRO=0.6179)
+  image_score=topk                 dAUROC=+0.0000 [95% CI +0.0000, +0.0000] dAUPRO=+0.0000 (AUROC=0.8761 AUPRO=0.6710)
+
+LADDER (baseline -> validation winner, cumulative in FACTORS order; delta vs previous step):
+  step1:pad                        dAUROC=-0.0002 [95% CI -0.0026, +0.0018] dAUPRO=+0.0001 (AUROC=0.8759 AUPRO=0.6712)
+  step2:tta                        dAUROC=+0.0041 [95% CI -0.0004, +0.0086] dAUPRO=-0.0042 (AUROC=0.8801 AUPRO=0.6670)
+  step3:score_mode                 dAUROC=+0.0146 [95% CI +0.0062, +0.0225] dAUPRO=+0.0197 (AUROC=0.8946 AUPRO=0.6866)
+  step4:levels                     dAUROC=+0.0207 [95% CI +0.0142, +0.0285] dAUPRO=+0.0934 (AUROC=0.9154 AUPRO=0.7801)
+  step5:align_corners              dAUROC=+0.0002 [95% CI -0.0005, +0.0011] dAUPRO=+0.0028 (AUROC=0.9156 AUPRO=0.7829)
+  step6:image_score                dAUROC=+0.0000 [95% CI +0.0000, +0.0000] dAUPRO=+0.0000 (AUROC=0.9156 AUPRO=0.7829)

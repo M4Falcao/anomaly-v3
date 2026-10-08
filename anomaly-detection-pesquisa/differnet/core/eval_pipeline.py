@@ -148,6 +148,99 @@ def compute_pro_rd_style(mask, amap, num_th=200):
     return float(auc(fpr_valid[sort_idx], pro_valid[sort_idx]))
 
 
+def cflow_aupro_regions(masks, valid=None):
+    """Ground-truth regions as the official CFLOW-AD AUPRO sees them.
+
+    8-connected components (``label(connectivity=2)``); the overlap is counted
+    on the hole-filled region crop and divided by the unfilled area, exactly as
+    ``prop.filled_image`` / ``prop.area`` in ``cflow-ad/train.py``.
+
+    Args:
+        masks: ``(N, H, W)`` binary ground truth.
+        valid: Optional ``(H, W)`` bool mask of pixels kept in the evaluation.
+
+    Returns:
+        List of ``(image_index, rows, cols, area)``.
+    """
+    from scipy.ndimage import binary_fill_holes
+    from skimage.measure import label, regionprops
+
+    regions = []
+    for i in range(masks.shape[0]):
+        if not masks[i].any():
+            continue
+        for prop in regionprops(label(masks[i] > 0, connectivity=2)):
+            r0, c0, _, _ = prop.bbox
+            rows, cols = np.nonzero(binary_fill_holes(prop.image))
+            rows, cols = rows + r0, cols + c0
+            area = int(prop.area)
+            if valid is not None:
+                keep = valid[rows, cols]
+                rows, cols = rows[keep], cols[keep]
+                area = int(valid[prop.coords[:, 0], prop.coords[:, 1]].sum())
+            if area > 0:
+                regions.append((i, rows, cols, area))
+    return regions
+
+
+def compute_aupro_cflow(maps, masks, max_step=1000, expect_fpr=0.3, valid=None, regions=None):
+    """AUPRO as implemented in the official CFLOW-AD repository.
+
+    Global thresholds ``max - k * (max - min) / max_step`` over every map, FPR
+    over the normal pixels of *all* images (normal images included), mean
+    per-region overlap, FPRs <= ``expect_fpr`` min-max rescaled to [0, 1]
+    before the AUC. Counting is exact (sorted thresholds + bincount), so it
+    matches the 1000-step loop without its cost.
+
+    Args:
+        maps: ``(N, H, W)`` anomaly maps (higher = more anomalous).
+        masks: ``(N, H, W)`` binary ground truth.
+        valid: Optional ``(H, W)`` bool mask; pixels outside are ignored.
+        regions: Optional precomputed :func:`cflow_aupro_regions` output.
+
+    Returns:
+        AUPRO in [0, 1], or NaN when undefined (no regions, constant maps).
+    """
+    from sklearn.metrics import auc
+
+    if regions is None:
+        regions = cflow_aupro_regions(masks, valid)
+    if not regions:
+        return float('nan')
+    keep = np.ones(masks.shape[1:], dtype=bool) if valid is None else valid
+
+    max_th = max(float(maps[i][keep].max()) for i in range(maps.shape[0]))
+    min_th = min(float(maps[i][keep].min()) for i in range(maps.shape[0]))
+    if max_th <= min_th:
+        return float('nan')
+    delta = (max_th - min_th) / max_step
+    ascending = (max_th - np.arange(max_step) * delta)[::-1]
+
+    def positives_per_step(values):
+        below = np.searchsorted(ascending, values, side='left')
+        suffix = np.bincount(below, minlength=max_step + 1)[::-1].cumsum()[::-1]
+        return suffix[1:][::-1].astype(np.float64)
+
+    false_pos = np.zeros(max_step)
+    n_negative = 0
+    for i in range(maps.shape[0]):
+        negative = keep & (masks[i] == 0)
+        n_negative += int(negative.sum())
+        false_pos += positives_per_step(maps[i][negative])
+    if n_negative == 0:
+        return float('nan')
+    fprs = false_pos / n_negative
+    pros = np.mean([positives_per_step(maps[i][rows, cols]) / area
+                    for i, rows, cols, area in regions], axis=0)
+
+    selected = fprs <= expect_fpr
+    fprs, pros = fprs[selected], pros[selected]
+    if fprs.size < 2 or fprs.max() <= fprs.min():
+        return float('nan')
+    fprs = (fprs - fprs.min()) / (fprs.max() - fprs.min())
+    return float(auc(fprs, pros))
+
+
 def compute_best_f1(labels, scores):
     """Find threshold that maximizes F1 score. Returns (best_f1, threshold)."""
     precision, recall, thresholds = precision_recall_curve(labels, scores)

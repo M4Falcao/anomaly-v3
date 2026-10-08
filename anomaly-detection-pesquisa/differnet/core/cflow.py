@@ -33,11 +33,15 @@ Score modes
     data (:func:`compute_level_stats`), then sum. Puts every level on a common
     scale without relying on per-image statistics.
 ``per_level_prob``
-    CFLOW-AD reference aggregation (Gudovskiy et al., WACV 2022): per-dimension
-    log-likelihood ``logsigmoid(log p) / C`` is exponentiated into a
-    pseudo-probability in ``[0, 1]`` per level, the levels are summed and the
-    score is the negated sum. Bounded, so no level can dominate through raw
-    magnitude and no per-image statistics are needed.
+    Local bounded-probability variant: ``exp(logsigmoid(-NLL) / C)`` is summed
+    with a negative sign. This is not the complete score aggregation in the
+    original CFLOW-AD implementation.
+``cflow_original``
+    CFLOW-AD reference scoring on a complete evaluation cohort. For each level,
+    divide log-likelihood by channel count, subtract that level's maximum over
+    the cohort, exponentiate, upsample, sum levels, then return ``global_max -
+    sum``. This mode belongs to cached-NLL ablations; it is excluded from
+    minibatch ``score_map`` calls because its normalization is cohort-wide.
 """
 
 import math
@@ -50,6 +54,9 @@ from torch import nn
 from tqdm import tqdm
 
 SCORE_MODES = ('raw', 'per_level_minmax', 'per_level_std', 'per_level_prob')
+# Cohort-normalized CFLOW-AD scoring is only valid in post-hoc evaluators that
+# have cached NLL maps for the complete evaluation set.
+ABLATION_SCORE_MODES = SCORE_MODES + ('cflow_original',)
 PAD_MODES = ('reflect', 'replicate')
 
 # The affine coupling clamp used while the released heads were trained. The
@@ -450,7 +457,10 @@ class CFlowPixelHead(nn.Module):
             Tensor of shape ``(B, img_size, img_size)``.
         """
         if mode not in SCORE_MODES:
-            raise ValueError(f"unknown score mode {mode!r}; expected one of {SCORE_MODES}")
+            raise ValueError(
+                f"unknown score mode {mode!r}; score_map accepts minibatch-safe "
+                f"modes {SCORE_MODES}; use aggregate_nll with the full cohort "
+                "for cflow_original")
         per_channel = mode == 'per_level_minmax'
         nll = self.nll_per_level(feats_per_level, per_channel=per_channel, chunk_size=chunk_size)
         channels = [f.shape[1] for f in feats_per_level]
@@ -460,7 +470,8 @@ class CFlowPixelHead(nn.Module):
 
     @staticmethod
     def aggregate_nll(nll_per_level, channels, img_size, mode='raw',
-                      level_stats=None, levels=None, pos_stats=None):
+                      level_stats=None, levels=None, pos_stats=None,
+                      align_corners=None):
         """Turn already-computed per-level NLL maps into one anomaly map.
 
         Split out of :meth:`score_map` so that an ablation can run the flow
@@ -485,12 +496,15 @@ class CFlowPixelHead(nn.Module):
         Returns:
             Tensor of shape ``(B, img_size, img_size)``.
         """
-        if mode not in SCORE_MODES:
-            raise ValueError(f"unknown score mode {mode!r}; expected one of {SCORE_MODES}")
+        if mode not in ABLATION_SCORE_MODES:
+            raise ValueError(f"unknown score mode {mode!r}; expected one of {ABLATION_SCORE_MODES}")
+
+        up_align_corners = (mode == 'cflow_original' if align_corners is None
+                            else bool(align_corners))
 
         def _up(t):
             return F.interpolate(t.unsqueeze(1), size=(img_size, img_size),
-                                 mode='bilinear', align_corners=False).squeeze(1)
+                                 mode='bilinear', align_corners=up_align_corners).squeeze(1)
 
         def _select(seq):
             return seq if levels is None else [seq[i] for i in levels]
@@ -523,6 +537,16 @@ class CFlowPixelHead(nn.Module):
             for m, C in zip(_select(nll), _select(list(channels))):
                 probs.append(torch.exp(F.logsigmoid(-m) / C))
             return -sum(_up(p) for p in probs)
+
+        if mode == 'cflow_original':
+            # Double precision as in the official test_norm (float32 exp underflows below ~-87).
+            probability_maps = []
+            for m, C in zip(_select(nll), _select(list(channels))):
+                log_prob = -m.double() / C
+                log_prob = log_prob - log_prob.max()
+                probability_maps.append(_up(torch.exp(log_prob)))
+            probability_sum = sum(probability_maps)
+            return probability_sum.max() - probability_sum
 
         if level_stats is None:
             raise ValueError("mode 'per_level_std' requires level_stats")

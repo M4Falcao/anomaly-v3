@@ -56,8 +56,8 @@ from tqdm import tqdm
 
 import config as c
 from core.cflow import (
+    ABLATION_SCORE_MODES,
     DEFAULT_ATTENTION,
-    SCORE_MODES,
     TTA_MODES,
     CFlowPixelHead,
     border_mask,
@@ -171,12 +171,13 @@ def evaluate_class(class_name, args, out_dir):
             levels=head.trained_levels, feat_stats=head.feat_stats,
             desc=f'  [{class_name}] level stats')
 
-    with torch.no_grad():
-        for i, data in enumerate(loader):
-            if i >= 3:
-                break
-            head.score_map(unpack_batch(data)[0], tta=args.tta, score_norm=args.score_norm,
-                           levels=score_idx, level_stats=level_stats)
+    if args.score_norm != 'cflow_original':
+        with torch.no_grad():
+            for i, data in enumerate(loader):
+                if i >= 3:
+                    break
+                head.score_map(unpack_batch(data)[0], tta=args.tta, score_norm=args.score_norm,
+                               levels=score_idx, level_stats=level_stats)
     if DEVICE == 'cuda':
         torch.cuda.synchronize()
 
@@ -200,6 +201,15 @@ def evaluate_class(class_name, args, out_dir):
                 images_viz.append(images[0].cpu())
 
     def aggregate(levels_idx, norm, sigma):
+        if norm == 'cflow_original':
+            nll_all = [
+                torch.cat([sample[level].to(DEVICE) for sample in cache], dim=0)
+                for level in range(len(head.channels))
+            ]
+            score_all = CFlowPixelHead.aggregate_nll(
+                nll_all, head.channels, c.img_size[0], mode=norm, levels=levels_idx)
+            return list(gaussian_smooth(t2np(score_all), sigma=sigma))
+
         maps = []
         for nll in cache:
             smap = CFlowPixelHead.aggregate_nll(
@@ -225,7 +235,9 @@ def evaluate_class(class_name, args, out_dir):
                'score_norm': args.score_norm, 'tta': args.tta, 'sigma': args.sigma,
                'reflect_pad': args.reflect_pad, 'border_margin': args.border_margin,
                'feat_norm': norm_val, 'head_epoch': head.epoch}
-    metrics.update(pixel_metrics(maps, masks, keep))
+    metrics.update(pixel_metrics(maps, masks, keep, with_aupro=not args.skip_aupro))
+    if args.skip_aupro:
+        metrics['aupro'] = float('nan')
     lat = float(np.mean(times)) * 1000
     metrics['latency_ms'] = lat
     metrics['fps'] = 1000.0 / lat if lat > 0 else 0.0
@@ -248,7 +260,10 @@ def evaluate_class(class_name, args, out_dir):
                 idx, ids = resolve_score_levels(lv, head.trained_levels)
             except ValueError:
                 continue
-            m = pixel_metrics(aggregate(idx, nm, sg), masks, keep, with_aupro=False)
+            sweep_maps = aggregate(idx, nm, sg)
+            m = pixel_metrics(
+                sweep_maps, masks, keep,
+                with_aupro=args.sweep_aupro and nm == 'cflow_original')
             sweep_rows.append({'class': class_name, 'levels': ''.join(str(i) for i in ids),
                                'sigma': sg, 'score_norm': nm, 'tta': args.tta, **m})
 
@@ -281,8 +296,9 @@ def main():
     parser.add_argument('--limit', type=int, default=None,
                         help='Teto balanceado de imagens de teste; preserva todas as anomalias.')
 
-    parser.add_argument('--score_norm', type=str, default='raw', choices=list(SCORE_MODES),
-                        help='Agregacao entre niveis. Default "raw": venceu em 17/18 heads.')
+    parser.add_argument('--score_norm', type=str, default='raw', choices=list(ABLATION_SCORE_MODES),
+                        help='Agregacao entre niveis. `cflow_original` reproduz o score do '
+                             'paper/repo oficial e normaliza maxima por escala sobre todo o teste.')
     parser.add_argument('--tta', type=str, default='flips', choices=list(TTA_MODES),
                         help='TTA por espelhamento. Default "flips" (4 vistas, 4x o custo).')
     parser.add_argument('--levels', type=str, default='auto',
@@ -297,6 +313,8 @@ def main():
                         help='Padding refletido na entrada (tecnica de inferencia).')
     parser.add_argument('--border_margin', type=int, default=0,
                         help='Exclui uma moldura de N pixels das metricas. Mantenha 0.')
+    parser.add_argument('--skip_aupro', action='store_true',
+                        help='Pula AUPRO (lento em milhares de imagens); mantém AUROC/AP/F1.')
 
     parser.add_argument('--attention', type=str, default=DEFAULT_ATTENTION,
                         choices=['auto', 'se', 'cbam', 'legacy_train'])
@@ -309,9 +327,12 @@ def main():
     parser.add_argument('--sweep', action='store_true',
                         help='Reagrega os mapas ja calculados sob varias configs (sem custo de '
                              'inferencia extra) e grava sweep.csv.')
+    parser.add_argument('--sweep_aupro', action='store_true',
+                        help='Tambem calcula AUPRO para cflow_original no sweep (mais caro).')
     parser.add_argument('--sweep_levels', type=str, default='0,2,02,012')
     parser.add_argument('--sweep_sigmas', type=str, default='0,2,4,8')
-    parser.add_argument('--sweep_norms', type=str, default='raw,per_level_minmax')
+    parser.add_argument('--sweep_norms', type=str,
+                        default='raw,per_level_minmax,per_level_prob,cflow_original')
 
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--out_dir', type=str, default=None)

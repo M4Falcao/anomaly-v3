@@ -83,7 +83,7 @@ prevê resolver o caso `yoke` (Seção 9.1). A seleção de época durante o tre
 | **3** | **Resultados — rodada 1** (8 receitas em vari-grip, 14 208 configurações) |
 | **4** | **Resultados — rodada 2** (5 receitas em vari-grip, 2 496 configurações) |
 | **5** | **Resultados — Passo 0 Multi-Classe** (heads publicadas em 3 classes) — ⚠️ conclusões sobre níveis revistas pela Seção 6 |
-| **6** | **Resultados — rodadas 3 e 4** (retreino nas 4 classes restantes) · **6.7** hierarquia dos níveis e regret · **6.8** ganho de cada técnica · **6.9** treino em lote (`run_20260907_145952`), diagnóstico de vari-grip, overfitting e transferência do RD++ |
+| **6** | **Resultados — rodadas 3 e 4** (retreino nas 4 classes restantes) · **6.7** hierarquia dos níveis e regret · **6.8** ganho de cada técnica · **6.9** treino em lote e transferência do RD++ · **6.10** score original CFLOW-AD em NLLs locais |
 | **7** | **Descobertas consolidadas** (confirmadas, derrubadas, novas) |
 | **8** | **Registro de caminhos testados e descartados** |
 | **9** | **Próximos passos** (**9.0** estrutura final · **9.1** o que falta) |
@@ -192,9 +192,11 @@ estruturas).
 ### 1.5 Outros fatores do grid
 
 - **`score_mode`** — como os mapas NLL dos níveis viram um só: `raw` (soma direta), `per_level_minmax`
-  (min-max por imagem em cada nível, depois soma; joga fora a escala absoluta), `per_level_prob`
-  (log-sigmoid limitado em [0,1] por nível, como no CFLOW-AD), `per_level_std` (padroniza com
-  estatísticas escalares de treino).
+   (min-max por imagem em cada nível, depois soma; convenção histórica local), `per_level_prob`
+   (aproximação local limitada por `logsigmoid(-NLL)/C`, sem o máximo global original),
+   `per_level_std` (padroniza com estatísticas escalares de treino) e `cflow_original` (normaliza
+   log-likelihood por canal e escala sobre a coorte, soma mapas de probabilidade e inverte pelo máximo
+   global do mapa somado, conforme o repositório oficial CFLOW-AD).
 - **`pos_calib`** — subtrai da NLL a média de cada posição estimada no treino. Só em L2/L3 (`l23`):
   o perfil posicional de L1 depende do conteúdo da imagem e não transfere.
 - **`tta`** — test-time augmentation por flips (H/V): média dos mapas de 4 visões simétricas.
@@ -1073,6 +1075,29 @@ O ajuste pontual de níveis por classe eleva o **AUROC médio acima de 0.90** e 
 ---
 
 ## 7. Descobertas consolidadas
+### 6.10 Comparação do score original CFLOW-AD sobre NLLs locais
+
+O sweep foi concluído em 2026-10-07 nas cinco heads de `run_20260907_145952`. Foram mantidos fixos os mapas NLL, a coorte de avaliação por classe, `levels=02`, `sigma=8`, TTA `flips`, `reflect_pad=112` e `border_margin=0`; compararam-se os caminhos `raw`, `per_level_minmax`, `per_level_prob` e `cflow_original`. O modo oficial usa `align_corners=True`, enquanto os modos locais usam `False`, portanto a interpolação também varia e o teste não isola somente a fórmula de agregação. Os CSVs estão em `resultado_analise_final/pixel/cflow_original_paired_run145952/`.
+
+| Classe (n imagens) | `raw` AUROC / AP | `per_level_minmax` AUROC / AP | `per_level_prob` AUROC / AP | `cflow_original` AUROC / AP | Δ AUROC original − raw |
+|---|---:|---:|---:|---:|---:|
+| glass-insulator (649) | 0,7589 / 0,0033 | 0,7049 / 0,0013 | 0,7457 / 0,0029 | **0,7700 / 0,0081** | +0,0111 |
+| lightning-rod (135) | 0,9070 / 0,0310 | 0,8913 / 0,0292 | 0,8819 / 0,0257 | **0,9172 / 0,0379** | +0,0103 |
+| polymer (283) | 0,6055 / 0,0087 | **0,6614 / 0,0123** | 0,5654 / 0,0070 | 0,6005 / **0,0161** | −0,0050 |
+| vari-grip (154) | 0,8648 / 0,0550 | 0,8191 / 0,0376 | 0,8604 / 0,0551 | **0,9051 / 0,0836** | +0,0403 |
+| yoke-suspension (1.199) | 0,9287 / 0,0140 | 0,9024 / 0,0074 | 0,8947 / 0,0085 | **0,9410 / 0,0228** | +0,0123 |
+| **Média macro por classe** | 0,8130 / 0,0224 | 0,7958 / 0,0176 | 0,7896 / 0,0198 | **0,8268 / 0,0337** | **+0,0138** |
+
+**Leitura:** `cflow_original` vence `raw` em AUROC em 4/5 classes e em AP em 5/5. `polymer` é exceção de AUROC: o min-max local obteve 0,6614, enquanto o score original ficou em 0,6005. As médias são macro por classe (peso igual por classe), não métricas agregadas sobre todos os pixels. O sweep contém 2.420 imagens, das quais 252 anômalas.
+
+**Limites:** os máximos por escala e do mapa somado foram calculados sobre a coorte completa de teste de cada classe; o método é transdutivo e não opera como inferência streaming/por imagem sem calibração fixa. As máscaras/rótulos não entram na normalização do score, mas são usados nas métricas. AUPRO foi omitido (`--skip_aupro`), então não há conclusão sobre cobertura regional. Este é um teste apenas da regra de agregação sobre NLLs locais, não uma reprodução end-to-end: backbone, features, dimensão PE, decoder, loss/amostragem, treino e dados ainda divergem do CFLOW-AD oficial.
+**Limites:** os máximos por escala e do mapa somado foram calculados sobre a coorte completa de teste de cada classe; o método é transdutivo e não opera como inferência streaming/por imagem sem calibração fixa. As máscaras/rótulos não entram na normalização do score, mas são usados nas métricas. AUPRO foi omitido (`--skip_aupro`), então não há conclusão sobre cobertura regional. O teste compara caminhos de score/upsampling sobre NLLs locais, não uma reprodução end-to-end: backbone, features, dimensão PE, decoder, loss/amostragem, treino e dados ainda divergem do CFLOW-AD oficial.
+
+**Conclusão do item:** a variante `per_level_prob` local não representa o score original e seu resultado inferior não refutava o CFLOW-AD. O teste original está concluído; permanece pendente validar uma calibração de coorte independente e executar a reprodução integral.
+
+---
+
+## 7. Descobertas consolidadas
 
 ### 7.1 Hipóteses do plano original que os dados **derrubaram**
 
@@ -1081,7 +1106,7 @@ O ajuste pontual de níveis por classe eleva o **AUROC médio acima de 0.90** e 
 | "L1 é o nível ruim (AUROC ≈ 0.52), remover melhora" | **Falsa em todas as classes** | O 0.52 histórico foi medido sob clamp errado (2.0). Com heads retreinadas: L1 = 0.89 (`vari-grip`), 0.76 (`lightning-rod`), 0.87 (`glass`), 0.78 (`polymer`), 0.85 (`yoke`). Remover L1 (`l23`) foi a **pior** head da rodada 3b. |
 | **"L1 tem sinal invertido em defeito estrutural"** (conclusão do Passo 0) | **Falsa — artefato de head legada** | 0.2583 na head publicada → **0.874** após retreinar (+0.61). Ver o quadro de correção em 5.2. |
 | "Rotação no treino é a causa da borda quente; desligar melhora" | **Parcial/falsa** | Desligar melhora L2/L3 mas piora L1; no agregado o AUROC não melhora. Com 477 imagens a rotação funciona como regularização (baseline melhorou até a época 40, norot fez pico na 5). |
-| "`per_level_prob` (CFLOW-AD) é a agregação superior" | **Falsa neste setup** | Pior média (0.6992) e pior máximo (0.8466) dos quatro modos. Ver Seção 8. |
+| "A aproximação local `per_level_prob` reproduz e supera o score CFLOW-AD" | **Não sustentada; os scores não são idênticos** | O modo local soma `-exp(logsigmoid(-NLL)/C)` e omite a normalização por nível da coorte e a inversão pelo máximo global do mapa agregado. O sweep oficial score-only (6.10) obteve média macro 0,8268 AUROC / 0,0337 AP, contra 0,7896 / 0,0198 da aproximação local; isso não valida uma reprodução end-to-end nem um uso streaming. |
 | "`feat_pool` (PatchCore) reduz ruído de L1 e ajuda" | **Marginal** | +0.011 de AUROC; bom em AP (2.º lugar) mas não justifica a complexidade sozinho. |
 | "Calibração posicional só em L2/L3 ajuda" | **Condicional/inerte** | Piora na média (−0.034 na rodada 1); com featnorm+raw fica neutra (+0.002). E é **inerte** quando `levels=0` (Seção 4.4). |
 | "Treinar com o mesmo pad da avaliação é necessário" | **Falsa** | `featnorm_pad112` foi a **pior** das cinco heads da rodada 2 (0.9033 vs 0.9185 da `featnorm` sem pad no treino). Pad é técnica de **inferência** (Seção 4.6). |
@@ -1192,6 +1217,7 @@ Magnitudes são o **ganho pareado** médio sobre as 5 classes (6.8), não média
 23. **[R5/RD++] O score composto e o histórico persistido estabilizam o rastreamento.** A métrica
     composta $(AUROC_{px} + AUROC_{sp} + AUPRO)/3$ e o salvamento em disco a cada época (`history.json`,
     `best_composite.pt`) protegem a seleção de modelos contra oscilações de um único critério.
+24. **[Score CFLOW-AD original] A regra canônica superou `raw` na média macro, com dependência por classe.** No sweep pareado, `cflow_original` ganhou +0,0138 AUROC e +0,0113 AP macro frente a `raw`, vencendo AUROC em 4/5 classes e AP em 5/5; `polymer` perdeu 0,0050 AUROC para `raw` e teve o maior AUROC com min-max local. A conclusão de ranking depende da métrica. Os máximos são cohort-wide, portanto o achado não é streaming nem end-to-end (6.10).
 
 ---
 
@@ -1202,7 +1228,9 @@ Registro negativo — tudo o que foi tentado e não funcionou, para não ser ret
 | Caminho | Resultado | Diagnóstico |
 |---|---|---|
 | **Calibração posicional por célula em L1** | −0.062 / −0.069 AUROC (histórico) | O perfil posicional de L1 correlaciona só 0.695 entre treino e teste (vs 0.98–0.99 em L2/L3): o viés depende do conteúdo, não é offset geométrico fixo. Subtrair a média injeta ruído. |
-| **`per_level_prob` (agregação do CFLOW-AD)** | Pior dos 4 modos (média 0.699) | `exp(logsigmoid(−NLL)/C)` satura: com NLL na escala de centenas, o logsigmoid vira ~−NLL e a divisão por C (64–256) comprime tudo para perto de 0 ou 1. Foi projetado para features de ResNet/WideResNet normalizadas, não para ReLU crua de AlexNet. **Pode voltar a fazer sentido combinado com `featnorm`** — não testado. |
+| **`per_level_prob` local** | Pior dos modos locais testados (média 0.699) | Usa `-sum(exp(logsigmoid(-NLL)/C))`, mas não inclui nem a normalização pelo máximo cohort-wide por nível nem a inversão pelo máximo do mapa agregado do CFLOW-AD original. Esse resultado não refuta a fórmula original. |
+| **Score original `cflow_original`** | Implementado e sweep de cinco classes concluído (Seção 6.10) | Média macro de 0,8268 AUROC / 0,0337 AP. Compara o caminho score/upsampling, é transdutivo e não testa uma head CFLOW-AD completa. |
+| **Score original `cflow_original`** | Implementado e testado nas cinco classes; ver Seção 6.10 | Média macro 0,8268 AUROC / 0,0337 AP; +0,0138 AUROC contra `raw`, 4/5 classes. Transdutivo, sem AUPRO e não end-to-end. |
 | **Head sem L1 (`--levels 1,2`)** | R1/R2 em `vari-grip`: pior head (0.8561); `levels=12` média 0.7034. **R3a em `lightning-rod`: o oposto** — `levels=12` tem média 0.8551 e a vencedora usa só L3 | **Descarte revogado.** Depende da classe (7.3.13). Em `vari-grip` L1 carrega o sinal; em `lightning-rod`/`glass` é L3. |
 | **Head sem L3 (`--levels 0,1`)** | R2 em `vari-grip`: neutro (0.9186). **R3a em `lightning-rod`: pior head da rodada** (0.8420 / AUPRO 0.4310) | Mesmo raciocínio, invertido. Não remover níveis sem ablar por classe. |
 | **Treinar com `--reflect_pad 112`** | R1: neutro. R2: **−0.015** (pior das cinco) | O flow modela o conteúdo espelhado como se fosse normal. Pad só na inferência. |
@@ -1212,7 +1240,9 @@ Registro negativo — tudo o que foi tentado e não funcionou, para não ser ret
 | **`--no_rotation` isolado** | −0.008 AUROC vs baseline (mas +0.058 AUPRO) | Perde regularização em L1, ganha coerência posicional em L2/L3. |
 | **`border_margin` como filtro de produção** | Descartado | Mascarar a borda melhora AUROC artificialmente e não melhora AUPRO — esconde o problema em vez de resolver. Removido do grid na rodada 2. |
 | **`--pad_mode replicate`** | Não executado | Implementado mas fora do grid padrão por custo. Pendente. |
-| **`per_level_prob` com featnorm** | Não executado | Ficou fora do `--score_modes` da rodada 2. **Única hipótese da rodada 1 ainda em aberto.** |
+| **Score CFLOW-AD original sobre NLLs locais** | Executado no batch run de 2026-10-07; ver Seção 6.10 | Compara apenas agregação sobre as mesmas heads AlexNet-SE, sem retreino; não é reprodução end-to-end. |
+| **`per_level_prob` com featnorm** | Não executado | Continua pendente: testa especificamente a aproximação local limitada em combinação com feature normalization; não substitui o teste do score original. |
+| **Reprodução end-to-end CFLOW-AD** | Não executada | Requer encoder/pyramid pooling, PE=128, decoder/affine parametrization, loss amostrada, resolução e agenda de treino alinhadas ao código oficial. |
 | **`image_score topk`** | Efeito nulo em pixel AUROC (0.7927 nos dois) | Como esperado — só afeta `image_auroc_map`. |
 | **AMP no treino do flow** | Desligado por padrão | Instável para flows (log-det em fp16). |
 | **`--epochs` global uniforme para todas as classes** | `yoke` caiu de 0.9292 (época 4) para 0.8993 (época 80) | Overfitting por super-treino (6.7× do orçamento de 12 épocas). Usar orçamentos por classe em `CLASS_BUDGETS`. |
@@ -1274,7 +1304,7 @@ Ganhos são o **pareado** médio sobre as 5 classes (6.8).
 
 | Item | Valor | Ganho medido |
 |---|---|---|
-| `score_mode` | **`raw`** | **+0.0497** (76–100 % dos pares) — o maior efeito do estudo |
+| `score_mode` | **`raw`** para score local independente da coorte; `cflow_original` para avaliação offline em lote | `raw` superou min-max local em +0.0497 nas ablações; o caminho oficial obteve +0.0138 AUROC macro vs `raw` no sweep 6.10, mas depende da coorte e também usa `align_corners=True` |
 | `levels` | **`02` (L1+L3)** default (`auto`); ou **`per_class`** | `auto` +0.0301; `per_class` +0.0154 adicional na média (+0.0630 em `vari-grip`) |
 | TTA | **flips** (id / H / V / HV) | +0.0120 (mas só 46 % dos pares em `yoke`) |
 | `reflect_pad` | **112** (reflect) | +0.0049 (70–85 % dos pares) |
@@ -1322,13 +1352,17 @@ python scripts/eval/evaluate_full_pipeline.py          # ambos + latencia + graf
 | 5 | ~~Três scripts de avaliação separados~~ **FEITO** | imagem, pixel e pipeline completo, com base comum em `core/eval_pipeline.py` (Seção 15) | — |
 | 6 | ~~Padronização seletiva por nível (`featnorm` só em L1)~~ **FEITO** | suporte a `--feat_norm_levels 0` e variantes `featnorm_l1_only*` em `pixel_train_from_pretrained.py` e `ablation_nf_head.py` | — |
 | 7 | **Múltiplos seeds de split** | limiar de significância 0.005 vem de 1 par; reportar média ± desvio | baixo |
-| 8 | `per_level_prob` **com** featnorm | única hipótese da rodada 1 ainda aberta | baixo |
+| 8 | `per_level_prob` local **com** featnorm | testa se z-score ameniza a saturação da aproximação `logsigmoid`; não equivale ao score CFLOW-AD original | baixo |
 | 9 | ~~**Épocas > 40 e sobreajuste**~~ **FEITO** | testado em 80 épocas (`run_20260907_145952`, Seção 6.9): `yoke` atinge pico na época 4 e degrada 0.030; implementado `--patience` para early stopping | — |
 | 10 | ~~**Investigar `polymer`**~~ **FEITO** | nova head 80 épocas mostrou L1+L3 (0.8505) muito superior a L1+L2+L3 (0.7987); L2 forte era artefato de head anterior (6.9) | — |
 | 11 | ~~**Correção do bug de AUPRO em cauda pesada**~~ **FEITO** | `compute_aupro` por quantis de normais em `pixel_train_from_pretrained.py` (Seção 6.9) | — |
 | 12 | ~~**Transferência do RD++ (score composto, monitor, history)**~~ **FEITO** | `best_composite.pt`, `history.json` a cada época, monitor 2×2, `--eval_aupro`, `--patience` (Seção 6.9) | — |
 | 13 | ~~**Avaliação `--levels per_class`**~~ **FEITO** | modo `--levels per_class` com `PER_CLASS_SCORE_LEVELS`: AUROC médio 0.9068, AUPRO 0.6446 (Seção 6.9) | — |
 | 14 | ~~**Correção de `vari-grip` na receita `optimal`**~~ **FEITO** | `optimal` atualizado para `levels='0,1'` em `train_all_nf_heads.py` | — |
+| 15 | ~~**Score original CFLOW-AD sobre NLLs das heads locais**~~ **FEITO** | sweep pareado nas cinco classes; resultados e limites registrados na Seção 6.10. É score-only, transdutivo, sem AUPRO e não end-to-end. | — |
+| 16 | **Reprodução end-to-end do CFLOW-AD original** | encoder/pyramid pooling, PE=128, `FrEIA AllInOneBlock`, loss/log-prob por canal, amostragem e protocolo original diferem; resultado atual testa o caminho de score/upsampling, não uma head oficial | alto |
+| 17 | **Validação independente da normalização cohort-wide** | o score original usa os máximos observados na coorte de avaliação; precisa protocolo transdutivo declarado ou conjunto de calibração normal fixo para deployment/streaming | médio |
+| 18 | **Isolar a regra de agregação da interpolação** | comparar scores com `align_corners` fixo nos quatro modos; o sweep atual usa `True` no modo oficial e `False` nos modos locais | baixo |
 
 #### Itens 1 a 6 e 9 a 14 — concluídos
 
@@ -1520,7 +1554,7 @@ Evidências (imagens em `resultado_analise_final/run_20260903_232209/vari-grip/`
 
 | Ideia | Fonte | O que aproveitamos |
 |---|---|---|
-| Agregação por probabilidade limitada (`exp(logsigmoid(logp)/C)`, soma dos níveis, score = −soma) | Gudovskiy et al., **CFLOW-AD**, WACV 2022 (arXiv 2107.12571) | Substitui o min-max por imagem por uma escala **absoluta e limitada** em [0,1] por nível. Implementado como `--score_norm per_level_prob`. Também: clamp 1.9, 8 blocos, cond_dim 128, sem L1. |
+| Score por probabilidade do CFLOW-AD | Gudovskiy et al., **CFLOW-AD**, WACV 2022 (arXiv 2107.12571) | O score original normaliza o log-likelihood por canal e pelo máximo da coorte em cada escala, soma os mapas upsampleados e inverte pelo máximo global da soma. `per_level_prob` é uma aproximação local distinta; o modo fiel da ablação é `cflow_original`. Outros defaults do CFLOW incluem clamp 1.9, 8 blocos e PE 128. |
 | Flows 2D preservando vizinhança espacial | Yu et al., **FastFlow**, arXiv 2111.07677 | Motiva agregação local das features (`--feat_pool 3`) como aproximação barata do contexto espacial. |
 | Agregação de vizinhança local 3×3 antes do scoring | Roth et al., **PatchCore**, CVPR 2022 (arXiv 2106.08265) | `--feat_pool 3`: reduz ruído de L1, aumenta campo receptivo, suaviza o tabuleiro de L3. |
 | Padronização por canal das features com estatísticas de treino | Defard et al., **PaDiM**, ICPR-W 2021 (arXiv 2011.08785) | `--feat_norm`: ReLU do AlexNet é não normalizada/pesada em cauda; padronizar estabiliza o coupling. |
@@ -1543,7 +1577,7 @@ Evidências (imagens em `resultado_analise_final/run_20260903_232209/vari-grip/`
 | P1 | `pad` (reflect_pad snapped) | 0, 112 (+ o pad de treino da head) | Reduz ativações de borda sobre zeros. |
 | P2 | `pad_mode` | reflect (opcional: replicate) | Replicate evita "eco" de estruturas espelhadas. |
 | P3 | `tta` | none, flips (id/h/v/hv) | Média sobre flips simetriza o prior posicional; reduz viés de canto. |
-| P4 | `score_mode` | per_level_minmax, per_level_prob, per_level_std, raw | `prob` (CFLOW-AD) elimina dependência de estatística por imagem. |
+| P4 | `score_mode` | per_level_minmax, per_level_prob, per_level_std, raw, cflow_original | `cflow_original` reproduz o score probabilístico cohort-wide; `per_level_prob` aproxima apenas parte da transformação e será mantido como baseline local. |
 | P5 | `levels` | 012, 12, 01, 02, 0, 2 | Subconjuntos de níveis; `0` (L1 sozinho) adicionado na rodada 2. |
 | P6 | `pos_calib` | none, l23 | Calibra por célula só onde o perfil transfere (L2/L3). |
 | P7 | `sigma` | 0, 4, 8 | Suavização vs. resolução do defeito. |
@@ -1588,7 +1622,10 @@ Ganhos são o **pareado** médio sobre as 5 classes (6.8).
 **Aplicar sempre (pos-hoc, nenhum retreino):**
 
 1. **Agregação `raw`** no lugar de `per_level_minmax` — o fator de maior efeito (**+0.0497**,
-   76–100 % dos pares).
+1. **Agregação `raw`** no lugar de `per_level_minmax` — o maior efeito entre os modos locais (+0.0497,
+   76–100 % dos pares). Para avaliação offline com a coorte completa, o caminho `cflow_original` teve
+   maior média no sweep 6.10; é transdutivo e inclui `align_corners=True`, então não é um score por
+   imagem/streaming nem um teste isolado da fórmula.
 2. **Reflect pad 112 — só na avaliação** (+0.0049). Treiná-lo junto **piora** (Seção 4.6).
 3. **TTA por flips** (+0.0120). Em `yoke` é ruído (46 % dos pares), mas nunca prejudica na média.
 4. `border_margin` **nunca** como filtro nem como critério de seleção.
@@ -1698,9 +1735,19 @@ Além das métricas, traz os dois diagnósticos que tornaram as decisões legív
 - **`--sweep`** — reagrega os mapas NLL **já calculados** sob todas as combinações de
   `levels` × `sigma` × `score_norm`, então a sensibilidade a essas escolhas sai numa tabela só, sem
   passagem extra pela rede. Mesmo truque de cache do `ablation_nf_head.py`.
+- Para comparar o score original, use `--score_norm cflow_original` ou inclua-o em `--sweep_norms`.
+   Os máximos por nível e pelo mapa combinado são calculados sobre todas as imagens carregadas;
+   portanto, este é um score transdutivo de lote, não uma opção streaming/minibatch. Use a mesma
+   coorte para todos os modos e reporte AUROC/AP (`--skip_aupro` evita o custo maior); use
+   `--sweep_aupro` somente quando também precisar AUPRO por modo.
+- `--score_norm cflow_original` e `--sweep_norms ... cflow_original` usam a agregação do paper/repo
+   oficial. Ela estima máximos por escala sobre toda a coorte carregada e o máximo global do mapa
+   agregado; isso é transdutivo, requer cache do conjunto completo e não deve ser chamado em modo
+   minibatch/streaming. `--sweep_aupro` também calcula AUPRO para essa linha no sweep.
 
 Saída: `results_per_class.csv` (inclui `pixel_ap_trivial` para contextualizar o AP),
-`per_level_auroc.csv`, `sweep.csv` e `mapas.png` (input ¦ GT ¦ mapa ¦ overlay).
+`per_level_auroc.csv`, `sweep.csv` (com `--sweep_aupro`, inclui AUPRO para a linha `cflow_original`)
+e `mapas.png` (input ¦ GT ¦ mapa ¦ overlay).
 
 ### `core/eval_pipeline.py` (novo)
 - `PixelHead`: carrega a NF head **junto com a receita gravada no checkpoint** (`levels`,
@@ -1715,7 +1762,13 @@ Saída: `results_per_class.csv` (inclui `pixel_ap_trivial` para contextualizar o
 
 ### `core/cflow.py`
 - `SEBackboneFeatureExtractor(..., pad_mode='reflect'|'replicate', feat_pool=k)`.
-- Novo modo `per_level_prob` (agregação do CFLOW-AD) em `SCORE_MODES`.
+- `per_level_prob` é uma aproximação local limitada; não é o score original CFLOW-AD.
+- `CFlowPixelHead.aggregate_nll(..., mode='cflow_original')` implementa o score do repositório
+   `gudovskiy/cflow-ad`: NLL por canal, deslocamento pelo máximo da coorte em cada escala, mapas de
+   probabilidade, soma e inversão pelo máximo global da soma. Está separado de `SCORE_MODES` de
+   minibatch e exposto por `ABLATION_SCORE_MODES`, porque requer o conjunto inteiro em cache.
+  Nota: a paridade aqui é apenas de scoring. O encoder, as dimensões da PE, a arquitetura/loss dos
+  flows e a interpolação (`align_corners`) permanecem diferentes do CFLOW-AD oficial (Seção 6.10).
 - `CFlowPixelHead.aggregate_nll(...)`: agrega mapas NLL já calculados (permite cache) com
   `pos_stats` opcional (calibração posicional por nível).
 - `compute_positional_stats`, `compute_feature_stats`, `apply_feature_stats`, `select_levels`.

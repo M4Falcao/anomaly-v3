@@ -1,0 +1,6 @@
+pad,pad_mode,tta,score_mode,levels,pos_calib,sigma,margin,image_score,role,pixel_auroc,pixel_ap,pixel_f1,aupro,image_auroc_map,image_auroc_sediffernet,n_holdout,name
+0,-,none,raw,02,l23,4.0,8,max,top,0.925262185038688,0.12993038853670807,0.2249873522335376,0.7805802154881621,0.5,0.2777777777777778,12,pad0--|tta=none|raw|L=02|calib=l23|s=4|m=8|img=max
+0,-,none,per_level_std,02,none,4.0,8,max,top,0.9256037479634617,0.1311270309400946,0.226068507074977,0.7814401475164812,0.5,0.2777777777777778,12,pad0--|tta=none|per_level_std|L=02|calib=none|s=4|m=8|img=max
+0,-,none,cflow_original,02,none,0.0,0,max,baseline_cflow_original,0.8873029024767095,0.07827715843947153,0.1565910304262378,0.7099023454124108,0.1111111111111111,0.2777777777777778,12,pad0--|tta=none|cflow_original|L=02|calib=none|s=0|m=0|img=max
+0,-,none,per_level_minmax,02,none,4.0,0,max,baseline_producao,0.8869246458737261,0.10879812647576576,0.1953414012975666,0.7163275813871456,0.7222222222222221,0.2777777777777778,12,pad0--|tta=none|per_level_minmax|L=02|calib=none|s=4|m=0|img=max
+112,reflect,none,per_level_minmax,02,none,4.0,8,max,producao_pad112_m8,0.8302801774931072,0.07504227566289819,0.14355350742447515,0.7209916571347136,0.3055555555555555,0.2777777777777778,12,pad112-reflect|tta=none|per_level_minmax|L=02|calib=none|s=4|m=8|img=max
