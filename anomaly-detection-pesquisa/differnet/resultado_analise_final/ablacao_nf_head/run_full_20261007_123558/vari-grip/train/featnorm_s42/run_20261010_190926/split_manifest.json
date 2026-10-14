@@ -1,0 +1,782 @@
+{
+  "class_name": "vari-grip",
+  "seed": 42,
+  "train_seed": 42,
+  "val_fraction": 0.4,
+  "validation_indices": [
+    0,
+    2,
+    4,
+    7,
+    10,
+    18,
+    20,
+    21,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    33,
+    37,
+    38,
+    45,
+    46,
+    50,
+    51,
+    52,
+    56,
+    63,
+    68,
+    70,
+    71,
+    73,
+    75,
+    76,
+    78,
+    83,
+    84,
+    87,
+    90,
+    91,
+    93,
+    94,
+    99,
+    100,
+    102,
+    105,
+    107,
+    108,
+    111,
+    113,
+    117,
+    118,
+    119,
+    120,
+    121,
+    122,
+    129,
+    130,
+    134,
+    136,
+    139,
+    146,
+    147,
+    148,
+    150,
+    151
+  ],
+  "holdout_indices": [
+    1,
+    3,
+    5,
+    6,
+    8,
+    9,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    19,
+    22,
+    23,
+    30,
+    31,
+    32,
+    34,
+    35,
+    36,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    47,
+    48,
+    49,
+    53,
+    54,
+    55,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    64,
+    65,
+    66,
+    67,
+    69,
+    72,
+    74,
+    77,
+    79,
+    80,
+    81,
+    82,
+    85,
+    86,
+    88,
+    89,
+    92,
+    95,
+    96,
+    97,
+    98,
+    101,
+    103,
+    104,
+    106,
+    109,
+    110,
+    112,
+    114,
+    115,
+    116,
+    123,
+    124,
+    125,
+    126,
+    127,
+    128,
+    131,
+    132,
+    133,
+    135,
+    137,
+    138,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    149,
+    152,
+    153
+  ],
+  "test_samples": [
+    {
+      "path": "vari-grip\\test\\good\\Fotos 01-12-2020_DJI_0078_vari_grip_48.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 01-12-2020_DJI_0079_vari_grip_50.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 01-12-2020_DJI_0139_vari_grip_45.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 01-12-2020_DJI_0402_vari_grip_29.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 01-12-2020_DJI_0512_vari_grip_22.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 02-12-2020_DJI_0021_vari_grip_97.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 02-12-2020_DJI_0428_vari_grip_62.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 03-12-2020_DJI_0085_vari_grip_129.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 03-12-2020_DJI_0457_vari_grip_110.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 03-12-2020_DJI_0469_vari_grip_116.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 03-12-2020_DJI_0514_vari_grip_104.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 03-12-2020_DJI_0515_vari_grip_105.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 03-12-2020_DJI_0561_vari_grip_100.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 04-12-2020_DJI_0611_vari_grip_176.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 04-12-2020_DJI_0761_vari_grip_161.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 04-12-2020_DJI_0761_vari_grip_162.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 04-12-2020_DJI_0762_vari_grip_163.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 04-12-2020_DJI_0950_vari_grip_142.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 04-12-2020_DJI_0998_vari_grip_140.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 07-12-2020_DJI_0020_vari_grip_199.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 07-12-2020_DJI_0099_vari_grip_188.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 07-12-2020_DJI_0100_vari_grip_190.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 07-12-2020_DJI_0100_vari_grip_191.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 07-12-2020_DJI_0140_vari_grip_182.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 07-12-2020_DJI_0141_vari_grip_185.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 08-12-2020_DJI_0451_vari_grip_224.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 08-12-2020_DJI_0452_vari_grip_225.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 08-12-2020_DJI_0452_vari_grip_226.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 08-12-2020_DJI_0538_vari_grip_218.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 09-12-2020_DJI_0056_vari_grip_263.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 09-12-2020_DJI_0060_vari_grip_266.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 09-12-2020_DJI_0060_vari_grip_267.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 09-12-2020_DJI_0143_vari_grip_249.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 09-12-2020_DJI_0146_vari_grip_253.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 09-12-2020_DJI_0146_vari_grip_254.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 09-12-2020_DJI_0147_vari_grip_257.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 09-12-2020_DJI_0183_vari_grip_244.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 09-12-2020_DJI_0186_vari_grip_247.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 09-12-2020_DJI_0271_vari_grip_241.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 09-12-2020_DJI_0310_vari_grip_237.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 10-12-2020_DJI_0019_vari_grip_326.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 10-12-2020_DJI_0063_vari_grip_318.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 10-12-2020_DJI_0100_vari_grip_311.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 10-12-2020_DJI_0101_vari_grip_312.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 10-12-2020_DJI_0140_vari_grip_300.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 10-12-2020_DJI_0142_vari_grip_305.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 10-12-2020_DJI_0143_vari_grip_307.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 10-12-2020_DJI_0181_vari_grip_293.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 10-12-2020_DJI_0182_vari_grip_295.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 10-12-2020_DJI_0184_vari_grip_297.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 10-12-2020_DJI_0220_vari_grip_289.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 10-12-2020_DJI_0258_vari_grip_281.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 11-12-2020_DJI_0055_vari_grip_379.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 14-12-2020_DJI_0708_vari_grip_391.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 16-11-2020_DJI_0157_vari_grip_438.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 16-12-2020_DJI_0109_vari_grip_466.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 16-12-2020_DJI_0110_vari_grip_468.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 16-12-2020_DJI_0257_vari_grip_458.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 16-12-2020_DJI_0257_vari_grip_459.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 16-12-2020_DJI_0258_vari_grip_460.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 17-11-2020_DJI_0120_vari_grip_496.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 17-11-2020_DJI_0256_vari_grip_483.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 17-11-2020_DJI_0305_vari_grip_481.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 18-11-2020_DJI_0051_vari_grip_551.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 18-11-2020_DJI_0107_vari_grip_545.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 19-10-2020_DJI_0045_vari_grip_5.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 19-10-2020_DJI_0046_vari_grip_7.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 19-10-2020_DJI_0086_vari_grip_18.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 19-10-2020_DJI_0087_vari_grip_19.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 19-11-2020_DJI_0060_vari_grip_582.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 19-11-2020_DJI_0167_vari_grip_566.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 19-11-2020_DJI_0200_vari_grip_565.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 20-10-2020_DJI_0205_vari_grip_621.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 20-10-2020_DJI_0208_vari_grip_626.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 20-10-2020_DJI_0209_vari_grip_628.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 20-10-2020_DJI_0211_vari_grip_632.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 20-10-2020_DJI_0238_vari_grip_641.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 20-10-2020_DJI_0242_vari_grip_647.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 20-10-2020_DJI_0243_vari_grip_648.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 20-10-2020_DJI_0254_vari_grip_656.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 20-10-2020_DJI_0257_vari_grip_662.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 20-10-2020_DJI_0336_vari_grip_600.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 20-10-2020_DJI_0337_vari_grip_601.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 20-10-2020_DJI_0337_vari_grip_602.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 20-11-2020_DJI_0014_vari_grip_716.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 20-11-2020_DJI_0114_vari_grip_704.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 20-11-2020_DJI_0170_vari_grip_684.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 20-11-2020_DJI_0198_vari_grip_693.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 22-10-2020_DJI_0859_vari_grip_719.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 22-10-2020_DJI_0860_vari_grip_720.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 22-10-2020_DJI_0864_vari_grip_724.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 22-10-2020_DJI_0880_vari_grip_734.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 22-10-2020_DJI_0880_vari_grip_735.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 23-11-2020_DJI_0010_vari_grip_806.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 23-11-2020_DJI_0077_vari_grip_797.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 23-11-2020_DJI_0176_vari_grip_779.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 23-11-2020_DJI_0209_vari_grip_778.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 24-11-2020_DJI_0101_vari_grip_837.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 24-11-2020_DJI_0101_vari_grip_838.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 24-11-2020_DJI_0169_vari_grip_833.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 24-11-2020_DJI_0244_vari_grip_830.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 24-11-2020_DJI_0310_vari_grip_826.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 25-11-2020_DJI_0208_vari_grip_862.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 25-11-2020_DJI_0307_vari_grip_855.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 26-11-2020_DJI_0025_vari_grip_922.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 26-11-2020_DJI_0091_vari_grip_918.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 26-11-2020_DJI_0288_vari_grip_901.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 26-11-2020_DJI_0416_vari_grip_887.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 27-11-2020_DJI_0353_vari_grip_940.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 30-11-2020_DJI_0319_vari_grip_983.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 30-11-2020_DJI_0320_vari_grip_985.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 30-11-2020_DJI_0437_vari_grip_975.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 30-11-2020_DJI_0502_vari_grip_970.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\good\\Fotos 30-11-2020_DJI_0503_vari_grip_973.jpg",
+      "label": 0
+    },
+    {
+      "path": "vari-grip\\test\\rust\\01-06-2021_DJI_0030_6_jpg.rf.4020b178bb29abad12bb787afe8d0ef9.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\01-06-2021_DJI_0146_39_jpg.rf.5140c96f89c696a3371e17906dc39a87.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\01-06-2021_DJI_0146_40_jpg.rf.574d9d4aa6c5d282d1592b1b3dc999ab.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\01-06-2021_DJI_0162_45_jpg.rf.c4749d945162352181be88b88f548db9.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\01-06-2021_DJI_0162_46_jpg.rf.0c31ad33f601821abf1791b140ad148a.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\02-06-2021_DJI_0359_261_jpg.rf.e879b5d3f213fa8cc86e6c32a61c6f50.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\08-06-2021_DJI_0385_421_jpg.rf.d35c9496d55c00dc5cc7899e56f3706c.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\08-06-2021_DJI_0385_422_jpg.rf.c72eeaf14ecb98c32754ad84c1bd63c7.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\09-06-2021_DJI_0466_568_jpg.rf.db66ec0c1f586a937f9038a334b136c4.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\09-06-2021_DJI_0466_569_jpg.rf.f134609f0ffba542bb6135ea92ed60c1.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\09-06-2021_DJI_0467_570_jpg.rf.42b82d80d117e47e7355f639b262363d.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\09-06-2021_DJI_0467_571_jpg.rf.9e8d92bbb3cb7f0bb1f3ca4c669e34fe.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\10-06-2021_DJI_0018_610_jpg.rf.e43b9b431c30473f265f08f6d817f741.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\10-06-2021_DJI_0018_611_jpg.rf.eb19e18a10c49b0caf7fbe9824bab8a7.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\10-06-2021_DJI_0019_612_jpg.rf.1a80c01568999931248608a9a0af69bd.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\10-06-2021_DJI_0019_613_jpg.rf.ad24aa4806306432a57a6bc47d932c17.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\11-06-2021_DJI_0479_11_jpg.rf.d432321dbfe31c96c4a57c769f216cee.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\15-06-2021_DJI_0117_739_jpg.rf.3264da751b1570fd01f3616d512e2aff.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\15-06-2021_DJI_0118_740_jpg.rf.9dd5b6ed39ed2dfb45e3ea0da7c53f73.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\15-06-2021_DJI_0118_741_jpg.rf.10782c2d46fb28eeb3a6d310947caf63.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0029_vari_grip_745_jpg.rf.2c9cc5fb8e82b9ec163dd28ec2773401.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0029_vari_grip_746_jpg.rf.b2fd2ffe67d91cc62f76364539afb9b2.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0031_vari_grip_748_jpg.rf.bf77f9c186002ae0518d2e746e1bd272.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0032_vari_grip_749_jpg.rf.162abb904fad7a6682b07e7db9e7f85a.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0032_vari_grip_750_jpg.rf.133c94d5604c1856d98e00da6b6360bf.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0034_vari_grip_751_jpg.rf.08d3c34b8092687c965c278be3bfa078.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0034_vari_grip_752_jpg.rf.47edac5f3bc20738a3eec0b413ff1782.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0035_vari_grip_753_jpg.rf.a171ac72273dc40a87797a8099ca3bff.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0035_vari_grip_754_jpg.rf.6043330890520377c05fc8c624ab361a.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0038_vari_grip_755_jpg.rf.78f15dd851ad962102c7fcded2bad235.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0038_vari_grip_756_jpg.rf.b7ac511d88892c10e20e57f4c59c309e.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0041_vari_grip_757_jpg.rf.db9b580d5676f6a2b18b854bb4494beb.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0041_vari_grip_758_jpg.rf.1287b17779d7c2361d62f2519c087848.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0043_vari_grip_759_jpg.rf.b6caf75e91df12b824f3e5a05faebcf6.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0043_vari_grip_760_jpg.rf.16fb0b6966f38767fa40d730d7a3942f.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0047_vari_grip_764_jpg.rf.34b65bdade88e84da4b34c558e657232.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0048_vari_grip_765_jpg.rf.d79bd412062bd400d608607e4fa86cf5.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0048_vari_grip_766_jpg.rf.4818c61ed218dca3b50116ea55a989c1.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0065_vari_grip_736_jpg.rf.c7c9bdfef6d04d70eae48695e76d8d81.jpg",
+      "label": 1
+    },
+    {
+      "path": "vari-grip\\test\\rust\\Fotos-23-10-2020_DJI_0072_vari_grip_737_jpg.rf.61170cd98410e129880814660112bc37.jpg",
+      "label": 1
+    }
+  ]
+}

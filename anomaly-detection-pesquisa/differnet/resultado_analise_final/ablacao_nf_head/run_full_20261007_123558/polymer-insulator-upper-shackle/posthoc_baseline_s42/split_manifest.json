@@ -1,0 +1,1596 @@
+{
+  "class_name": "polymer-insulator-upper-shackle",
+  "seed": 42,
+  "val_fraction": 0.4,
+  "validation_indices": [
+    2,
+    3,
+    4,
+    7,
+    8,
+    9,
+    20,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    32,
+    33,
+    37,
+    38,
+    46,
+    50,
+    51,
+    52,
+    54,
+    55,
+    56,
+    66,
+    67,
+    68,
+    70,
+    72,
+    75,
+    79,
+    80,
+    81,
+    84,
+    86,
+    88,
+    89,
+    94,
+    95,
+    96,
+    98,
+    100,
+    101,
+    104,
+    107,
+    108,
+    115,
+    118,
+    120,
+    124,
+    126,
+    127,
+    128,
+    131,
+    132,
+    133,
+    135,
+    144,
+    147,
+    151,
+    153,
+    154,
+    156,
+    158,
+    161,
+    162,
+    165,
+    166,
+    168,
+    169,
+    172,
+    173,
+    177,
+    178,
+    180,
+    191,
+    192,
+    196,
+    207,
+    208,
+    209,
+    210,
+    212,
+    213,
+    215,
+    222,
+    223,
+    224,
+    225,
+    226,
+    230,
+    231,
+    233,
+    234,
+    235,
+    236,
+    240,
+    243,
+    245,
+    246,
+    248,
+    249,
+    250,
+    251,
+    253,
+    254,
+    257,
+    258,
+    261,
+    267,
+    268,
+    271,
+    274,
+    278,
+    281,
+    282,
+    286,
+    290,
+    295,
+    296,
+    297,
+    301,
+    306,
+    308,
+    311,
+    314,
+    316
+  ],
+  "holdout_indices": [
+    0,
+    1,
+    5,
+    6,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    21,
+    22,
+    23,
+    30,
+    31,
+    34,
+    35,
+    36,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    47,
+    48,
+    49,
+    53,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    69,
+    71,
+    73,
+    74,
+    76,
+    77,
+    78,
+    82,
+    83,
+    85,
+    87,
+    90,
+    91,
+    92,
+    93,
+    97,
+    99,
+    102,
+    103,
+    105,
+    106,
+    109,
+    110,
+    111,
+    112,
+    113,
+    114,
+    116,
+    117,
+    119,
+    121,
+    122,
+    123,
+    125,
+    129,
+    130,
+    134,
+    136,
+    137,
+    138,
+    139,
+    140,
+    141,
+    142,
+    143,
+    145,
+    146,
+    148,
+    149,
+    150,
+    152,
+    155,
+    157,
+    159,
+    160,
+    163,
+    164,
+    167,
+    170,
+    171,
+    174,
+    175,
+    176,
+    179,
+    181,
+    182,
+    183,
+    184,
+    185,
+    186,
+    187,
+    188,
+    189,
+    190,
+    193,
+    194,
+    195,
+    197,
+    198,
+    199,
+    200,
+    201,
+    202,
+    203,
+    204,
+    205,
+    206,
+    211,
+    214,
+    216,
+    217,
+    218,
+    219,
+    220,
+    221,
+    227,
+    228,
+    229,
+    232,
+    237,
+    238,
+    239,
+    241,
+    242,
+    244,
+    247,
+    252,
+    255,
+    256,
+    259,
+    260,
+    262,
+    263,
+    264,
+    265,
+    266,
+    269,
+    270,
+    272,
+    273,
+    275,
+    276,
+    277,
+    279,
+    280,
+    283,
+    284,
+    285,
+    287,
+    288,
+    289,
+    291,
+    292,
+    293,
+    294,
+    298,
+    299,
+    300,
+    302,
+    303,
+    304,
+    305,
+    307,
+    309,
+    310,
+    312,
+    313,
+    315
+  ],
+  "test_samples": [
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\02-06-2021_DJI_0073_198.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0010_manilha_isolador_superior_117.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0046_manilha_isolador_superior_125.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0080_manilha_isolador_superior_109.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0105_manilha_isolador_superior_114.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0186_manilha_isolador_superior_82.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0201_manilha_isolador_superior_83.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0202_manilha_isolador_superior_84.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0205_manilha_isolador_superior_86.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0386_manilha_isolador_superior_47.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0406_manilha_isolador_superior_52.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0421_manilha_isolador_superior_54.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0422_manilha_isolador_superior_55.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0443_manilha_isolador_superior_36.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0462_manilha_isolador_superior_41.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0478_manilha_isolador_superior_42.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0502_manilha_isolador_superior_25.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 01-12-2020_DJI_0532_manilha_isolador_superior_30.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 02-12-2020_DJI_0008_manilha_isolador_superior_243.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 02-12-2020_DJI_0023_manilha_isolador_superior_246.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 02-12-2020_DJI_0288_manilha_isolador_superior_176.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 02-12-2020_DJI_0305_manilha_isolador_superior_180.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 02-12-2020_DJI_0307_manilha_isolador_superior_182.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 02-12-2020_DJI_0354_manilha_isolador_superior_163.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 02-12-2020_DJI_0370_manilha_isolador_superior_165.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 02-12-2020_DJI_0371_manilha_isolador_superior_166.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 02-12-2020_DJI_0458_manilha_isolador_superior_157.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 02-12-2020_DJI_0477_manilha_isolador_superior_129.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 02-12-2020_DJI_0495_manilha_isolador_superior_131.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 02-12-2020_DJI_0521_manilha_isolador_superior_142.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 03-12-2020_DJI_0010_manilha_isolador_superior_352.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 03-12-2020_DJI_0026_manilha_isolador_superior_356.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 03-12-2020_DJI_0196_manilha_isolador_superior_311.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 03-12-2020_DJI_0197_manilha_isolador_superior_312.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 03-12-2020_DJI_0211_manilha_isolador_superior_314.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 03-12-2020_DJI_0342_manilha_isolador_superior_306.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 03-12-2020_DJI_0461_manilha_isolador_superior_285.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 03-12-2020_DJI_0462_manilha_isolador_superior_286.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 03-12-2020_DJI_0503_manilha_isolador_superior_269.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 03-12-2020_DJI_0534_manilha_isolador_superior_277.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 03-12-2020_DJI_0563_manilha_isolador_superior_258.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 04-12-2020_DJI_0601_manilha_isolador_superior_458.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 04-12-2020_DJI_0613_manilha_isolador_superior_460.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 04-12-2020_DJI_0660_manilha_isolador_superior_450.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 04-12-2020_DJI_0708_manilha_isolador_superior_438.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 04-12-2020_DJI_0807_manilha_isolador_superior_418.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 04-12-2020_DJI_0824_manilha_isolador_superior_424.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 04-12-2020_DJI_0842_manilha_isolador_superior_403.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 04-12-2020_DJI_0871_manilha_isolador_superior_412.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 04-12-2020_DJI_0872_manilha_isolador_superior_413.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 04-12-2020_DJI_0908_manilha_isolador_superior_394.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 04-12-2020_DJI_0909_manilha_isolador_superior_395.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 04-12-2020_DJI_0942_manilha_isolador_superior_377.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 04-12-2020_DJI_0968_manilha_isolador_superior_383.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 04-12-2020_DJI_1000 (16)_manilha_isolador_superior_371.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 04-12-2020_DJI_1000 (17)_manilha_isolador_superior_372.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 07-12-2020_DJI_0011_manilha_isolador_superior_542.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 07-12-2020_DJI_0022_manilha_isolador_superior_545.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 07-12-2020_DJI_0061_manilha_isolador_superior_533.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 07-12-2020_DJI_0101_manilha_isolador_superior_523.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 07-12-2020_DJI_0103_manilha_isolador_superior_525.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 07-12-2020_DJI_0133_manilha_isolador_superior_511.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 07-12-2020_DJI_0205_manilha_isolador_superior_506.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 07-12-2020_DJI_0229_manilha_isolador_superior_491.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 07-12-2020_DJI_0244_manilha_isolador_superior_494.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 07-12-2020_DJI_0320_manilha_isolador_superior_468.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 08-12-2020_DJI_0494_manilha_isolador_superior_623.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 08-12-2020_DJI_0508_manilha_isolador_superior_628.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 08-12-2020_DJI_0509_manilha_isolador_superior_629.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 08-12-2020_DJI_0538_manilha_isolador_superior_614.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 08-12-2020_DJI_0629_manilha_isolador_superior_595.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 08-12-2020_DJI_0643_manilha_isolador_superior_578.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 08-12-2020_DJI_0680_manilha_isolador_superior_568.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 08-12-2020_DJI_0681_manilha_isolador_superior_569.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 08-12-2020_DJI_0723_manilha_isolador_superior_563.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 08-12-2020_DJI_0735_manilha_isolador_superior_564.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 08-12-2020_DJI_0736_manilha_isolador_superior_565.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 08-12-2020_DJI_0758_manilha_isolador_superior_551.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 08-12-2020_DJI_0759_manilha_isolador_superior_552.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 08-12-2020_DJI_0769_manilha_isolador_superior_554.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 09-12-2020_DJI_0050_manilha_isolador_superior_731.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 09-12-2020_DJI_0058_manilha_isolador_superior_732.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 09-12-2020_DJI_0076_manilha_isolador_superior_740.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 09-12-2020_DJI_0134_manilha_isolador_superior_706.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 09-12-2020_DJI_0136_manilha_isolador_superior_708.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 09-12-2020_DJI_0137_manilha_isolador_superior_709.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 09-12-2020_DJI_0147_manilha_isolador_superior_712.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 09-12-2020_DJI_0175_manilha_isolador_superior_695.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 09-12-2020_DJI_0197_manilha_isolador_superior_702.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 09-12-2020_DJI_0213_manilha_isolador_superior_680.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 09-12-2020_DJI_0223_manilha_isolador_superior_682.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 09-12-2020_DJI_0238_manilha_isolador_superior_687.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 09-12-2020_DJI_0263_manilha_isolador_superior_667.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 09-12-2020_DJI_0340_manilha_isolador_superior_642.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 09-12-2020_DJI_0349_manilha_isolador_superior_644.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 09-12-2020_DJI_0366_manilha_isolador_superior_651.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 10-12-2020_DJI_0011_manilha_isolador_superior_836.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 10-12-2020_DJI_0022_manilha_isolador_superior_837.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 10-12-2020_DJI_0024_manilha_isolador_superior_839.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 10-12-2020_DJI_0103_manilha_isolador_superior_817.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 10-12-2020_DJI_0175_manilha_isolador_superior_795.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 10-12-2020_DJI_0184_manilha_isolador_superior_797.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 10-12-2020_DJI_0197_manilha_isolador_superior_800.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 10-12-2020_DJI_0213_manilha_isolador_superior_785.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 10-12-2020_DJI_0222_manilha_isolador_superior_787.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 10-12-2020_DJI_0261_manilha_isolador_superior_776.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 10-12-2020_DJI_0300_manilha_isolador_superior_766.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 10-12-2020_DJI_0355_manilha_isolador_superior_761.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 11-12-2020_DJI_0033_manilha_isolador_superior_937.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 11-12-2020_DJI_0096_manilha_isolador_superior_911.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 11-12-2020_DJI_0109_manilha_isolador_superior_914.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 11-12-2020_DJI_0244_manilha_isolador_superior_869.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 11-12-2020_DJI_0265_manilha_isolador_superior_875.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 11-12-2020_DJI_0303_manilha_isolador_superior_864.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 14-12-2020_DJI_0211_manilha_isolador_superior_974.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 14-12-2020_DJI_0237_manilha_isolador_superior_975.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 14-12-2020_DJI_0329_manilha_isolador_superior_968.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 14-12-2020_DJI_0464_manilha_isolador_superior_963.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 14-12-2020_DJI_0495_manilha_isolador_superior_964.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 14-12-2020_DJI_0503_manilha_isolador_superior_951.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 14-12-2020_DJI_0533_manilha_isolador_superior_954.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 16-11-2020_DJI_0105_manilha_isolador_superior_1020.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 16-12-2020_DJI_0092_manilha_isolador_superior_1078.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 16-12-2020_DJI_0112_manilha_isolador_superior_1080.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 16-12-2020_DJI_0113_manilha_isolador_superior_1081.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 16-12-2020_DJI_0141_manilha_isolador_superior_1084.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 16-12-2020_DJI_0215_manilha_isolador_superior_1075.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 16-12-2020_DJI_0473_manilha_isolador_superior_1046.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 16-12-2020_DJI_0494_manilha_isolador_superior_1048.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 16-12-2020_DJI_0507_manilha_isolador_superior_1050.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 16-12-2020_DJI_0654_manilha_isolador_superior_1038.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 17-11-2020_DJI_0009_manilha_isolador_superior_1135.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 17-11-2020_DJI_0045_manilha_isolador_superior_1126.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 17-11-2020_DJI_0057_manilha_isolador_superior_1129.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 17-11-2020_DJI_0099_manilha_isolador_superior_1111.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 17-11-2020_DJI_0139_manilha_isolador_superior_1109.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 17-11-2020_DJI_0237_manilha_isolador_superior_1104.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 17-12-2020_DJI_0126_manilha_isolador_superior_1176.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 17-12-2020_DJI_0172_manilha_isolador_superior_1166.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 17-12-2020_DJI_0199_manilha_isolador_superior_1170.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 17-12-2020_DJI_0253_manilha_isolador_superior_1157.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 17-12-2020_DJI_0371_manilha_isolador_superior_1143.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 18-11-2020_DJI_0010_manilha_isolador_superior_1211.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 18-11-2020_DJI_0095_manilha_isolador_superior_1204.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 18-11-2020_DJI_0125_manilha_isolador_superior_1201.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 18-11-2020_DJI_0211_manilha_isolador_superior_1192.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 18-11-2020_DJI_0236_manilha_isolador_superior_1187.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 19-10-2020_DJI_0038_manilha_isolador_superior_2.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 19-10-2020_DJI_0042_manilha_isolador_superior_6.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 19-11-2020_DJI_0019_manilha_isolador_superior_1252.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 19-11-2020_DJI_0041_manilha_isolador_superior_1245.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 19-11-2020_DJI_0055_manilha_isolador_superior_1239.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 19-11-2020_DJI_0091_manilha_isolador_superior_1235.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 19-11-2020_DJI_0130_manilha_isolador_superior_1233.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 19-11-2020_DJI_0155_manilha_isolador_superior_1229.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 19-11-2020_DJI_0210_manilha_isolador_superior_1223.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 19-11-2020_DJI_0228_manilha_isolador_superior_1216.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 20-10-2020_DJI_0104_manilha_isolador_superior_1261.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 20-10-2020_DJI_0200_manilha_isolador_superior_1292.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 20-10-2020_DJI_0228_manilha_isolador_superior_1295.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 20-10-2020_DJI_0235_manilha_isolador_superior_1299.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 20-10-2020_DJI_0269_manilha_isolador_superior_1272.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 20-11-2020_DJI_0043_manilha_isolador_superior_1327.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 20-11-2020_DJI_0057_manilha_isolador_superior_1330.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 20-11-2020_DJI_0071_manilha_isolador_superior_1323.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 20-11-2020_DJI_0133_manilha_isolador_superior_1315.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 20-11-2020_DJI_0162_manilha_isolador_superior_1311.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 20-11-2020_DJI_0173_manilha_isolador_superior_1312.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 20-11-2020_DJI_0184_manilha_isolador_superior_1313.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 20-11-2020_DJI_0299_manilha_isolador_superior_1304.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 21-10-2020_DJI_0358_manilha_isolador_superior_1345.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 21-10-2020_DJI_0376_manilha_isolador_superior_1349.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 21-10-2020_DJI_0433_manilha_isolador_superior_1352.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 21-10-2020_DJI_0435_manilha_isolador_superior_1354.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 21-10-2020_DJI_0544_manilha_isolador_superior_1356.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 22-10-2020_DJI_0652_manilha_isolador_superior_1359.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 22-10-2020_DJI_0688_manilha_isolador_superior_1365.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 22-10-2020_DJI_0698_manilha_isolador_superior_1367.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 22-10-2020_DJI_0714_manilha_isolador_superior_1369.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 22-10-2020_DJI_0715_manilha_isolador_superior_1370.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 22-10-2020_DJI_0726_manilha_isolador_superior_1372.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 22-10-2020_DJI_0806_manilha_isolador_superior_1388.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 22-10-2020_DJI_0826_manilha_isolador_superior_1390.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 22-10-2020_DJI_0863_manilha_isolador_superior_1380.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 22-10-2020_DJI_0878_manilha_isolador_superior_1383.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 22-10-2020_DJI_0879_manilha_isolador_superior_1384.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 23-10-2020_DJI_0208_manilha_isolador_superior_1427.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 23-11-2020_DJI_0070_manilha_isolador_superior_1447.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 23-11-2020_DJI_0101_manilha_isolador_superior_1445.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 23-11-2020_DJI_0137_manilha_isolador_superior_1441.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 23-11-2020_DJI_0145_manilha_isolador_superior_1442.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 23-11-2020_DJI_0185_manilha_isolador_superior_1440.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 23-11-2020_DJI_0256_manilha_isolador_superior_1433.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 23-11-2020_DJI_0272_manilha_isolador_superior_1428.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 24-11-2020_DJI_0006_manilha_isolador_superior_1491.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 24-11-2020_DJI_0008_manilha_isolador_superior_1493.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 24-11-2020_DJI_0030_manilha_isolador_superior_1495.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 24-11-2020_DJI_0112_manilha_isolador_superior_1490.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 24-11-2020_DJI_0294_manilha_isolador_superior_1477.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 24-11-2020_DJI_0312_manilha_isolador_superior_1478.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 24-11-2020_DJI_0362_manilha_isolador_superior_1472.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 24-11-2020_DJI_0378_manilha_isolador_superior_1473.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 24-11-2020_DJI_0429_manilha_isolador_superior_1467.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 24-11-2020_DJI_0477_manilha_isolador_superior_1469.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 24-11-2020_DJI_0539_manilha_isolador_superior_1466.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 24-11-2020_DJI_0624_manilha_isolador_superior_1463.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 25-11-2020_DJI_0257_manilha_isolador_superior_1510.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 25-11-2020_DJI_0274_manilha_isolador_superior_1511.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 25-11-2020_DJI_0467_manilha_isolador_superior_1500.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 25-11-2020_DJI_0495_manilha_isolador_superior_1501.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 25-11-2020_DJI_0603_manilha_isolador_superior_1498.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 26-11-2020_DJI_0074_manilha_isolador_superior_1555.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 26-11-2020_DJI_0292_manilha_isolador_superior_1545.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 26-11-2020_DJI_0492_manilha_isolador_superior_1537.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 27-11-2020_DJI_0063_manilha_isolador_superior_1618.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 27-11-2020_DJI_0100_manilha_isolador_superior_1621.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 27-11-2020_DJI_0167_manilha_isolador_superior_1615.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 27-11-2020_DJI_0192_manilha_isolador_superior_1599.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 27-11-2020_DJI_0213_manilha_isolador_superior_1603.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 27-11-2020_DJI_0275_manilha_isolador_superior_1592.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 27-11-2020_DJI_0339_manilha_isolador_superior_1585.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 27-11-2020_DJI_0425_manilha_isolador_superior_1577.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 27-11-2020_DJI_0520_manilha_isolador_superior_1573.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 27-11-2020_DJI_0545_manilha_isolador_superior_1563.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 30-11-2020_DJI_0012_manilha_isolador_superior_1685.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 30-11-2020_DJI_0098_manilha_isolador_superior_1677.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 30-11-2020_DJI_0321_manilha_isolador_superior_1661.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 30-11-2020_DJI_0378_manilha_isolador_superior_1654.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 30-11-2020_DJI_0421_manilha_isolador_superior_1646.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 30-11-2020_DJI_0423_manilha_isolador_superior_1648.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 30-11-2020_DJI_0506_manilha_isolador_superior_1640.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 30-11-2020_DJI_0527_manilha_isolador_superior_1643.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 30-11-2020_DJI_0528_manilha_isolador_superior_1644.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 30-11-2020_DJI_0548_manilha_isolador_superior_1628.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\good\\Fotos 30-11-2020_DJI_0584_manilha_isolador_superior_1634.jpg",
+      "label": 0
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0005_2_jpg.rf.f8e5e1cdfbf8a3702fa077bf2146d924.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0006_3_jpg.rf.ce9fd73c67085bd2436093f80dd200ac.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0007_4_jpg.rf.befc990bebd7329aa86d4bb4530d85ca.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0036_8_jpg.rf.f682d6f4dcfcb2b7843ce6033512da4d.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0037_9_jpg.rf.7aeba185d753a5a3a2767f4c1f9780a1.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0038_10_jpg.rf.e1dea6866b2a7a20b320d746751b897e.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0072_12_jpg.rf.f9ea4d0c2235b077b07d1e8bd0ae6bfd.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0073_13_jpg.rf.00bc3b207bad938252ef63f458845aec.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0074_14_jpg.rf.64fb22b8e5d8ae1d66091b5ecc553e6f.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0101_23_jpg.rf.010279af173c95fc2ea2fd1bd78413ad.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0102_24_jpg.rf.d16a3e14572debc3745dc4e28eee0dc2.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0192_58_jpg.rf.dd59f48507f0e179e4a6bd346ec5307f.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0248_73_jpg.rf.aa07b95b93c32921876231aa05771878.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0271_83_jpg.rf.c03f8a6ecbcc0574c84b323efb2e42b4.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0272_84_jpg.rf.edc847b7a89fbf1b37b20a56b78f4faf.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0273_85_jpg.rf.868c6ee1fbb920b2dfe7a953c3d17592.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0294_95_jpg.rf.e090203bc0b612fec7dc0b18060c1989.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0329_98_jpg.rf.d7524115a8536b34097d5b68d66702b6.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0335_100_jpg.rf.571eb857edd9739596985b8e939d35bf.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0336_101_jpg.rf.2f216f67daacf53c73c647528ddd078e.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0512_149_jpg.rf.a2a62628b4baaa9bf51483102c736764.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0546_158_jpg.rf.95691e3e4a814031ac17aeb924f22549.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0547_159_jpg.rf.b6e8056d463cbd7a9930b007094e52ee.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0548_160_jpg.rf.1c10ab61159b1f7a056829dd08fdc102.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0569_163_jpg.rf.e271509f946c6c53f3dc0d8c19336e2e.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0587_166_jpg.rf.003e7d6e8e77e5764f09215ac6e1aeff.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\01-06-2021_DJI_0597_170_jpg.rf.e7de15e511147f0bedeb08da1069b713.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0008_182_jpg.rf.158162c0ddc4e719351aebd12a859414.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0048_195_jpg.rf.2b94b758a8b278651bbd80f7612651a4.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0141_224_jpg.rf.f1a12dcc3812c855f31c5611e4cc98ca.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0142_225_jpg.rf.4532f09accfc8cc3e82ad8eecae1930f.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0263_244_jpg.rf.f3e54128b2e93c6af177e0fcad8efb82.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0334_255_jpg.rf.4d0f3e683e1745dabb9893105a581b6b.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0335_256_jpg.rf.085f6b4f971ef8021090d0f145e5e545.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0379_265_jpg.rf.3e19d5fa6b749143188b8b6fa4e5482f.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0408_266_jpg.rf.d058186ff6d082a7d92f306687e727dc.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0500_274_jpg.rf.ad2488cc248282dca11ed936bc817b77.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0527_275_jpg.rf.e4fb873f8ba59d7bf065bc56962172bd.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0528_276_jpg.rf.f646af37daac00cb19e0043479952509.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0568_277_jpg.rf.ce97ad68a462057e84eb6533f746f22f.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0569_278_jpg.rf.a1cbcbec60bb44ab28f451ffc47a4c95.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0595_282_jpg.rf.17bce4b8022c53a9ebf6138630660ff1.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0596_283_jpg.rf.31f3cf48d52db7e52787d975b0601785.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0643_293_jpg.rf.dbfbd03704389ac830f9147bb8a8d5f0.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\02-06-2021_DJI_0644_294_jpg.rf.dfc0fd4b726abce6ea6ff5a17f339034.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\08-06-2021_DJI_0007_296_jpg.rf.409083982aa33bd391995642bf4cec9d.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\08-06-2021_DJI_0054_310_jpg.rf.c05a7e6cff16775373ea5bb87e1decfa.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\08-06-2021_DJI_0055_311_jpg.rf.f97cbad694593b0d8d9d4b981f04086a.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\08-06-2021_DJI_0080_319_jpg.rf.94263ae6de074455c652d6a885add03f.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\08-06-2021_DJI_0081_320_jpg.rf.0dde2796e719865136ea0b230d5c4a10.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\08-06-2021_DJI_0244_349_jpg.rf.fb2bc916e61021ec843ef87fe538c441.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\08-06-2021_DJI_0272_378_jpg.rf.18133df7f58445423050c928bff90ada.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\08-06-2021_DJI_0273_379_jpg.rf.4dd28556cd027c87472b58b4af2d3575.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\08-06-2021_DJI_0274_380_jpg.rf.3e340eec239b00bcc598a15e5a2e7ffa.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\08-06-2021_DJI_0321_397_jpg.rf.f99567d3c87880d07091bcd1e65c8833.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\08-06-2021_DJI_0322_398_jpg.rf.aa0353ab4cf4b4108cab6539ee902727.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\08-06-2021_DJI_0373_411_jpg.rf.cd332967d1a41129b54d814fb4ff8f24.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\08-06-2021_DJI_0374_412_jpg.rf.381b4f90cc956be57de8001fcec30b7a.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0083_463_jpg.rf.fb40f30642ea6cb1ace37a6a23f9d3ce.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0084_464_jpg.rf.5ae266a809f432e804913c488824c769.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0184_475_jpg.rf.913469bec41f0192770598564fee8367.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0185_476_jpg.rf.b400d0f9979d5d6369e291a7fce5f6bb.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0186_477_jpg.rf.0a6fff46c01f4296424bed96aafc4da4.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0210_489_jpg.rf.4fde70d97a609b4105afb075653cafed.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0211_490_jpg.rf.b39c1d5eecb2e86203e501b385434c56.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0274_509_jpg.rf.680fe03006d3757473fa238438f47e68.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0275_510_jpg.rf.71badd4c924354d494b22d14701cfb5e.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0301_527_jpg.rf.10e82e3f7278a8a03b1058c13318ea45.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0302_528_jpg.rf.4e73d7a2dd2a70d0cbcf98f4d92899b8.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0303_529_jpg.rf.9fe17a882845446b61c41555f2b3f7c5.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0404_540_jpg.rf.34dd418250bd7a09bf60b2cae2b1ca17.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0405_541_jpg.rf.23fec0cd9439c2fe6255f309b99827c4.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0456_560_jpg.rf.1cc4916ec077e1b976a0bb917ff3b347.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0457_561_jpg.rf.e2e7c83f9cd7602b1f8e59517bec4961.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0482_593_jpg.rf.7ce971bf8cd501a1e31890502b1335cb.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\09-06-2021_DJI_0483_594_jpg.rf.57097225e0ff438829cd7069bc86dc01.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\10-06-2021_DJI_0034_619_jpg.rf.2279e139fc16e5a461bc5cefa57b92e1.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\10-06-2021_DJI_0054_622_jpg.rf.16fbb5d26549e70809563f376f732e79.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\Fotos-11-12-2020_DJI_0124_manilha_isolador_superior_897_jpg.rf.33ba8d6d96239992867c7636a13a7281.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\Fotos-19-10-2020_DJI_0083_manilha_isolador_superior_16_jpg.rf.220746fdf5ae2e7030b3dbc3683e4c24.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\Fotos-19-10-2020_DJI_0084_manilha_isolador_superior_17_jpg.rf.3f1c98e3b4ee8df202feba34a336a4c6.jpg",
+      "label": 1
+    },
+    {
+      "path": "polymer-insulator-upper-shackle\\test\\rust\\Fotos-19-10-2020_DJI_0090_manilha_isolador_superior_21_jpg.rf.95883776a2b6ba13a6fe2d3d98149a6c.jpg",
+      "label": 1
+    }
+  ]
+}

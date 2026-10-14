@@ -1,0 +1,3 @@
+# Instruções para agentes neste projeto
+
+Antes de propor ou executar decisões de método, treinamento, avaliação, interpretação de resultados ou mudanças no protocolo, consulte [`docs/contexto_e_decisoes_ia.md`](docs/contexto_e_decisoes_ia.md). Use a hierarquia de evidências e o checklist definidos lá. Toda decisão nova que afete método, dados, métricas, critérios de seleção ou interpretação deve ser acrescentada ao Registro de Decisões do documento, com justificativa, evidência, alternativas e verificação planejada. Não trate resultados exploratórios ou de holdout como confirmação independente.

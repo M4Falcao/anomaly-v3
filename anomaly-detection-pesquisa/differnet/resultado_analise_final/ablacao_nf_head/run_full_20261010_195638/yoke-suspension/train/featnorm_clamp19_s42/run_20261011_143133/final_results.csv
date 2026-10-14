@@ -1,0 +1,2 @@
+method,pixel_auroc,pixel_ap,pixel_f1,aupro,image_auroc,image_ap,image_f1,auroc_only
+CFLOW,0.844266,nan,nan,nan,0.710093,nan,nan,True

@@ -5,15 +5,14 @@ param(
     [string]$DatasetRoot,
 
     [string[]]$Classes = @(
-        'glass-insulator',
-        'lightning-rod-suspension',
-        'polymer-insulator-upper-shackle',
         'vari-grip',
         'yoke-suspension'
     ),
 
+    [ValidateCount(1, 1)]
     [int[]]$Seeds = @(42),
     [int]$SplitSeed = 42,
+    [string[]]$AurocOnlyClasses = @('vari-grip', 'yoke-suspension'),
     [int]$Bootstrap = 1000,
     [string]$OutputRoot,
     [string]$Python = 'python',
@@ -25,9 +24,9 @@ $ErrorActionPreference = 'Stop'
 $DatasetRoot = (Resolve-Path $DatasetRoot).Path
 $AblationScript = Join-Path $PSScriptRoot 'ablation_nf_head.py'
 $KnownClasses = @(
-    'glass-insulator',
-    'lightning-rod-suspension',
-    'polymer-insulator-upper-shackle',
+    # 'glass-insulator',
+    # 'lightning-rod-suspension',
+    # 'polymer-insulator-upper-shackle',
     'vari-grip',
     'yoke-suspension'
 )
@@ -41,6 +40,12 @@ $EpochBudgets = @{
 
 if (-not (Test-Path $AblationScript -PathType Leaf)) {
     throw "Ablation script not found: $AblationScript"
+}
+
+foreach ($className in $AurocOnlyClasses) {
+    if ($className -notin $KnownClasses) {
+        throw "Unknown AUROC-only class '$className'. Valid classes: $($KnownClasses -join ', ')"
+    }
 }
 
 foreach ($className in $Classes) {
@@ -70,10 +75,12 @@ Write-Warning 'The SEDifferNet checkpoint remains pretrained and frozen. This is
 Write-Host "Dataset: $DatasetRoot"
 Write-Host "Output:  $OutputRoot"
 Write-Host "Training seeds: $($Seeds -join ',') | split seed: $SplitSeed (fixed across seeds)"
+Write-Host "AUROC-only classes: $($AurocOnlyClasses -join ',') (AUPRO/AP/F1 deferred)"
 
 foreach ($className in $Classes) {
     $budget = $EpochBudgets[$className]
     $runDir = Join-Path $OutputRoot $className
+    $selectionMetric = if ($className -in $AurocOnlyClasses) { 'pixel_auroc' } else { 'auroc_aupro' }
     $arguments = @(
         $AblationScript,
         '--class_name', $className,
@@ -97,11 +104,14 @@ foreach ($className in $Classes) {
         '--sigmas', '0,2,4,8,12',
         '--margins', '0',
         '--image_scores', 'max,topk',
-        '--select_metric', 'auroc_aupro',
+        '--select_metric', $selectionMetric,
         '--bootstrap', [string]$Bootstrap,
         '--top_n', [string]$TopN,
         '--pixel_stride', '2'
     )
+    if ($className -in $AurocOnlyClasses) {
+        $arguments += '--auroc_only'
+    }
 
     Write-Host "`n$className"
     if ($PlanOnly) {

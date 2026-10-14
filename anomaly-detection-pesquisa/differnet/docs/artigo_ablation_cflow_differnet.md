@@ -1,6 +1,8 @@
 # Pós-Processamento Supera Retreino: Um Estudo Abrangente de Ablação da Cabeça de Normalizing Flow para Localização de Anomalias em Inspeção de Linhas de Transmissão
 
 **Autor:** Teo Santos  
+
+> **⚠️ Nota de versão (2026-10-13).** Este rascunho reporta as rodadas de setembro, em parte com época escolhida no teste completo e AUPRO por imagem. A versão para submissão deve usar a [análise científica consolidada](analise_cientifica_ablacao_nf_head_5classes.md) (25 heads, seleção só na validação, holdout auditado). Afirmações que **não se sustentam** no protocolo novo: "$L_1+L_3$ é o default universal (regret ≤ 0,0012)" — refutado (0,044 em polymer; L1+L2+L3 é minimax); "+0,0965 de pós-processamento" — substituir por +0,0625 no holdout, ou +0,080 com a variante de treino; `featnorm` em yoke −0,0499 — medido −0,012 a −0,033; "`cflow_original` +0,0138 sobre `raw`" — empate em AUROC (+0,0009; IC contém zero), vantagem apenas em AUPRO. O título "Pós-processamento supera retreino" continua sustentado (≈78 % do ganho vem da inferência), com a ressalva de que a variante de treino importa dentro de cada classe.
 *Universidade de Brasília (UnB), Brasília, Brasil*  
 
 ---

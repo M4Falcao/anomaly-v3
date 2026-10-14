@@ -468,6 +468,9 @@ def main():
                              'Cheap now that connected components are pre-extracted.')
     parser.add_argument('--no_eval_aupro', dest='eval_aupro', action='store_false',
                         help='Skip the per-epoch AUPRO (falls back to pixel-AUROC selection only).')
+    parser.add_argument('--auroc_only', action='store_true',
+                        help='Use pixel AUROC for selection; skip AUPRO at every epoch and in '
+                             'final reporting, and skip final AP/F1 metrics.')
     parser.add_argument('--patience', type=int, default=0,
                         help='Early stopping: stop after N evaluations with no improvement of the '
                              'selection metric. 0 disables it. Measured on run_20260907_145952, '
@@ -492,6 +495,9 @@ def main():
                              'across training seeds so every head is scored on the same holdout.')
     
     args = parser.parse_args()
+    if args.auroc_only:
+        args.eval_aupro = False
+        print('AUROC-only: epoch/final AUPRO and final AP/F1 are disabled; skipped values are NaN.')
     if args.split_seed is None:
         args.split_seed = args.seed
     if not 0 <= args.val_fraction < 1:
@@ -834,9 +840,6 @@ def main():
             image_auroc = roc_auc_score(all_image_labels, all_image_scores) \
                 if len(np.unique(all_image_labels)) > 1 else 0.5
 
-            # AUPRO. RD++ tracks it every epoch and selects on it; AUROC, AP and
-            # AUPRO disagree systematically, so pixel AUROC alone picks the wrong
-            # epoch for localization quality.
             aupro = float('nan')
             if args.eval_aupro and lab_flat.sum() > 0:
                 try:
@@ -844,8 +847,11 @@ def main():
                 except Exception as exc:  # noqa: BLE001 - never abort training on a metric
                     print(f"    AUPRO falhou: {exc}")
 
-            composite = (pixel_auroc + image_auroc + aupro) / 3 \
-                if aupro == aupro else (pixel_auroc + image_auroc) / 2
+            if args.auroc_only:
+                composite = pixel_auroc
+            else:
+                composite = (pixel_auroc + image_auroc + aupro) / 3 \
+                    if aupro == aupro else (pixel_auroc + image_auroc) / 2
 
             history['pixel_auroc'].append(pixel_auroc)
             history['image_auroc'].append(image_auroc)
@@ -1021,12 +1027,14 @@ def main():
         
         # Pixel metrics
         pixel_auroc = roc_auc_score(lab_flat, pix_flat) if lab_flat.sum() > 0 else 0.5
-        pixel_ap = average_precision_score(lab_flat, pix_flat) if lab_flat.sum() > 0 else 0.0
-        pixel_f1, pixel_thresh = compute_best_f1(lab_flat, pix_flat)
+        pixel_ap, pixel_f1 = float('nan'), float('nan')
+        if not args.auroc_only:
+            pixel_ap = average_precision_score(lab_flat, pix_flat) if lab_flat.sum() > 0 else 0.0
+            pixel_f1, pixel_thresh = compute_best_f1(lab_flat, pix_flat)
         
         # AUPRO (slower, compute only for best method)
-        aupro = 0.0
-        if method_name in ('CFLOW', 'Ensemble'):
+        aupro = float('nan') if args.auroc_only else 0.0
+        if not args.auroc_only and method_name in ('CFLOW', 'Ensemble'):
             try:
                 aupro = compute_aupro(gt_masks, pixel_maps)
             except Exception as e:
@@ -1035,9 +1043,11 @@ def main():
         # Image metrics
         image_auroc = roc_auc_score(image_labels, img_scores_arr) \
             if len(np.unique(image_labels)) > 1 else 0.5
-        image_ap = average_precision_score(image_labels, img_scores_arr) \
-            if len(np.unique(image_labels)) > 1 else 0.0
-        image_f1, _ = compute_best_f1(image_labels, img_scores_arr)
+        image_ap, image_f1 = float('nan'), float('nan')
+        if not args.auroc_only:
+            image_ap = average_precision_score(image_labels, img_scores_arr) \
+                if len(np.unique(image_labels)) > 1 else 0.0
+            image_f1, _ = compute_best_f1(image_labels, img_scores_arr)
         
         results_table.append({
             'method': method_name,
@@ -1051,7 +1061,7 @@ def main():
         })
         
         # Log to MLflow
-        mlflow.log_metrics({
+        logged_metrics = {
             f'{method_name}_pixel_auroc': pixel_auroc,
             f'{method_name}_pixel_ap': pixel_ap,
             f'{method_name}_pixel_f1': pixel_f1,
@@ -1059,7 +1069,8 @@ def main():
             f'{method_name}_image_auroc': image_auroc,
             f'{method_name}_image_ap': image_ap,
             f'{method_name}_image_f1': image_f1,
-        })
+        }
+        mlflow.log_metrics({name: value for name, value in logged_metrics.items() if np.isfinite(value)})
     
     # ─── Print results ───────────────────────────────────────────────────────
     print(f"\n{'='*80}")
@@ -1186,11 +1197,11 @@ def main():
     # ─── Save results CSV ────────────────────────────────────────────────────
     csv_path = os.path.join(run_dir, "final_results.csv")
     with open(csv_path, 'w') as f:
-        f.write("method,pixel_auroc,pixel_ap,pixel_f1,aupro,image_auroc,image_ap,image_f1\n")
+        f.write("method,pixel_auroc,pixel_ap,pixel_f1,aupro,image_auroc,image_ap,image_f1,auroc_only\n")
         for r in results_table:
             f.write(f"{r['method']},{r['pixel_auroc']:.6f},{r['pixel_ap']:.6f},"
                     f"{r['pixel_f1']:.6f},{r['aupro']:.6f},{r['image_auroc']:.6f},"
-                    f"{r['image_ap']:.6f},{r['image_f1']:.6f}\n")
+                    f"{r['image_ap']:.6f},{r['image_f1']:.6f},{args.auroc_only}\n")
     mlflow.log_artifact(csv_path)
     
     # ─── Save best models as MLflow artifacts ────────────────────────────────

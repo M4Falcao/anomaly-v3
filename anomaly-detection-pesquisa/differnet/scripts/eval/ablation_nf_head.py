@@ -366,7 +366,7 @@ def collect_nll(model, backbone, cflow, loader, levels, feat_stats, tta, desc,
 # Metrics
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def fast_binary_metrics(scores, labels, n_bins=16384, sample_size=500_000, seed=0):
+def fast_binary_metrics(scores, labels, n_bins=16384, sample_size=500_000, seed=0, auroc_only=False):
     """Histogram-based AUROC / AP / best-F1.
 
     Bin edges are score quantiles, so each bin holds ~1/n_bins of the pixels
@@ -392,6 +392,8 @@ def fast_binary_metrics(scores, labels, n_bins=16384, sample_size=500_000, seed=
     fpr = np.concatenate([[0.0], fp / N])
     trapezoid = getattr(np, 'trapezoid', None) or np.trapz
     auroc = float(trapezoid(tpr, fpr))
+    if auroc_only:
+        return auroc, float('nan'), float('nan')
     prec = tp / np.maximum(tp + fp, 1.0)
     rec = tp / P
     rec_prev = np.concatenate([[0.0], rec[:-1]])
@@ -400,7 +402,7 @@ def fast_binary_metrics(scores, labels, n_bins=16384, sample_size=500_000, seed=
     return auroc, ap, float(f1.max())
 
 
-def pixel_metrics(maps, masks, margin, stride=1, exact=False):
+def pixel_metrics(maps, masks, margin, stride=1, exact=False, auroc_only=False):
     """Pixel AUROC/AP/F1 on a strided, border-masked view of the maps."""
     size = masks.shape[-1]
     keep = border_mask(size, margin)[::stride, ::stride]
@@ -410,10 +412,12 @@ def pixel_metrics(maps, masks, margin, stride=1, exact=False):
         return {'pixel_auroc': float('nan'), 'pixel_ap': float('nan'), 'pixel_f1': float('nan')}
     if exact:
         auroc = float(roc_auc_score(y, s))
-        ap = float(average_precision_score(y, s))
-        _, _, f1 = fast_binary_metrics(s, y)
+        ap, f1 = float('nan'), float('nan')
+        if not auroc_only:
+            ap = float(average_precision_score(y, s))
+            _, _, f1 = fast_binary_metrics(s, y)
     else:
-        auroc, ap, f1 = fast_binary_metrics(s, y)
+        auroc, ap, f1 = fast_binary_metrics(s, y, auroc_only=auroc_only)
     return {'pixel_auroc': auroc, 'pixel_ap': ap, 'pixel_f1': f1}
 
 
@@ -421,6 +425,17 @@ def aupro_rd_legacy(maps, masks, labels):
     """Former per-image RD++ AUPRO (ignores normal images); not comparable to the literature."""
     vals = [compute_pro_rd_style(masks[i], maps[i]) for i in range(len(labels)) if labels[i] > 0]
     return float(np.mean(vals)) if vals else float('nan')
+
+
+def region_metrics(maps, masks, valid=None, regions=None, labels=None, auroc_only=False):
+    metrics = {'aupro': float('nan')}
+    if labels is not None:
+        metrics['aupro_rd_legacy'] = float('nan')
+    if not auroc_only:
+        metrics['aupro'] = compute_aupro_cflow(maps, masks, valid=valid, regions=regions)
+        if labels is not None:
+            metrics['aupro_rd_legacy'] = aupro_rd_legacy(maps, masks, labels)
+    return metrics
 
 
 def stratified_bootstrap_weights(labels, n_boot, seed):
@@ -780,7 +795,7 @@ def run_posthoc(args, nf_ckpt_path, out_dir, tag, variant=None, train_seed=None)
                         [level_val], [channels[i]], img_size, mode='raw',
                         align_corners=align_corners)
                     m = pixel_metrics(up.numpy(), cache['masks'][val_idx], 0,
-                                      stride=args.pixel_stride)
+                                      stride=args.pixel_stride, auroc_only=args.auroc_only)
                     per_level_rows.append({'pad': pad, 'pad_mode': pad_mode, 'tta': tta,
                                            'align_corners': align_corners,
                                            'level': LEVEL_NAMES[lvl], **m})
@@ -803,7 +818,8 @@ def run_posthoc(args, nf_ckpt_path, out_dir, tag, variant=None, train_seed=None)
     val_valid, val_regions = {}, {}
     for margin in margins:
         val_valid[margin] = border_mask(img_size, margin)[::stride, ::stride] if margin > 0 else None
-        val_regions[margin] = cflow_aupro_regions(masks_val_s, val_valid[margin])
+        val_regions[margin] = (cflow_aupro_regions(masks_val_s, val_valid[margin])
+                               if not args.auroc_only else None)
 
     rows = []
     pbar = tqdm(total=n_total, desc='  grid (val)')
@@ -822,10 +838,10 @@ def run_posthoc(args, nf_ckpt_path, out_dir, tag, variant=None, train_seed=None)
         for sigma in sigmas:
             sm = smooth(maps_val, sigma)
             for margin in margins:
-                pm = pixel_metrics(sm, masks_val, margin, stride=stride)
-                pm['aupro'] = compute_aupro_cflow(sm[:, ::stride, ::stride], masks_val_s,
-                                                  valid=val_valid[margin],
-                                                  regions=val_regions[margin])
+                pm = pixel_metrics(sm, masks_val, margin, stride=stride, auroc_only=args.auroc_only)
+                pm.update(region_metrics(sm[:, ::stride, ::stride], masks_val_s,
+                                         valid=val_valid[margin], regions=val_regions[margin],
+                                         auroc_only=args.auroc_only))
                 pm['auroc_aupro'] = (pm['pixel_auroc'] + pm['aupro']) / 2
                 for img_mode in image_scores:
                     row = dict(cfg, sigma=sigma, margin=margin, image_score=img_mode, **pm)
@@ -895,12 +911,13 @@ def run_posthoc(args, nf_ckpt_path, out_dir, tag, variant=None, train_seed=None)
                               trained_levels, channels, img_size, cohort_idx=hold_idx),
                     cfg['sigma'])
         valid = border_mask(img_size, cfg['margin']) if cfg['margin'] > 0 else None
-        if cfg['margin'] not in hold_regions:
+        if not args.auroc_only and cfg['margin'] not in hold_regions:
             hold_regions[cfg['margin']] = cflow_aupro_regions(masks_hold, valid)
-        metrics = dict(cfg, **pixel_metrics(sm, masks_hold, cfg['margin'], stride=1, exact=True))
-        metrics['aupro'] = compute_aupro_cflow(sm, masks_hold, valid=valid,
-                                               regions=hold_regions[cfg['margin']])
-        metrics['aupro_rd_legacy'] = aupro_rd_legacy(sm, masks_hold, labels_hold)
+        metrics = dict(cfg, **pixel_metrics(sm, masks_hold, cfg['margin'], stride=1, exact=True,
+                                           auroc_only=args.auroc_only))
+        metrics.update(region_metrics(sm, masks_hold, valid=valid,
+                                      regions=hold_regions.get(cfg['margin']), labels=labels_hold,
+                                      auroc_only=args.auroc_only))
         metrics['image_auroc_map'] = image_auroc_from_map(sm, labels_hold, cfg['image_score'],
                                                           args.topk_percent)
         metrics['image_auroc_sediffernet'] = se_hold_auroc
@@ -1008,7 +1025,9 @@ def run_posthoc(args, nf_ckpt_path, out_dir, tag, variant=None, train_seed=None)
         f"grid size: {len(df)} ({len(ranked)} distinct pixel configs) | selection metric: "
         f"{args.select_metric} | pixel_stride (grid)={args.pixel_stride} | bootstrap={args.bootstrap}",
         f"SEDifferNet image AUROC (all): {se_auroc:.4f}",
-        "AUPRO = official CFLOW-AD protocol; aupro_rd_legacy in the CSV is the old per-image variant.",
+        ("AUROC-only: AP, F1 and both AUPRO metrics were not computed (NaN in CSVs)."
+         if args.auroc_only else
+         "AUPRO = official CFLOW-AD protocol; aupro_rd_legacy in the CSV is the old per-image variant."),
         "",
         f"BEST on val:      {best_val['name']}  -> {args.select_metric}={best_val[args.select_metric]:.4f}",
         f"  -> holdout:     pixAUROC={best_hold['pixel_auroc']:.4f} AP={best_hold['pixel_ap']:.4f} "
@@ -1035,6 +1054,8 @@ def run_posthoc(args, nf_ckpt_path, out_dir, tag, variant=None, train_seed=None)
     del model, cflow, caches
     torch.cuda.empty_cache() if DEVICE == 'cuda' else None
     return {'tag': tag, 'variant': variant or tag, 'train_seed': train_seed,
+            'select_metric': args.select_metric, 'auroc_only': args.auroc_only,
+            'aupro_enabled': not args.auroc_only,
             'holdout_clean': holdout_clean, 'nf_head': nf_ckpt_path,
             **{k: info[k] for k in ('levels', 'train_reflect_pad', 'feat_pool', 'feat_norm',
                                     'feat_norm_levels', 'no_rotation', 'epoch', 'train_pixel_auroc')},
@@ -1079,6 +1100,8 @@ def run_retrain(args, run_dir):
                '--out_dir', out_dir, '--seed', str(train_seed),
                '--sigma', '4', '--score_norm', args.train_score_mode,
                *TRAIN_VARIANTS[variant]]
+        if args.auroc_only:
+            cmd.append('--auroc_only')
         print(f"\n{'=' * 70}\n  RETRAIN [{tag}]\n{'=' * 70}\n  " + " ".join(cmd))
         t0 = time.time()
         ret = subprocess.run(cmd, cwd=PROJECT_ROOT)
@@ -1128,6 +1151,9 @@ def main():
                         choices=['auroc_aupro', 'pixel_auroc', 'aupro', 'pixel_ap', 'pixel_f1',
                                  'image_auroc_map'],
                         help='auroc_aupro = mean of pixel AUROC and CFLOW-AD AUPRO on validation')
+    parser.add_argument('--auroc_only', action='store_true',
+                        help='Select by pixel AUROC only; skip AP/F1, global and legacy AUPRO, '
+                             'and propagate the same metric policy to retraining.')
     parser.add_argument('--top_n', type=int, default=12,
                         help='Number of best validation configs re-scored on the held-out split')
     parser.add_argument('--bootstrap', type=int, default=1000,
@@ -1174,6 +1200,8 @@ def main():
     parser.add_argument('--out_dir', type=str, default=None)
     args = parser.parse_args()
 
+    if args.auroc_only:
+        args.select_metric = 'pixel_auroc'
     if not 0 <= args.val_fraction < 1:
         parser.error('--val_fraction must be in [0, 1)')
     if args.bootstrap < 0:

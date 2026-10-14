@@ -1,0 +1,6 @@
+variant,holdout_baseline_pixel_auroc_mean,holdout_baseline_pixel_auroc_std,holdout_baseline_pixel_auroc_count,holdout_best_pixel_auroc_mean,holdout_best_pixel_auroc_std,holdout_best_pixel_auroc_count,holdout_delta_pixel_auroc_mean,holdout_delta_pixel_auroc_std,holdout_delta_pixel_auroc_count,holdout_baseline_aupro_mean,holdout_baseline_aupro_std,holdout_baseline_aupro_count,holdout_best_aupro_mean,holdout_best_aupro_std,holdout_best_aupro_count,holdout_delta_aupro_mean,holdout_delta_aupro_std,holdout_delta_aupro_count
+baseline,0.7940130875627073,,1,0.8673798673131704,,1,0.07336677975046313,,1,0.42368549127965394,,1,0.5825179623711486,,1,0.15883247109149468,,1
+clamp19,0.8565678335657869,,1,0.8965323876655416,,1,0.039964554099754634,,1,0.546752584374388,,1,0.6442135569102656,,1,0.0974609725358776,,1
+featnorm,0.8224090430515177,,1,0.8604856663206876,,1,0.03807662326916983,,1,0.5041862422210321,,1,0.5630408308887537,,1,0.05885458866772153,,1
+featnorm_clamp19,0.8628833708469056,,1,0.8606889170520171,,1,-0.0021944537948884735,,1,0.5612346337608282,,1,0.5930351131253848,,1,0.031800479364556655,,1
+featnorm_l1_only,0.7969937326696257,,1,0.8686108308901657,,1,0.07161709822053997,,1,0.4536953818589926,,1,0.5825181885813938,,1,0.1288228067224012,,1

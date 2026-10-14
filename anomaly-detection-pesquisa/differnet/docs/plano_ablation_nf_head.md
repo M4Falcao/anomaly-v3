@@ -15,6 +15,8 @@ Avaliação: `scripts/eval/evaluate_image_level.py`, `evaluate_pixel_level.py`,
 
 ## 0. Sumário executivo
 
+> **⚠️ Atualização 2026-10-13 — leia antes de usar os números deste documento.** As rodadas de outubro (`run_full_20261007_123558` e `run_full_20261010_195638`; 25 heads, época escolhida só na validação, holdout auditado, AUPRO global) substituem os resultados de setembro para fins de publicação. Consulte a [análise científica consolidada](analise_cientifica_ablacao_nf_head_5classes.md). Principais revisões: (i) **L1+L3 não é o default universal**: o regret de 02 chega a 0,044 em polymer, e L1+L2+L3 é minimax (regret médio 0,011); (ii) `raw` vs min-max se confirma e cresce (+0,085; 25/25 heads); (iii) `raw`, `per_level_std` e `cflow_original` empatam em AUROC; (iv) nenhuma variante de treino vence na média entre classes (Friedman p = 0,72); (v) melhores AUROC no holdout: glass 0,9467, lightning 0,8965, polymer 0,8848, vari 0,9295, yoke 0,9466. A tabela de reconciliação está na seção 6 daquele documento.
+
 > **Estado em 2026-09-08.** 5 rodadas de retreino (27 receitas) + pós-hoc nas heads publicadas +
 > **treino em lote das 5 classes** (`run_20260907_145952`, Seção 6.9).
 > **~24 000 medições** de validação, 8 conjuntos de held-out independentes.

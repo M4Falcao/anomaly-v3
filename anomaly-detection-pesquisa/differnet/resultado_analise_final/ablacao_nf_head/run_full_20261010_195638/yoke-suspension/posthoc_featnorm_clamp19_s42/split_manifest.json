@@ -1,0 +1,6276 @@
+{
+  "class_name": "yoke-suspension",
+  "seed": 42,
+  "val_fraction": 0.4,
+  "validation_indices": [
+    0,
+    1,
+    2,
+    6,
+    7,
+    10,
+    11,
+    12,
+    14,
+    15,
+    20,
+    21,
+    25,
+    30,
+    35,
+    36,
+    38,
+    45,
+    47,
+    48,
+    51,
+    53,
+    55,
+    60,
+    61,
+    64,
+    66,
+    69,
+    77,
+    78,
+    79,
+    80,
+    82,
+    83,
+    86,
+    87,
+    88,
+    91,
+    94,
+    96,
+    97,
+    98,
+    100,
+    101,
+    110,
+    111,
+    112,
+    113,
+    116,
+    123,
+    125,
+    126,
+    127,
+    128,
+    129,
+    130,
+    131,
+    132,
+    133,
+    135,
+    136,
+    138,
+    140,
+    142,
+    143,
+    146,
+    147,
+    150,
+    151,
+    152,
+    156,
+    157,
+    158,
+    166,
+    171,
+    173,
+    179,
+    180,
+    184,
+    185,
+    186,
+    187,
+    192,
+    193,
+    195,
+    197,
+    198,
+    199,
+    202,
+    203,
+    206,
+    213,
+    217,
+    218,
+    219,
+    220,
+    222,
+    223,
+    224,
+    230,
+    231,
+    232,
+    234,
+    236,
+    237,
+    238,
+    239,
+    241,
+    243,
+    244,
+    245,
+    248,
+    250,
+    252,
+    253,
+    259,
+    260,
+    263,
+    267,
+    268,
+    273,
+    276,
+    278,
+    281,
+    285,
+    289,
+    297,
+    299,
+    304,
+    305,
+    306,
+    307,
+    309,
+    310,
+    312,
+    315,
+    319,
+    321,
+    322,
+    324,
+    326,
+    328,
+    331,
+    332,
+    336,
+    340,
+    342,
+    343,
+    344,
+    346,
+    350,
+    352,
+    354,
+    356,
+    360,
+    361,
+    363,
+    365,
+    367,
+    368,
+    369,
+    371,
+    374,
+    377,
+    379,
+    380,
+    381,
+    385,
+    387,
+    388,
+    389,
+    390,
+    394,
+    395,
+    396,
+    403,
+    406,
+    408,
+    418,
+    419,
+    420,
+    421,
+    425,
+    426,
+    427,
+    429,
+    431,
+    433,
+    434,
+    435,
+    444,
+    447,
+    448,
+    453,
+    455,
+    457,
+    461,
+    463,
+    467,
+    468,
+    470,
+    471,
+    472,
+    473,
+    474,
+    475,
+    476,
+    479,
+    483,
+    492,
+    493,
+    498,
+    501,
+    509,
+    510,
+    511,
+    513,
+    514,
+    518,
+    530,
+    531,
+    536,
+    539,
+    541,
+    542,
+    544,
+    546,
+    547,
+    548,
+    549,
+    550,
+    551,
+    553,
+    556,
+    558,
+    563,
+    567,
+    573,
+    578,
+    581,
+    582,
+    583,
+    585,
+    586,
+    588,
+    589,
+    595,
+    598,
+    599,
+    602,
+    603,
+    606,
+    610,
+    613,
+    614,
+    618,
+    619,
+    623,
+    626,
+    627,
+    630,
+    632,
+    634,
+    635,
+    636,
+    643,
+    646,
+    647,
+    648,
+    651,
+    652,
+    653,
+    656,
+    659,
+    660,
+    662,
+    663,
+    664,
+    666,
+    668,
+    671,
+    674,
+    677,
+    679,
+    680,
+    683,
+    684,
+    688,
+    691,
+    692,
+    694,
+    696,
+    697,
+    699,
+    702,
+    703,
+    705,
+    711,
+    712,
+    714,
+    716,
+    717,
+    719,
+    723,
+    728,
+    729,
+    736,
+    737,
+    740,
+    742,
+    743,
+    747,
+    748,
+    754,
+    755,
+    756,
+    759,
+    766,
+    768,
+    772,
+    774,
+    776,
+    782,
+    784,
+    787,
+    789,
+    790,
+    791,
+    792,
+    793,
+    794,
+    795,
+    796,
+    801,
+    802,
+    803,
+    807,
+    810,
+    812,
+    817,
+    819,
+    823,
+    824,
+    826,
+    831,
+    835,
+    839,
+    843,
+    845,
+    850,
+    853,
+    859,
+    863,
+    869,
+    870,
+    871,
+    879,
+    881,
+    883,
+    884,
+    885,
+    889,
+    890,
+    895,
+    896,
+    899,
+    900,
+    902,
+    906,
+    907,
+    911,
+    915,
+    916,
+    921,
+    922,
+    925,
+    926,
+    928,
+    934,
+    936,
+    937,
+    938,
+    941,
+    942,
+    943,
+    947,
+    950,
+    953,
+    954,
+    956,
+    958,
+    959,
+    962,
+    964,
+    980,
+    981,
+    984,
+    989,
+    991,
+    992,
+    993,
+    996,
+    1000,
+    1001,
+    1003,
+    1005,
+    1006,
+    1010,
+    1012,
+    1015,
+    1019,
+    1023,
+    1024,
+    1026,
+    1027,
+    1030,
+    1038,
+    1044,
+    1045,
+    1046,
+    1047,
+    1049,
+    1053,
+    1054,
+    1055,
+    1056,
+    1059,
+    1062,
+    1065,
+    1070,
+    1071,
+    1073,
+    1075,
+    1078,
+    1080,
+    1083,
+    1085,
+    1086,
+    1089,
+    1095,
+    1097,
+    1101,
+    1102,
+    1105,
+    1106,
+    1113,
+    1115,
+    1119,
+    1121,
+    1124,
+    1125,
+    1126,
+    1131,
+    1132,
+    1134,
+    1135,
+    1136,
+    1138,
+    1141,
+    1143,
+    1144,
+    1147,
+    1148,
+    1157,
+    1158,
+    1160,
+    1164,
+    1165,
+    1166,
+    1167,
+    1168,
+    1170,
+    1172,
+    1175,
+    1179,
+    1181,
+    1182,
+    1191,
+    1194,
+    1195,
+    1202,
+    1204,
+    1205,
+    1207,
+    1208,
+    1215,
+    1216,
+    1220,
+    1221,
+    1228,
+    1229,
+    1230,
+    1232,
+    1234,
+    1238,
+    1239,
+    1241,
+    1243,
+    1244,
+    1245,
+    1247
+  ],
+  "holdout_indices": [
+    3,
+    4,
+    5,
+    8,
+    9,
+    13,
+    16,
+    17,
+    18,
+    19,
+    22,
+    23,
+    24,
+    26,
+    27,
+    28,
+    29,
+    31,
+    32,
+    33,
+    34,
+    37,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    46,
+    49,
+    50,
+    52,
+    54,
+    56,
+    57,
+    58,
+    59,
+    62,
+    63,
+    65,
+    67,
+    68,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    81,
+    84,
+    85,
+    89,
+    90,
+    92,
+    93,
+    95,
+    99,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    114,
+    115,
+    117,
+    118,
+    119,
+    120,
+    121,
+    122,
+    124,
+    134,
+    137,
+    139,
+    141,
+    144,
+    145,
+    148,
+    149,
+    153,
+    154,
+    155,
+    159,
+    160,
+    161,
+    162,
+    163,
+    164,
+    165,
+    167,
+    168,
+    169,
+    170,
+    172,
+    174,
+    175,
+    176,
+    177,
+    178,
+    181,
+    182,
+    183,
+    188,
+    189,
+    190,
+    191,
+    194,
+    196,
+    200,
+    201,
+    204,
+    205,
+    207,
+    208,
+    209,
+    210,
+    211,
+    212,
+    214,
+    215,
+    216,
+    221,
+    225,
+    226,
+    227,
+    228,
+    229,
+    233,
+    235,
+    240,
+    242,
+    246,
+    247,
+    249,
+    251,
+    254,
+    255,
+    256,
+    257,
+    258,
+    261,
+    262,
+    264,
+    265,
+    266,
+    269,
+    270,
+    271,
+    272,
+    274,
+    275,
+    277,
+    279,
+    280,
+    282,
+    283,
+    284,
+    286,
+    287,
+    288,
+    290,
+    291,
+    292,
+    293,
+    294,
+    295,
+    296,
+    298,
+    300,
+    301,
+    302,
+    303,
+    308,
+    311,
+    313,
+    314,
+    316,
+    317,
+    318,
+    320,
+    323,
+    325,
+    327,
+    329,
+    330,
+    333,
+    334,
+    335,
+    337,
+    338,
+    339,
+    341,
+    345,
+    347,
+    348,
+    349,
+    351,
+    353,
+    355,
+    357,
+    358,
+    359,
+    362,
+    364,
+    366,
+    370,
+    372,
+    373,
+    375,
+    376,
+    378,
+    382,
+    383,
+    384,
+    386,
+    391,
+    392,
+    393,
+    397,
+    398,
+    399,
+    400,
+    401,
+    402,
+    404,
+    405,
+    407,
+    409,
+    410,
+    411,
+    412,
+    413,
+    414,
+    415,
+    416,
+    417,
+    422,
+    423,
+    424,
+    428,
+    430,
+    432,
+    436,
+    437,
+    438,
+    439,
+    440,
+    441,
+    442,
+    443,
+    445,
+    446,
+    449,
+    450,
+    451,
+    452,
+    454,
+    456,
+    458,
+    459,
+    460,
+    462,
+    464,
+    465,
+    466,
+    469,
+    477,
+    478,
+    480,
+    481,
+    482,
+    484,
+    485,
+    486,
+    487,
+    488,
+    489,
+    490,
+    491,
+    494,
+    495,
+    496,
+    497,
+    499,
+    500,
+    502,
+    503,
+    504,
+    505,
+    506,
+    507,
+    508,
+    512,
+    515,
+    516,
+    517,
+    519,
+    520,
+    521,
+    522,
+    523,
+    524,
+    525,
+    526,
+    527,
+    528,
+    529,
+    532,
+    533,
+    534,
+    535,
+    537,
+    538,
+    540,
+    543,
+    545,
+    552,
+    554,
+    555,
+    557,
+    559,
+    560,
+    561,
+    562,
+    564,
+    565,
+    566,
+    568,
+    569,
+    570,
+    571,
+    572,
+    574,
+    575,
+    576,
+    577,
+    579,
+    580,
+    584,
+    587,
+    590,
+    591,
+    592,
+    593,
+    594,
+    596,
+    597,
+    600,
+    601,
+    604,
+    605,
+    607,
+    608,
+    609,
+    611,
+    612,
+    615,
+    616,
+    617,
+    620,
+    621,
+    622,
+    624,
+    625,
+    628,
+    629,
+    631,
+    633,
+    637,
+    638,
+    639,
+    640,
+    641,
+    642,
+    644,
+    645,
+    649,
+    650,
+    654,
+    655,
+    657,
+    658,
+    661,
+    665,
+    667,
+    669,
+    670,
+    672,
+    673,
+    675,
+    676,
+    678,
+    681,
+    682,
+    685,
+    686,
+    687,
+    689,
+    690,
+    693,
+    695,
+    698,
+    700,
+    701,
+    704,
+    706,
+    707,
+    708,
+    709,
+    710,
+    713,
+    715,
+    718,
+    720,
+    721,
+    722,
+    724,
+    725,
+    726,
+    727,
+    730,
+    731,
+    732,
+    733,
+    734,
+    735,
+    738,
+    739,
+    741,
+    744,
+    745,
+    746,
+    749,
+    750,
+    751,
+    752,
+    753,
+    757,
+    758,
+    760,
+    761,
+    762,
+    763,
+    764,
+    765,
+    767,
+    769,
+    770,
+    771,
+    773,
+    775,
+    777,
+    778,
+    779,
+    780,
+    781,
+    783,
+    785,
+    786,
+    788,
+    797,
+    798,
+    799,
+    800,
+    804,
+    805,
+    806,
+    808,
+    809,
+    811,
+    813,
+    814,
+    815,
+    816,
+    818,
+    820,
+    821,
+    822,
+    825,
+    827,
+    828,
+    829,
+    830,
+    832,
+    833,
+    834,
+    836,
+    837,
+    838,
+    840,
+    841,
+    842,
+    844,
+    846,
+    847,
+    848,
+    849,
+    851,
+    852,
+    854,
+    855,
+    856,
+    857,
+    858,
+    860,
+    861,
+    862,
+    864,
+    865,
+    866,
+    867,
+    868,
+    872,
+    873,
+    874,
+    875,
+    876,
+    877,
+    878,
+    880,
+    882,
+    886,
+    887,
+    888,
+    891,
+    892,
+    893,
+    894,
+    897,
+    898,
+    901,
+    903,
+    904,
+    905,
+    908,
+    909,
+    910,
+    912,
+    913,
+    914,
+    917,
+    918,
+    919,
+    920,
+    923,
+    924,
+    927,
+    929,
+    930,
+    931,
+    932,
+    933,
+    935,
+    939,
+    940,
+    944,
+    945,
+    946,
+    948,
+    949,
+    951,
+    952,
+    955,
+    957,
+    960,
+    961,
+    963,
+    965,
+    966,
+    967,
+    968,
+    969,
+    970,
+    971,
+    972,
+    973,
+    974,
+    975,
+    976,
+    977,
+    978,
+    979,
+    982,
+    983,
+    985,
+    986,
+    987,
+    988,
+    990,
+    994,
+    995,
+    997,
+    998,
+    999,
+    1002,
+    1004,
+    1007,
+    1008,
+    1009,
+    1011,
+    1013,
+    1014,
+    1016,
+    1017,
+    1018,
+    1020,
+    1021,
+    1022,
+    1025,
+    1028,
+    1029,
+    1031,
+    1032,
+    1033,
+    1034,
+    1035,
+    1036,
+    1037,
+    1039,
+    1040,
+    1041,
+    1042,
+    1043,
+    1048,
+    1050,
+    1051,
+    1052,
+    1057,
+    1058,
+    1060,
+    1061,
+    1063,
+    1064,
+    1066,
+    1067,
+    1068,
+    1069,
+    1072,
+    1074,
+    1076,
+    1077,
+    1079,
+    1081,
+    1082,
+    1084,
+    1087,
+    1088,
+    1090,
+    1091,
+    1092,
+    1093,
+    1094,
+    1096,
+    1098,
+    1099,
+    1100,
+    1103,
+    1104,
+    1107,
+    1108,
+    1109,
+    1110,
+    1111,
+    1112,
+    1114,
+    1116,
+    1117,
+    1118,
+    1120,
+    1122,
+    1123,
+    1127,
+    1128,
+    1129,
+    1130,
+    1133,
+    1137,
+    1139,
+    1140,
+    1142,
+    1145,
+    1146,
+    1149,
+    1150,
+    1151,
+    1152,
+    1153,
+    1154,
+    1155,
+    1156,
+    1159,
+    1161,
+    1162,
+    1163,
+    1169,
+    1171,
+    1173,
+    1174,
+    1176,
+    1177,
+    1178,
+    1180,
+    1183,
+    1184,
+    1185,
+    1186,
+    1187,
+    1188,
+    1189,
+    1190,
+    1192,
+    1193,
+    1196,
+    1197,
+    1198,
+    1199,
+    1200,
+    1201,
+    1203,
+    1206,
+    1209,
+    1210,
+    1211,
+    1212,
+    1213,
+    1214,
+    1217,
+    1218,
+    1219,
+    1222,
+    1223,
+    1224,
+    1225,
+    1226,
+    1227,
+    1231,
+    1233,
+    1235,
+    1236,
+    1237,
+    1240,
+    1242,
+    1246,
+    1248,
+    1249,
+    1250,
+    1251,
+    1252
+  ],
+  "test_samples": [
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0018_amarra_balancim_334.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0035_amarra_balancim_344.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0038_amarra_balancim_352.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0056_amarra_balancim_358.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0057_amarra_balancim_360.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0074_amarra_balancim_307.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0075_amarra_balancim_309.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0096_amarra_balancim_319.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0096_amarra_balancim_321.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0114_amarra_balancim_328.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0115_amarra_balancim_331.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0134_amarra_balancim_275.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0135_amarra_balancim_276.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0138_amarra_balancim_284.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0155_amarra_balancim_290.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0173_amarra_balancim_298.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0197_amarra_balancim_249.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0213_amarra_balancim_256.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0221_amarra_balancim_259.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0222_amarra_balancim_261.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0227_amarra_balancim_262.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0249_amarra_balancim_266.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0249_amarra_balancim_267.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0273_amarra_balancim_210.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0294_amarra_balancim_223.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0295_amarra_balancim_225.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0339_amarra_balancim_184.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0340_amarra_balancim_186.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0341_amarra_balancim_189.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0353_amarra_balancim_190.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0357_amarra_balancim_199.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0375_amarra_balancim_201.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0376_amarra_balancim_203.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0377_amarra_balancim_205.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0378_amarra_balancim_209.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0397_amarra_balancim_154.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0400_amarra_balancim_160.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0415_amarra_balancim_170.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0428_amarra_balancim_172.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0431_amarra_balancim_177.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0454_amarra_balancim_129.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0456_amarra_balancim_133.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0472_amarra_balancim_138.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0472_amarra_balancim_139.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0473_amarra_balancim_142.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0489_amarra_balancim_144.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0493_amarra_balancim_152.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0508_amarra_balancim_104.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0508_amarra_balancim_105.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0509_amarra_balancim_106.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0510_amarra_balancim_110.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0525_amarra_balancim_117.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0541_amarra_balancim_121.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 01-12-2020_DJI_0542_amarra_balancim_123.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0017_amarra_balancim_644.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0031_amarra_balancim_651.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0034_amarra_balancim_656.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0050_amarra_balancim_664.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0053_amarra_balancim_670.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0106_amarra_balancim_633.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0144_amarra_balancim_593.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0146_amarra_balancim_597.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0162_amarra_balancim_605.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0163_amarra_balancim_607.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0185_amarra_balancim_546.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0186_amarra_balancim_548.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0188_amarra_balancim_552.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0189_amarra_balancim_555.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0199_amarra_balancim_557.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0201_amarra_balancim_561.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0216_amarra_balancim_573.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0236_amarra_balancim_510.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0256_amarra_balancim_524.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0257_amarra_balancim_527.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0258_amarra_balancim_531.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0258_amarra_balancim_533.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0274_amarra_balancim_535.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0275_amarra_balancim_536.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0276_amarra_balancim_539.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0277_amarra_balancim_540.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0319_amarra_balancim_493.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0339_amarra_balancim_503.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0340_amarra_balancim_506.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0341_amarra_balancim_508.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0362_amarra_balancim_442.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0363_amarra_balancim_445.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0384_amarra_balancim_456.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0386_amarra_balancim_465.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0402_amarra_balancim_470.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0404_amarra_balancim_475.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0425_amarra_balancim_404.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0426_amarra_balancim_407.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0440_amarra_balancim_410.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0441_amarra_balancim_411.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0445_amarra_balancim_424.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0446_amarra_balancim_425.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0446_amarra_balancim_428.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0466_amarra_balancim_435.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0489_amarra_balancim_365.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0505_amarra_balancim_377.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0506_amarra_balancim_380.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0507_amarra_balancim_383.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0528_amarra_balancim_391.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0529_amarra_balancim_393.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 02-12-2020_DJI_0529_amarra_balancim_394.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0021_amarra_balancim_915.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0037_amarra_balancim_925.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0039_amarra_balancim_930.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0056_amarra_balancim_934.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0056_amarra_balancim_935.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0057_amarra_balancim_936.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0057_amarra_balancim_937.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0059_amarra_balancim_941.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0098_amarra_balancim_882.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0099_amarra_balancim_885.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0100_amarra_balancim_886.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0103_amarra_balancim_895.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0103_amarra_balancim_896.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0122_amarra_balancim_900.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0123_amarra_balancim_903.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0147_amarra_balancim_847.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0147_amarra_balancim_848.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0164_amarra_balancim_855.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0165_amarra_balancim_856.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0166_amarra_balancim_859.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0217_amarra_balancim_824.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0219_amarra_balancim_831.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0235_amarra_balancim_834.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0236_amarra_balancim_836.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0236_amarra_balancim_837.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0340_amarra_balancim_805.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0389_amarra_balancim_765.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0405_amarra_balancim_773.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0409_amarra_balancim_782.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0410_amarra_balancim_786.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0426_amarra_balancim_790.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0428_amarra_balancim_794.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0454_amarra_balancim_742.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0475_amarra_balancim_750.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0476_amarra_balancim_752.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0510_amarra_balancim_704.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0524_amarra_balancim_718.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0525_amarra_balancim_724.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0540_amarra_balancim_736.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0560_amarra_balancim_679.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0573_amarra_balancim_689.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 03-12-2020_DJI_0573_amarra_balancim_691.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0621_amarra_balancim_1140.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0621_amarra_balancim_1141.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0622_amarra_balancim_1142.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0624_amarra_balancim_1147.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0636_amarra_balancim_1149.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0656_amarra_balancim_1116.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0672_amarra_balancim_1122.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0672_amarra_balancim_1123.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0727_amarra_balancim_1098.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0742_amarra_balancim_1107.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0757_amarra_balancim_1062.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0759_amarra_balancim_1065.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0785_amarra_balancim_1081.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0787_amarra_balancim_1085.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0801_amarra_balancim_1040.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0802_amarra_balancim_1042.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0814_amarra_balancim_1046.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0829_amarra_balancim_1054.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0831_amarra_balancim_1060.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0850_amarra_balancim_1026.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0850_amarra_balancim_1027.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0863_amarra_balancim_1032.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0875_amarra_balancim_1035.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0876_amarra_balancim_1036.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0901_amarra_balancim_1002.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0930_amarra_balancim_1014.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0931_amarra_balancim_1018.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0946_amarra_balancim_971.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0947_amarra_balancim_972.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0960_amarra_balancim_984.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0960_amarra_balancim_986.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0971_amarra_balancim_987.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0972_amarra_balancim_989.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_0995_amarra_balancim_951.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_1000 (22)_amarra_balancim_956.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 04-12-2020_DJI_1000 (9)_amarra_balancim_966.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0016_amarra_balancim_1377.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0025_amarra_balancim_1384.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0027_amarra_balancim_1390.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0041_amarra_balancim_1402.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0042_amarra_balancim_1405.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0055_amarra_balancim_1347.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0069_amarra_balancim_1361.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0069_amarra_balancim_1362.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0082_amarra_balancim_1369.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0096_amarra_balancim_1321.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0097_amarra_balancim_1323.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0107_amarra_balancim_1328.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0110_amarra_balancim_1334.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0120_amarra_balancim_1338.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0123_amarra_balancim_1345.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0138_amarra_balancim_1296.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0166_amarra_balancim_1306.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0169_amarra_balancim_1313.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0169_amarra_balancim_1315.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0185_amarra_balancim_1261.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0208_amarra_balancim_1282.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0226_amarra_balancim_1234.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0232_amarra_balancim_1237.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0233_amarra_balancim_1240.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0248_amarra_balancim_1245.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0248_amarra_balancim_1247.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0248_amarra_balancim_1248.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0250_amarra_balancim_1251.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0265_amarra_balancim_1193.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0268_amarra_balancim_1200.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0292_amarra_balancim_1221.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0324_amarra_balancim_1174.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0335_amarra_balancim_1177.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0338_amarra_balancim_1182.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0346_amarra_balancim_1187.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0347_amarra_balancim_1189.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 07-12-2020_DJI_0347_amarra_balancim_1191.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0448_amarra_balancim_1614.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0449_amarra_balancim_1617.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0450_amarra_balancim_1619.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0460_amarra_balancim_1627.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0473_amarra_balancim_1632.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0475_amarra_balancim_1637.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0490_amarra_balancim_1587.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0491_amarra_balancim_1589.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0498_amarra_balancim_1593.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0501_amarra_balancim_1601.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0513_amarra_balancim_1606.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0513_amarra_balancim_1607.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0514_amarra_balancim_1608.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0529_amarra_balancim_1561.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0543_amarra_balancim_1573.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0570_amarra_balancim_1534.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0571_amarra_balancim_1536.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0572_amarra_balancim_1539.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0583_amarra_balancim_1550.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0597_amarra_balancim_1558.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0610_amarra_balancim_1514.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0619_amarra_balancim_1522.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0619_amarra_balancim_1523.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0632_amarra_balancim_1530.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0633_amarra_balancim_1533.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0648_amarra_balancim_1486.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0671_amarra_balancim_1502.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0684_amarra_balancim_1460.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0685_amarra_balancim_1463.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0685_amarra_balancim_1465.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0727_amarra_balancim_1445.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0728_amarra_balancim_1448.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0739_amarra_balancim_1452.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0767_amarra_balancim_1415.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0773_amarra_balancim_1420.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0774_amarra_balancim_1421.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0774_amarra_balancim_1424.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0788_amarra_balancim_1429.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 08-12-2020_DJI_0788_amarra_balancim_1430.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0014_amarra_balancim_1897.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0026_amarra_balancim_1911.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0038_amarra_balancim_1917.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0039_amarra_balancim_1918.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0041_amarra_balancim_1923.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0055_amarra_balancim_1870.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0110_amarra_balancim_1840.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0111_amarra_balancim_1844.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0111_amarra_balancim_1845.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0122_amarra_balancim_1851.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0125_amarra_balancim_1858.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0126_amarra_balancim_1861.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0139_amarra_balancim_1797.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0142_amarra_balancim_1803.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0142_amarra_balancim_1805.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0165_amarra_balancim_1822.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0165_amarra_balancim_1823.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0165_amarra_balancim_1824.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0182_amarra_balancim_1776.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0182_amarra_balancim_1778.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0200_amarra_balancim_1785.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0203_amarra_balancim_1792.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0242_amarra_balancim_1750.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0245_amarra_balancim_1757.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0245_amarra_balancim_1758.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0250_amarra_balancim_1760.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0252_amarra_balancim_1765.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0289_amarra_balancim_1717.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0290_amarra_balancim_1718.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0290_amarra_balancim_1719.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0293_amarra_balancim_1725.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0318_amarra_balancim_1683.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0330_amarra_balancim_1687.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0330_amarra_balancim_1688.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0332_amarra_balancim_1692.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0333_amarra_balancim_1694.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0357_amarra_balancim_1655.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0371_amarra_balancim_1665.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 09-12-2020_DJI_0372_amarra_balancim_1668.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0057_amarra_balancim_2088.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0058_amarra_balancim_2089.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0079_amarra_balancim_2100.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0095_amarra_balancim_2058.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0097_amarra_balancim_2062.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0098_amarra_balancim_2064.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0107_amarra_balancim_2073.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0109_amarra_balancim_2075.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0119_amarra_balancim_2079.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0119_amarra_balancim_2080.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0121_amarra_balancim_2083.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0147_amarra_balancim_2037.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0150_amarra_balancim_2045.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0177_amarra_balancim_2008.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0188_amarra_balancim_2017.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0202_amarra_balancim_2026.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0203_amarra_balancim_2028.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0217_amarra_balancim_1989.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0226_amarra_balancim_1996.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0264_amarra_balancim_1974.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0268_amarra_balancim_1981.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0268_amarra_balancim_1982.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0296_amarra_balancim_1950.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0305_amarra_balancim_1953.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0319_amarra_balancim_1960.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0320_amarra_balancim_1962.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0335_amarra_balancim_1926.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0337_amarra_balancim_1931.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0346_amarra_balancim_1936.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 10-12-2020_DJI_0358_amarra_balancim_1945.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0012_amarra_balancim_2395.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0012_amarra_balancim_2396.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0014_amarra_balancim_2400.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0023_amarra_balancim_2409.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0024_amarra_balancim_2411.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0024_amarra_balancim_2412.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0035_amarra_balancim_2418.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0076_amarra_balancim_2388.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0077_amarra_balancim_2391.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0089_amarra_balancim_2325.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0090_amarra_balancim_2327.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0090_amarra_balancim_2328.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0092_amarra_balancim_2333.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0098_amarra_balancim_2336.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0099_amarra_balancim_2339.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0101_amarra_balancim_2345.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0112_amarra_balancim_2350.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0112_amarra_balancim_2352.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0113_amarra_balancim_2353.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0113_amarra_balancim_2354.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0130_amarra_balancim_2294.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0131_amarra_balancim_2297.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0140_amarra_balancim_2307.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0140_amarra_balancim_2308.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0151_amarra_balancim_2315.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0152_amarra_balancim_2316.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0167_amarra_balancim_2254.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0167_amarra_balancim_2255.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0179_amarra_balancim_2272.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0191_amarra_balancim_2279.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0208_amarra_balancim_2224.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0209_amarra_balancim_2226.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0209_amarra_balancim_2227.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0210_amarra_balancim_2228.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0233_amarra_balancim_2251.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0246_amarra_balancim_2196.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0249_amarra_balancim_2201.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0249_amarra_balancim_2202.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0255_amarra_balancim_2204.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0268_amarra_balancim_2212.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0283_amarra_balancim_2168.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0286_amarra_balancim_2175.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0295_amarra_balancim_2181.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0295_amarra_balancim_2184.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0305_amarra_balancim_2187.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0320_amarra_balancim_2138.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0342_amarra_balancim_2154.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0343_amarra_balancim_2156.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0343_amarra_balancim_2158.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0345_amarra_balancim_2162.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 11-12-2020_DJI_0345_amarra_balancim_2163.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0022_amarra_balancim_2706.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0024_amarra_balancim_2712.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0025_amarra_balancim_2717.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0030_amarra_balancim_2726.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0030_amarra_balancim_2727.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0053_amarra_balancim_2732.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0055_amarra_balancim_2737.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0055_amarra_balancim_2740.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0079_amarra_balancim_2670.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0080_amarra_balancim_2674.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0142_amarra_balancim_2633.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0152_amarra_balancim_2650.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0154_amarra_balancim_2653.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0184_amarra_balancim_2657.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0184_amarra_balancim_2658.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0185_amarra_balancim_2661.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0203_amarra_balancim_2669.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0231_amarra_balancim_2590.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0232_amarra_balancim_2594.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0261_amarra_balancim_2612.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0290_amarra_balancim_2619.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0292_amarra_balancim_2625.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0320_amarra_balancim_2558.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0320_amarra_balancim_2560.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0321_amarra_balancim_2562.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0322_amarra_balancim_2565.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0328_amarra_balancim_2566.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0395_amarra_balancim_2574.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0396_amarra_balancim_2576.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0397_amarra_balancim_2579.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0399_amarra_balancim_2582.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0399_amarra_balancim_2583.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0399_amarra_balancim_2584.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0400_amarra_balancim_2587.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0402_amarra_balancim_2588.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0432_amarra_balancim_2532.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0450_amarra_balancim_2534.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0450_amarra_balancim_2536.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0452_amarra_balancim_2540.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0453_amarra_balancim_2544.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0455_amarra_balancim_2549.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0461_amarra_balancim_2550.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0524_amarra_balancim_2500.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0527_amarra_balancim_2506.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0528_amarra_balancim_2509.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0530_amarra_balancim_2513.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0532_amarra_balancim_2517.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0591_amarra_balancim_2521.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0621_amarra_balancim_2467.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0644_amarra_balancim_2475.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0644_amarra_balancim_2477.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0646_amarra_balancim_2482.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0648_amarra_balancim_2486.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0649_amarra_balancim_2488.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0649_amarra_balancim_2489.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0672_amarra_balancim_2495.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0673_amarra_balancim_2496.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0706_amarra_balancim_2433.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0725_amarra_balancim_2437.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0725_amarra_balancim_2439.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0726_amarra_balancim_2441.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0726_amarra_balancim_2442.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0727_amarra_balancim_2445.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0727_amarra_balancim_2446.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0728_amarra_balancim_2448.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 14-12-2020_DJI_0763_amarra_balancim_2459.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0006_amarra_balancim_2888.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0030_amarra_balancim_2896.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0036_amarra_balancim_2875.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0068_amarra_balancim_2859.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0069_amarra_balancim_2863.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0100_amarra_balancim_2842.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0101_amarra_balancim_2845.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0102_amarra_balancim_2847.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0104_amarra_balancim_2853.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0117_amarra_balancim_2816.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0117_amarra_balancim_2817.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0118_amarra_balancim_2819.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0125_amarra_balancim_2824.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0142_amarra_balancim_2806.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0146_amarra_balancim_2812.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0146_amarra_balancim_2813.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0190_amarra_balancim_2761.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0191_amarra_balancim_2765.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0210_amarra_balancim_2742.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0216_amarra_balancim_2749.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0216_amarra_balancim_2751.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-11-2020_DJI_0219_amarra_balancim_2760.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0049_amarra_balancim_3168.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0050_amarra_balancim_3170.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0051_amarra_balancim_3174.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0053_amarra_balancim_3180.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0055_amarra_balancim_3183.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0081_amarra_balancim_3185.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0081_amarra_balancim_3188.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0083_amarra_balancim_3193.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0083_amarra_balancim_3194.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0105_amarra_balancim_3128.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0106_amarra_balancim_3130.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0131_amarra_balancim_3145.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0131_amarra_balancim_3146.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0133_amarra_balancim_3150.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0158_amarra_balancim_3154.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0160_amarra_balancim_3159.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0203_amarra_balancim_3103.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0203_amarra_balancim_3105.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0207_amarra_balancim_3115.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0227_amarra_balancim_3118.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0227_amarra_balancim_3119.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0227_amarra_balancim_3120.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0254_amarra_balancim_3063.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0255_amarra_balancim_3068.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0256_amarra_balancim_3070.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0275_amarra_balancim_3077.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0302_amarra_balancim_3089.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0302_amarra_balancim_3090.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0303_amarra_balancim_3092.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0304_amarra_balancim_3093.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0304_amarra_balancim_3094.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0331_amarra_balancim_3024.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0332_amarra_balancim_3028.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0333_amarra_balancim_3031.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0352_amarra_balancim_3044.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0353_amarra_balancim_3046.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0353_amarra_balancim_3047.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0354_amarra_balancim_3050.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0375_amarra_balancim_3058.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0377_amarra_balancim_3061.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0401_amarra_balancim_2991.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0403_amarra_balancim_2994.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0419_amarra_balancim_2998.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0420_amarra_balancim_3000.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0420_amarra_balancim_3001.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0423_amarra_balancim_3008.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0424_amarra_balancim_3010.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0425_amarra_balancim_3013.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0445_amarra_balancim_3014.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0448_amarra_balancim_3022.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0472_amarra_balancim_2970.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0472_amarra_balancim_2971.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0475_amarra_balancim_2974.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0520_amarra_balancim_2981.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0545_amarra_balancim_2933.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0546_amarra_balancim_2935.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0566_amarra_balancim_2952.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0586_amarra_balancim_2956.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0587_amarra_balancim_2961.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0609_amarra_balancim_2899.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0609_amarra_balancim_2901.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0610_amarra_balancim_2902.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0611_amarra_balancim_2907.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0615_amarra_balancim_2915.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0615_amarra_balancim_2916.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 16-12-2020_DJI_0671_amarra_balancim_2926.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0010_amarra_balancim_3359.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0011_amarra_balancim_3361.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0011_amarra_balancim_3362.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0011_amarra_balancim_3363.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0016_amarra_balancim_3371.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0036_amarra_balancim_3325.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0038_amarra_balancim_3332.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0038_amarra_balancim_3333.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0050_amarra_balancim_3344.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0051_amarra_balancim_3348.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0072_amarra_balancim_3311.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0088_amarra_balancim_3319.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0088_amarra_balancim_3320.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0093_amarra_balancim_3322.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0098_amarra_balancim_3300.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0103_amarra_balancim_3302.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0130_amarra_balancim_3283.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0137_amarra_balancim_3289.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0181_amarra_balancim_3297.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0181_amarra_balancim_3298.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0184_amarra_balancim_3253.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0185_amarra_balancim_3255.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0186_amarra_balancim_3262.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0197_amarra_balancim_3275.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0197_amarra_balancim_3276.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0216_amarra_balancim_3240.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0236_amarra_balancim_3252.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0245_amarra_balancim_3216.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0253_amarra_balancim_3221.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0260_amarra_balancim_3228.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0278_amarra_balancim_3197.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0278_amarra_balancim_3198.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0287_amarra_balancim_3204.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0291_amarra_balancim_3211.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-11-2020_DJI_0302_amarra_balancim_3215.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0031_amarra_balancim_3557.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0033_amarra_balancim_3560.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0033_amarra_balancim_3561.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0050_amarra_balancim_3565.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0053_amarra_balancim_3570.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0053_amarra_balancim_3572.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0077_amarra_balancim_3582.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0079_amarra_balancim_3585.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0099_amarra_balancim_3519.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0099_amarra_balancim_3522.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0100_amarra_balancim_3523.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0101_amarra_balancim_3526.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0114_amarra_balancim_3528.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0115_amarra_balancim_3531.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0117_amarra_balancim_3536.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0118_amarra_balancim_3539.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0120_amarra_balancim_3543.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0140_amarra_balancim_3551.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0164_amarra_balancim_3481.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0164_amarra_balancim_3483.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0165_amarra_balancim_3485.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0167_amarra_balancim_3492.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0189_amarra_balancim_3504.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0216_amarra_balancim_3515.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0246_amarra_balancim_3445.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0246_amarra_balancim_3447.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0264_amarra_balancim_3456.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0265_amarra_balancim_3457.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0268_amarra_balancim_3463.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0268_amarra_balancim_3464.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0271_amarra_balancim_3471.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0316_amarra_balancim_3411.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0316_amarra_balancim_3413.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0317_amarra_balancim_3415.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0335_amarra_balancim_3425.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0337_amarra_balancim_3431.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0363_amarra_balancim_3443.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0382_amarra_balancim_3376.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0384_amarra_balancim_3381.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0399_amarra_balancim_3385.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0401_amarra_balancim_3389.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 17-12-2020_DJI_0429_amarra_balancim_3402.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0004_amarra_balancim_3731.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0038_amarra_balancim_3710.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0038_amarra_balancim_3711.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0038_amarra_balancim_3712.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0039_amarra_balancim_3714.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0046_amarra_balancim_3722.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0061_amarra_balancim_3691.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0069_amarra_balancim_3699.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0074_amarra_balancim_3705.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0074_amarra_balancim_3706.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0084_amarra_balancim_3707.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0090_amarra_balancim_3677.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0091_amarra_balancim_3680.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0120_amarra_balancim_3657.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0129_amarra_balancim_3664.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0145_amarra_balancim_3672.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0150_amarra_balancim_3636.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0157_amarra_balancim_3637.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0157_amarra_balancim_3638.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0158_amarra_balancim_3639.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0158_amarra_balancim_3641.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0175_amarra_balancim_3650.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0178_amarra_balancim_3618.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0189_amarra_balancim_3624.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0206_amarra_balancim_3602.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0213_amarra_balancim_3603.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0218_amarra_balancim_3611.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0219_amarra_balancim_3614.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0219_amarra_balancim_3616.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0233_amarra_balancim_3586.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0233_amarra_balancim_3588.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0233_amarra_balancim_3589.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0241_amarra_balancim_3592.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0241_amarra_balancim_3593.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 18-11-2020_DJI_0242_amarra_balancim_3594.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-10-2020_DJI_0007_amarra_balancim_6.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-10-2020_DJI_0009_amarra_balancim_14.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-10-2020_DJI_0012_amarra_balancim_24.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-10-2020_DJI_0013_amarra_balancim_76.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-10-2020_DJI_0014_amarra_balancim_31.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-10-2020_DJI_0014_amarra_balancim_81.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-10-2020_DJI_0015_amarra_balancim_34.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-10-2020_DJI_0018_amarra_balancim_45.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-10-2020_DJI_0019_amarra_balancim_47.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-10-2020_DJI_0026_amarra_balancim_82.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-10-2020_DJI_0036_amarra_balancim_88.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-10-2020_DJI_0048_amarra_balancim_65.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-10-2020_DJI_0048_amarra_balancim_67.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-10-2020_DJI_0055_amarra_balancim_92.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-10-2020_DJI_0070_amarra_balancim_96.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0003_amarra_balancim_3882.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0005_amarra_balancim_3887.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0006_amarra_balancim_3890.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0015_amarra_balancim_3891.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0017_amarra_balancim_3897.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0031_amarra_balancim_3873.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0032_amarra_balancim_3876.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0043_amarra_balancim_3879.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0043_amarra_balancim_3880.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0052_amarra_balancim_3854.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0053_amarra_balancim_3857.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0067_amarra_balancim_3866.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0077_amarra_balancim_3836.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0093_amarra_balancim_3842.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0101_amarra_balancim_3848.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0125_amarra_balancim_3825.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0127_amarra_balancim_3831.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0128_amarra_balancim_3834.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0136_amarra_balancim_3794.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0137_amarra_balancim_3797.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0152_amarra_balancim_3802.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0152_amarra_balancim_3803.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0164_amarra_balancim_3781.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0178_amarra_balancim_3792.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0204_amarra_balancim_3767.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0219_amarra_balancim_3746.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0220_amarra_balancim_3749.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0220_amarra_balancim_3750.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0232_amarra_balancim_3756.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0232_amarra_balancim_3757.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0232_amarra_balancim_3759.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 19-11-2020_DJI_0233_amarra_balancim_3760.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0006_amarra_balancim_3902.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0006_amarra_balancim_3903.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0008_amarra_balancim_3907.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0009_amarra_balancim_3909.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0010_amarra_balancim_3910.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0017_amarra_balancim_3917.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0018_amarra_balancim_3918.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0063_amarra_balancim_3925.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0064_amarra_balancim_3927.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0066_amarra_balancim_3932.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0067_amarra_balancim_3933.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0076_amarra_balancim_3946.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0086_amarra_balancim_3955.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0086_amarra_balancim_3958.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0087_amarra_balancim_3960.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0088_amarra_balancim_3964.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0097_amarra_balancim_3974.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0120_amarra_balancim_3979.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0148_amarra_balancim_4038.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0148_amarra_balancim_4039.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0157_amarra_balancim_4045.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0159_amarra_balancim_4050.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0160_amarra_balancim_4051.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0160_amarra_balancim_4052.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0161_amarra_balancim_4054.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0163_amarra_balancim_4065.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0176_amarra_balancim_4074.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0177_amarra_balancim_4076.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0177_amarra_balancim_4077.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0183_amarra_balancim_4088.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0187_amarra_balancim_4092.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0191_amarra_balancim_4094.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0192_amarra_balancim_4095.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0193_amarra_balancim_4096.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0281_amarra_balancim_3995.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0281_amarra_balancim_3996.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0285_amarra_balancim_3997.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0286_amarra_balancim_3998.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0287_amarra_balancim_3999.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0288_amarra_balancim_4000.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0289_amarra_balancim_4001.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0292_amarra_balancim_4009.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0293_amarra_balancim_4010.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0308_amarra_balancim_4026.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0323_amarra_balancim_4035.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0324_amarra_balancim_4036.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-10-2020_DJI_0325_amarra_balancim_4037.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0006_amarra_balancim_4436.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0008_amarra_balancim_4439.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0012_amarra_balancim_4442.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0012_amarra_balancim_4444.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0013_amarra_balancim_4445.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0013_amarra_balancim_4448.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0015_amarra_balancim_4451.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0016_amarra_balancim_4453.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0016_amarra_balancim_4455.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0017_amarra_balancim_4458.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0040_amarra_balancim_4400.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0047_amarra_balancim_4408.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0077_amarra_balancim_4365.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0078_amarra_balancim_4366.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0078_amarra_balancim_4367.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0092_amarra_balancim_4388.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0093_amarra_balancim_4389.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0102_amarra_balancim_4332.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0103_amarra_balancim_4333.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0103_amarra_balancim_4335.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0103_amarra_balancim_4336.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0111_amarra_balancim_4340.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0116_amarra_balancim_4343.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0117_amarra_balancim_4347.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0117_amarra_balancim_4349.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0119_amarra_balancim_4353.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0122_amarra_balancim_4359.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0129_amarra_balancim_4289.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0130_amarra_balancim_4292.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0130_amarra_balancim_4293.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0140_amarra_balancim_4297.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0149_amarra_balancim_4310.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0149_amarra_balancim_4311.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0151_amarra_balancim_4317.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0151_amarra_balancim_4319.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0165_amarra_balancim_4231.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0166_amarra_balancim_4232.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0168_amarra_balancim_4239.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0176_amarra_balancim_4250.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0181_amarra_balancim_4252.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0192_amarra_balancim_4263.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0196_amarra_balancim_4277.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0199_amarra_balancim_4281.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0200_amarra_balancim_4285.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0201_amarra_balancim_4287.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0204_amarra_balancim_4181.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0204_amarra_balancim_4184.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0218_amarra_balancim_4200.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0219_amarra_balancim_4202.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0219_amarra_balancim_4204.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0219_amarra_balancim_4205.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0220_amarra_balancim_4206.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0222_amarra_balancim_4214.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0222_amarra_balancim_4215.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0223_amarra_balancim_4216.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0223_amarra_balancim_4218.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0223_amarra_balancim_4219.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0224_amarra_balancim_4221.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0227_amarra_balancim_4227.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0238_amarra_balancim_4150.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0250_amarra_balancim_4161.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0251_amarra_balancim_4164.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0257_amarra_balancim_4168.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0259_amarra_balancim_4174.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0260_amarra_balancim_4175.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0271_amarra_balancim_4105.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0272_amarra_balancim_4106.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0273_amarra_balancim_4109.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0289_amarra_balancim_4124.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0290_amarra_balancim_4127.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0291_amarra_balancim_4130.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0291_amarra_balancim_4131.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0292_amarra_balancim_4133.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 20-11-2020_DJI_0296_amarra_balancim_4143.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0345_amarra_balancim_4484.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0347_amarra_balancim_4486.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0348_amarra_balancim_4487.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0365_amarra_balancim_4493.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0366_amarra_balancim_4495.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0371_amarra_balancim_4498.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0374_amarra_balancim_4501.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0390_amarra_balancim_4506.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0394_amarra_balancim_4510.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0429_amarra_balancim_4517.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0429_amarra_balancim_4519.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0436_amarra_balancim_4521.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0437_amarra_balancim_4526.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0437_amarra_balancim_4527.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0457_amarra_balancim_4538.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0468_amarra_balancim_4542.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0469_amarra_balancim_4543.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0469_amarra_balancim_4544.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0571_amarra_balancim_4463.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0615_amarra_balancim_4474.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 21-10-2020_DJI_0616_amarra_balancim_4477.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0646_amarra_balancim_4549.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0646_amarra_balancim_4550.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0659_amarra_balancim_4565.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0665_amarra_balancim_4566.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0665_amarra_balancim_4567.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0675_amarra_balancim_4575.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0676_amarra_balancim_4577.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0689_amarra_balancim_4588.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0690_amarra_balancim_4590.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0709_amarra_balancim_4603.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0717_amarra_balancim_4608.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0719_amarra_balancim_4611.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0720_amarra_balancim_4613.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0727_amarra_balancim_4615.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0729_amarra_balancim_4618.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0736_amarra_balancim_4630.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0741_amarra_balancim_4633.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0741_amarra_balancim_4636.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0742_amarra_balancim_4637.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0751_amarra_balancim_4641.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0759_amarra_balancim_4643.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0763_amarra_balancim_4652.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0769_amarra_balancim_4654.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0769_amarra_balancim_4655.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0770_amarra_balancim_4656.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0773_amarra_balancim_4659.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0808_amarra_balancim_4698.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0808_amarra_balancim_4701.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0812_amarra_balancim_4705.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0813_amarra_balancim_4706.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0813_amarra_balancim_4707.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0819_amarra_balancim_4711.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0828_amarra_balancim_4713.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0849_amarra_balancim_4732.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0875_amarra_balancim_4673.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0883_amarra_balancim_4679.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 22-10-2020_DJI_0883_amarra_balancim_4680.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0003_amarra_balancim_4805.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0007_amarra_balancim_4810.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0022_amarra_balancim_4819.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0024_amarra_balancim_4822.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0025_amarra_balancim_4824.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0026_amarra_balancim_4825.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0026_amarra_balancim_4826.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0079_amarra_balancim_4764.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0100_amarra_balancim_4774.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0101_amarra_balancim_4775.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0116_amarra_balancim_4789.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0133_amarra_balancim_4836.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0134_amarra_balancim_4838.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0149_amarra_balancim_4853.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0150_amarra_balancim_4854.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0158_amarra_balancim_4863.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0162_amarra_balancim_4866.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0188_amarra_balancim_4874.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0212_amarra_balancim_4903.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-10-2020_DJI_0212_amarra_balancim_4904.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0003_amarra_balancim_5225.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0014_amarra_balancim_5234.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0015_amarra_balancim_5237.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0015_amarra_balancim_5239.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0031_amarra_balancim_5247.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0032_amarra_balancim_5250.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0043_amarra_balancim_5186.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0044_amarra_balancim_5190.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0046_amarra_balancim_5194.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0058_amarra_balancim_5206.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0059_amarra_balancim_5207.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0059_amarra_balancim_5208.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0059_amarra_balancim_5209.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0064_amarra_balancim_5221.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0064_amarra_balancim_5222.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0072_amarra_balancim_5152.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0073_amarra_balancim_5156.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0074_amarra_balancim_5159.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0087_amarra_balancim_5170.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0089_amarra_balancim_5175.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0091_amarra_balancim_5180.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0094_amarra_balancim_5184.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0103_amarra_balancim_5117.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0107_amarra_balancim_5126.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0107_amarra_balancim_5127.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0108_amarra_balancim_5131.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0117_amarra_balancim_5134.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0118_amarra_balancim_5137.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0118_amarra_balancim_5138.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0118_amarra_balancim_5140.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0125_amarra_balancim_5147.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0139_amarra_balancim_5076.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0142_amarra_balancim_5084.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0142_amarra_balancim_5085.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0148_amarra_balancim_5086.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0148_amarra_balancim_5088.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0158_amarra_balancim_5098.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0159_amarra_balancim_5100.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0159_amarra_balancim_5102.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0160_amarra_balancim_5105.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0162_amarra_balancim_5110.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0163_amarra_balancim_5113.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0164_amarra_balancim_5114.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0173_amarra_balancim_5039.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0181_amarra_balancim_5051.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0187_amarra_balancim_5054.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0189_amarra_balancim_5060.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0191_amarra_balancim_5065.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0191_amarra_balancim_5066.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0206_amarra_balancim_5003.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0212_amarra_balancim_5006.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0212_amarra_balancim_5009.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0223_amarra_balancim_5018.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0223_amarra_balancim_5019.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0223_amarra_balancim_5020.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0224_amarra_balancim_5022.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0226_amarra_balancim_5025.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0229_amarra_balancim_5034.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0238_amarra_balancim_4948.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0239_amarra_balancim_4949.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0240_amarra_balancim_4953.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0246_amarra_balancim_4959.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0247_amarra_balancim_4963.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0248_amarra_balancim_4965.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0252_amarra_balancim_4972.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0258_amarra_balancim_4974.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0259_amarra_balancim_4977.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0264_amarra_balancim_4988.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0265_amarra_balancim_4990.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0275_amarra_balancim_4909.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0283_amarra_balancim_4916.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0285_amarra_balancim_4924.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0285_amarra_balancim_4925.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 23-11-2020_DJI_0286_amarra_balancim_4928.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0018_amarra_balancim_5463.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0019_amarra_balancim_5466.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0019_amarra_balancim_5468.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0025_amarra_balancim_5475.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0026_amarra_balancim_5476.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0051_amarra_balancim_5484.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0066_amarra_balancim_5490.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0068_amarra_balancim_5495.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0096_amarra_balancim_5423.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0096_amarra_balancim_5424.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0097_amarra_balancim_5428.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0098_amarra_balancim_5430.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0099_amarra_balancim_5432.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0099_amarra_balancim_5433.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0105_amarra_balancim_5436.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0126_amarra_balancim_5449.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0128_amarra_balancim_5454.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0141_amarra_balancim_5459.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0185_amarra_balancim_5400.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0186_amarra_balancim_5405.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0188_amarra_balancim_5409.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0202_amarra_balancim_5413.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0204_amarra_balancim_5418.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0206_amarra_balancim_5419.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0207_amarra_balancim_5421.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0240_amarra_balancim_5370.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0241_amarra_balancim_5372.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0242_amarra_balancim_5373.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0242_amarra_balancim_5374.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0281_amarra_balancim_5375.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0281_amarra_balancim_5378.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0284_amarra_balancim_5384.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0325_amarra_balancim_5342.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0326_amarra_balancim_5346.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0345_amarra_balancim_5352.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0347_amarra_balancim_5358.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0373_amarra_balancim_5315.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0373_amarra_balancim_5316.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0419_amarra_balancim_5327.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0420_amarra_balancim_5329.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0450_amarra_balancim_5300.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0495_amarra_balancim_5313.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0517_amarra_balancim_5281.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0533_amarra_balancim_5283.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0533_amarra_balancim_5285.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0558_amarra_balancim_5293.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0579_amarra_balancim_5260.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 24-11-2020_DJI_0610_amarra_balancim_5271.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0019_amarra_balancim_5692.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0037_amarra_balancim_5701.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0037_amarra_balancim_5702.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0060_amarra_balancim_5710.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0062_amarra_balancim_5711.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0108_amarra_balancim_5682.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0137_amarra_balancim_5648.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0156_amarra_balancim_5657.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0178_amarra_balancim_5662.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0179_amarra_balancim_5665.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0180_amarra_balancim_5666.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0203_amarra_balancim_5619.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0203_amarra_balancim_5620.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0203_amarra_balancim_5621.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0205_amarra_balancim_5625.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0220_amarra_balancim_5626.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0220_amarra_balancim_5629.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0235_amarra_balancim_5640.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0235_amarra_balancim_5641.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0252_amarra_balancim_5584.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0265_amarra_balancim_5592.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0267_amarra_balancim_5598.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0269_amarra_balancim_5602.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0282_amarra_balancim_5605.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0315_amarra_balancim_5559.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0316_amarra_balancim_5560.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0317_amarra_balancim_5565.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0319_amarra_balancim_5571.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0336_amarra_balancim_5576.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0336_amarra_balancim_5577.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0337_amarra_balancim_5578.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0372_amarra_balancim_5542.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0373_amarra_balancim_5544.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0560_amarra_balancim_5498.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0560_amarra_balancim_5499.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0566_amarra_balancim_5504.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0566_amarra_balancim_5505.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0568_amarra_balancim_5508.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 25-11-2020_DJI_0591_amarra_balancim_5512.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0022_amarra_balancim_5927.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0022_amarra_balancim_5928.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0023_amarra_balancim_5930.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0043_amarra_balancim_5934.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0087_amarra_balancim_5903.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0115_amarra_balancim_5909.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0136_amarra_balancim_5917.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0136_amarra_balancim_5918.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0137_amarra_balancim_5920.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0160_amarra_balancim_5884.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0172_amarra_balancim_5885.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0172_amarra_balancim_5886.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0172_amarra_balancim_5888.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0173_amarra_balancim_5890.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0190_amarra_balancim_5893.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0191_amarra_balancim_5896.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0209_amarra_balancim_5853.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0209_amarra_balancim_5855.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0212_amarra_balancim_5862.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0237_amarra_balancim_5866.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0239_amarra_balancim_5870.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0261_amarra_balancim_5878.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0286_amarra_balancim_5832.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0331_amarra_balancim_5844.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0335_amarra_balancim_5849.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0335_amarra_balancim_5850.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0353_amarra_balancim_5719.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0354_amarra_balancim_5723.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0354_amarra_balancim_5724.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0371_amarra_balancim_5730.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0372_amarra_balancim_5733.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0373_amarra_balancim_5736.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0373_amarra_balancim_5737.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0411_amarra_balancim_5747.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0452_amarra_balancim_5771.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0472_amarra_balancim_5778.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0487_amarra_balancim_5789.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0500_amarra_balancim_5791.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0501_amarra_balancim_5793.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0543_amarra_balancim_5812.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 26-11-2020_DJI_0565_amarra_balancim_5824.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0018_amarra_balancim_6272.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0019_amarra_balancim_6273.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0019_amarra_balancim_6274.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0019_amarra_balancim_6276.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0021_amarra_balancim_6279.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0035_amarra_balancim_6288.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0036_amarra_balancim_6290.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0037_amarra_balancim_6291.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0052_amarra_balancim_6300.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0052_amarra_balancim_6302.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0054_amarra_balancim_6305.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0088_amarra_balancim_6240.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0091_amarra_balancim_6249.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0094_amarra_balancim_6258.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0110_amarra_balancim_6262.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0111_amarra_balancim_6266.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0112_amarra_balancim_6267.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0135_amarra_balancim_6185.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0136_amarra_balancim_6189.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0137_amarra_balancim_6192.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0157_amarra_balancim_6205.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0159_amarra_balancim_6209.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0182_amarra_balancim_6222.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0183_amarra_balancim_6224.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0207_amarra_balancim_6139.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0227_amarra_balancim_6150.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0230_amarra_balancim_6158.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0234_amarra_balancim_6167.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0234_amarra_balancim_6168.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0259_amarra_balancim_6173.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0262_amarra_balancim_6180.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0288_amarra_balancim_6103.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0288_amarra_balancim_6104.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0304_amarra_balancim_6107.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0305_amarra_balancim_6110.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0307_amarra_balancim_6116.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0308_amarra_balancim_6117.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0327_amarra_balancim_6134.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0328_amarra_balancim_6135.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0369_amarra_balancim_6068.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0372_amarra_balancim_6075.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0372_amarra_balancim_6076.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0373_amarra_balancim_6077.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0374_amarra_balancim_6082.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0376_amarra_balancim_6086.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0418_amarra_balancim_6030.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0419_amarra_balancim_6034.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0438_amarra_balancim_6037.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0441_amarra_balancim_6045.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0442_amarra_balancim_6048.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0443_amarra_balancim_6049.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0443_amarra_balancim_6050.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0466_amarra_balancim_6059.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0489_amarra_balancim_5994.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0506_amarra_balancim_5997.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0534_amarra_balancim_6019.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0534_amarra_balancim_6020.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0536_amarra_balancim_6023.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0536_amarra_balancim_6024.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0562_amarra_balancim_5950.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0562_amarra_balancim_5952.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0583_amarra_balancim_5962.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0583_amarra_balancim_5965.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0585_amarra_balancim_5968.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0587_amarra_balancim_5975.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0588_amarra_balancim_5976.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0607_amarra_balancim_5980.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0607_amarra_balancim_5983.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0608_amarra_balancim_5984.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 27-11-2020_DJI_0608_amarra_balancim_5985.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0021_amarra_balancim_6490.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0024_amarra_balancim_6494.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0046_amarra_balancim_6502.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0047_amarra_balancim_6503.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0068_amarra_balancim_6507.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0070_amarra_balancim_6510.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0072_amarra_balancim_6515.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0073_amarra_balancim_6518.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0074_amarra_balancim_6520.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0092_amarra_balancim_6481.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0125_amarra_balancim_6488.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0192_amarra_balancim_6459.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0203_amarra_balancim_6462.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0206_amarra_balancim_6468.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0206_amarra_balancim_6471.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0252_amarra_balancim_6437.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0272_amarra_balancim_6438.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0290_amarra_balancim_6448.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0316_amarra_balancim_6405.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0328_amarra_balancim_6407.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0329_amarra_balancim_6409.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0331_amarra_balancim_6413.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0333_amarra_balancim_6417.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0353_amarra_balancim_6425.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0354_amarra_balancim_6428.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0383_amarra_balancim_6380.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0385_amarra_balancim_6384.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0386_amarra_balancim_6386.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0393_amarra_balancim_6388.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0397_amarra_balancim_6392.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0409_amarra_balancim_6397.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0411_amarra_balancim_6400.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0433_amarra_balancim_6347.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0433_amarra_balancim_6348.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0434_amarra_balancim_6349.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0434_amarra_balancim_6350.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0453_amarra_balancim_6358.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0453_amarra_balancim_6360.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0476_amarra_balancim_6374.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0537_amarra_balancim_6343.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0558_amarra_balancim_6308.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0593_amarra_balancim_6324.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0594_amarra_balancim_6327.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\good\\Fotos 30-11-2020_DJI_0594_amarra_balancim_6328.jpg",
+      "label": 0
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0144_37_jpg.rf.53d21c1974820af7ba66231d5a9acd9b.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0144_38_jpg.rf.8d7939a547fae6752ee20e5d2f1af703.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0183_55_jpg.rf.f8d84e455110b4d3df42b29cde6c2143.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0183_56_jpg.rf.5ae43bd5527c76005cf5a50520f75b61.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0210_65_jpg.rf.597f83431f8f3db86552febed40dfc9b.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0262_75_jpg.rf.1ac0a6130c96e9acc8811ac45b996ad2.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0263_77_jpg.rf.ee9d2d7bf12c3cfb9ccdee1c4d3eb10c.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0264_80_jpg.rf.19e7fdaf847d6260aecf7fe0380d4cd4.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0291_92_jpg.rf.db0555b3cb9809101e48e06bcba15d40.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0351_106_jpg.rf.a6097bda68a66f7831a8c5ec3aa6aaad.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0352_107_jpg.rf.e6761925ac5c2b010453967ef9168bcc.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0352_108_jpg.rf.99f96c16e95486c5d9b4ad819538da7d.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0354_109_jpg.rf.799f958c4ec4b897e5b0845f8c9496f1.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0355_110_jpg.rf.0bfed0e7dc8be3f07106d22a09f3682d.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0355_111_jpg.rf.40d631a41556417526b13b1ade39d959.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0385_114_jpg.rf.19338b42a03003a11c7851442ee26b65.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0386_116_jpg.rf.57965b5f1954be025c0f54770d6dbcba.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0386_117_jpg.rf.c8f1223e9d6a995e29af7e467de13b11.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0441_126_jpg.rf.cf195cb968f1ae9e5c031b5fcbb0ca4a.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0443_128_jpg.rf.e76e25328d6c6e4e9006253498c22381.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0443_129_jpg.rf.bc292d33a4388d0142805cd292b05c4f.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0444_130_jpg.rf.dfc5e96076009dd53dd50ab48c6027ea.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0444_131_jpg.rf.45b7cd17d5392a96bce552446f319bbf.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0446_134_jpg.rf.fa28f8f497ae2c838990de658ed0ddba.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0446_135_jpg.rf.dac1b6268138119e03642a60af3e4202.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0536_154_jpg.rf.83d389f1869eb2bde93f16d237dd076b.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0623_173_jpg.rf.a5cd4220d00cbbabded26f34025c6f12.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0623_174_jpg.rf.0de4c687236558884c9b69e4023bedb1.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\01-06-2021_DJI_0626_178_jpg.rf.96b768d4ef9c426904c99914c2e1d92e.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\02-06-2021_DJI_0091_202_jpg.rf.1b56917629b26f3b4ec443f15291cedd.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\02-06-2021_DJI_0092_204_jpg.rf.86a13124a86b254b7c07f89ed6996ea6.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\02-06-2021_DJI_0241_238_jpg.rf.1a04fbbaf9b91ca2c6cf4612fb7058c4.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\09-06-2021_DJI_0474_581_jpg.rf.528d494feb9732989daef15af49bf7b4.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\09-06-2021_DJI_0475_583_jpg.rf.c518155bd48e7e42e97d4d8227b64772.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\09-06-2021_DJI_0475_584_jpg.rf.576b6abc6b97de2875542769ab9c47e9.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\10-06-2021_DJI_0026_618_jpg.rf.72974e593975c68cd319ba8ebfcc23f9.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\10-06-2021_DJI_0122_641_jpg.rf.1c093ff27c84a493c5b14a3d55553468.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\10-06-2021_DJI_0303_664_jpg.rf.700c607f4516ed551376329a240bfc22.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\15-06-2021_DJI_0115_738_jpg.rf.fe23bd13471c3bb16781f4b849d41fd9.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\15-06-2021_DJI_0160_748_jpg.rf.1fa0351f60221e7938ba1518ab53d756.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\15-06-2021_DJI_0172_757_jpg.rf.36b4e4e26464bba28eb2e5777e522076.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\15-06-2021_DJI_0208_764_jpg.rf.8b88d25f50ad3298889b0ba8f4726400.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\15-06-2021_DJI_0217_771_jpg.rf.1f9ea53426d8f039ffa58912de30e9c9.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\15-06-2021_DJI_0218_775_jpg.rf.d6bcb8cb5d5d85ce14575cd422a6c221.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\15-06-2021_DJI_0266_783_jpg.rf.f86c398b2337ec94712f471328b60f24.jpg",
+      "label": 1
+    },
+    {
+      "path": "yoke-suspension\\test\\rust\\15-06-2021_DJI_0266_784_jpg.rf.30c14c599c5622e0da451473330213e7.jpg",
+      "label": 1
+    }
+  ]
+}
