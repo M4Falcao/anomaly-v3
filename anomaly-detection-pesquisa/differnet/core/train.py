@@ -1,9 +1,8 @@
 """Image-level training loop for DifferNet / SEDifferNet.
 
-Trains the normalizing-flow head (and, for SEDifferNet, the SE attention
-blocks) on defect-free images, evaluating image-level AUROC after every
-sub-epoch. Progress, parameters and artifacts are logged to MLflow when
-``config.use_mlflow`` is enabled.
+Trains the normalizing-flow head on defect-free images, evaluating
+image-level AUROC after every meta-epoch. Progress, parameters and
+artifacts are logged to MLflow when ``config.use_mlflow`` is enabled.
 
 This module is a library: use ``main.py`` as the entry point.
 """
@@ -31,8 +30,6 @@ from core.mlflow_utils import (
     wait_for_server,
 )
 from core.paths import project_path
-from torch.cuda.amp import GradScaler
-from torch.amp import autocast
 from scipy.ndimage import gaussian_filter
 
 
@@ -185,20 +182,12 @@ def train(train_loader, test_loader):
             except:
                 pass
 
-    # Model and optimizer
+    # Model and optimizer (only NF head parameters are optimized)
     model = SEDifferNet()
-
-    # Train SE attention modules jointly with NF head (lower LR for attention)
-    se_params = list(model.simsa1.parameters()) + list(model.simsa2.parameters()) + \
-                list(model.simsa3.parameters()) + list(model.simsa4.parameters())
     optimizer = torch.optim.Adam(
-        [{'params': model.nf.parameters(), 'lr': c.lr_init},
-         {'params': se_params, 'lr': c.lr_init * 0.5}],
-        betas=(0.8, 0.8), eps=1e-04, weight_decay=1e-5
+        model.nf.parameters(), lr=c.lr_init, betas=(0.8, 0.8), eps=1e-04, weight_decay=1e-5
     )
     model.to(c.device)
-
-    scaler = GradScaler()
 
     if c.use_mlflow:
         config_path = project_path("config.py")
@@ -244,14 +233,12 @@ def train(train_loader, test_loader):
                 optimizer.zero_grad()
                 inputs, labels = preprocess_batch(data)
 
-                with autocast('cuda'):
-                    z = model(inputs)
-                    loss = get_loss(z, model.nf.jacobian(run_forward=False))
+                z = model(inputs)
+                loss = get_loss(z, model.nf.jacobian(run_forward=False))
 
                 pre_train_loss.append(loss.item())
-                scaler.scale(loss).backward()
-                scaler.step(optimizer)
-                scaler.update()
+                loss.backward()
+                optimizer.step()
 
             avg = np.mean(pre_train_loss)
             print(f"Pre-Epoch [{pre_epoch + 1}/{c.pre_epochs}], Train Loss: {avg:.4f}")
@@ -271,14 +258,12 @@ def train(train_loader, test_loader):
                 optimizer.zero_grad()
                 inputs, labels = preprocess_batch(data)
 
-                with autocast('cuda'):
-                    z = model(inputs)
-                    loss = get_loss(z, model.nf.jacobian(run_forward=False))
+                z = model(inputs)
+                loss = get_loss(z, model.nf.jacobian(run_forward=False))
 
                 train_loss.append(loss.item())
-                scaler.scale(loss).backward()
-                scaler.step(optimizer)
-                scaler.update()
+                loss.backward()
+                optimizer.step()
 
         avg_train_loss = np.mean(train_loss)
         print(f'Epoch [{meta_epoch + 1}/{c.meta_epochs}], Train Loss: {avg_train_loss:.4f}')
@@ -390,7 +375,5 @@ def train(train_loader, test_loader):
     if c.use_mlflow:
         mlflow.pytorch.log_model(model, "final_model")
         mlflow.end_run()
-
-
 
     return model
