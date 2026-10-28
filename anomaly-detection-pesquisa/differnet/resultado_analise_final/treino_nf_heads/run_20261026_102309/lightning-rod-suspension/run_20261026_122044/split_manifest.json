@@ -1,0 +1,687 @@
+{
+  "class_name": "lightning-rod-suspension",
+  "seed": 42,
+  "train_seed": 42,
+  "val_fraction": 0.4,
+  "validation_indices": [
+    0,
+    2,
+    4,
+    7,
+    10,
+    18,
+    21,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    33,
+    37,
+    38,
+    39,
+    40,
+    42,
+    50,
+    51,
+    52,
+    57,
+    59,
+    61,
+    63,
+    68,
+    69,
+    72,
+    74,
+    75,
+    76,
+    82,
+    85,
+    90,
+    93,
+    94,
+    95,
+    98,
+    100,
+    102,
+    104,
+    107,
+    111,
+    112,
+    113,
+    116,
+    120,
+    122,
+    123,
+    126,
+    127,
+    128,
+    130
+  ],
+  "holdout_indices": [
+    1,
+    3,
+    5,
+    6,
+    8,
+    9,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    19,
+    20,
+    22,
+    23,
+    30,
+    31,
+    32,
+    34,
+    35,
+    36,
+    41,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    53,
+    54,
+    55,
+    56,
+    58,
+    60,
+    62,
+    64,
+    65,
+    66,
+    67,
+    70,
+    71,
+    73,
+    77,
+    78,
+    79,
+    80,
+    81,
+    83,
+    84,
+    86,
+    87,
+    88,
+    89,
+    91,
+    92,
+    96,
+    97,
+    99,
+    101,
+    103,
+    105,
+    106,
+    108,
+    109,
+    110,
+    114,
+    115,
+    117,
+    118,
+    119,
+    121,
+    124,
+    125,
+    129,
+    131,
+    132,
+    133,
+    134
+  ],
+  "test_samples": [
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 01-12-2020_DJI_0181_suspensao_para_raio_23.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 01-12-2020_DJI_0323_suspensao_para_raio_19.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 01-12-2020_DJI_0498_suspensao_para_raio_14.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 02-12-2020_DJI_0151_suspensao_para_raio_50.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 02-12-2020_DJI_0347_suspensao_para_raio_39.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 02-12-2020_DJI_0409_suspensao_para_raio_36.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 02-12-2020_DJI_0450_suspensao_para_raio_38.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 02-12-2020_DJI_0472_suspensao_para_raio_33.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 02-12-2020_DJI_0511_suspensao_para_raio_34.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 03-12-2020_DJI_0066_suspensao_para_raio_70.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 03-12-2020_DJI_0497_suspensao_para_raio_58.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 04-12-2020_DJI_0749_suspensao_para_raio_86.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 04-12-2020_DJI_0936_suspensao_para_raio_78.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 04-12-2020_DJI_0964_suspensao_para_raio_81.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 04-12-2020_DJI_1000 (12)_suspensao_para_raio_77.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 07-12-2020_DJI_0031_suspensao_para_raio_110.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 07-12-2020_DJI_0072_suspensao_para_raio_108.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 07-12-2020_DJI_0128_suspensao_para_raio_104.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 08-12-2020_DJI_0440_suspensao_para_raio_127.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 08-12-2020_DJI_0504_suspensao_para_raio_126.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 08-12-2020_DJI_0586_suspensao_para_raio_122.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 09-12-2020_DJI_0030_suspensao_para_raio_147.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 09-12-2020_DJI_0115_suspensao_para_raio_144.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 09-12-2020_DJI_0155_suspensao_para_raio_142.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 09-12-2020_DJI_0193_suspensao_para_raio_140.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 09-12-2020_DJI_0298_suspensao_para_raio_131.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 09-12-2020_DJI_0337_suspensao_para_raio_129.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 10-12-2020_DJI_0285_suspensao_para_raio_149.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 11-12-2020_DJI_0067_suspensao_para_raio_184.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 11-12-2020_DJI_0105_suspensao_para_raio_182.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 11-12-2020_DJI_0144_suspensao_para_raio_180.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 11-12-2020_DJI_0223_suspensao_para_raio_176.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 14-12-2020_DJI_0003_suspensao_para_raio_205.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 14-12-2020_DJI_0652_suspensao_para_raio_189.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 16-11-2020_DJI_0134_suspensao_para_raio_231.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 16-11-2020_DJI_0180_suspensao_para_raio_221.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 16-12-2020_DJI_0088_suspensao_para_raio_249.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 16-12-2020_DJI_0164_suspensao_para_raio_247.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 16-12-2020_DJI_0453_suspensao_para_raio_239.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 17-11-2020_DJI_0084_suspensao_para_raio_287.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 17-11-2020_DJI_0091_suspensao_para_raio_291.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 17-11-2020_DJI_0112_suspensao_para_raio_283.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 17-11-2020_DJI_0265_suspensao_para_raio_265.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 18-11-2020_DJI_0086_suspensao_para_raio_381.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 18-11-2020_DJI_0105_suspensao_para_raio_361.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 18-11-2020_DJI_0168_suspensao_para_raio_345.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 18-11-2020_DJI_0170_suspensao_para_raio_347.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 18-11-2020_DJI_0171_suspensao_para_raio_348.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 18-11-2020_DJI_0224_suspensao_para_raio_326.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 18-11-2020_DJI_0226_suspensao_para_raio_328.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 18-11-2020_DJI_0253_suspensao_para_raio_323.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 19-11-2020_DJI_0049_suspensao_para_raio_429.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 19-11-2020_DJI_0143_suspensao_para_raio_400.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 19-11-2020_DJI_0158_suspensao_para_raio_403.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 19-11-2020_DJI_0160_suspensao_para_raio_404.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 19-11-2020_DJI_0182_suspensao_para_raio_398.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-10-2020_DJI_0113_suspensao_para_raio_447.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-10-2020_DJI_0114_suspensao_para_raio_448.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-10-2020_DJI_0117_suspensao_para_raio_451.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-10-2020_DJI_0118_suspensao_para_raio_452.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-10-2020_DJI_0166_suspensao_para_raio_461.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-10-2020_DJI_0249_suspensao_para_raio_481.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-10-2020_DJI_0252_suspensao_para_raio_484.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-11-2020_DJI_0072_suspensao_para_raio_523.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-11-2020_DJI_0091_suspensao_para_raio_529.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-11-2020_DJI_0124_suspensao_para_raio_520.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-11-2020_DJI_0126_suspensao_para_raio_522.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-11-2020_DJI_0145_suspensao_para_raio_514.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-11-2020_DJI_0187_suspensao_para_raio_511.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-11-2020_DJI_0231_suspensao_para_raio_501.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-11-2020_DJI_0233_suspensao_para_raio_503.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-11-2020_DJI_0254_suspensao_para_raio_496.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-11-2020_DJI_0283_suspensao_para_raio_488.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 20-11-2020_DJI_0302_suspensao_para_raio_491.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 22-10-2020_DJI_0887_suspensao_para_raio_554.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 24-11-2020_DJI_0004_suspensao_para_raio_630.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 24-11-2020_DJI_0290_suspensao_para_raio_624.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 24-11-2020_DJI_0355_suspensao_para_raio_619.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 24-11-2020_DJI_0356_suspensao_para_raio_620.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 24-11-2020_DJI_0562_suspensao_para_raio_613.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 24-11-2020_DJI_0592_suspensao_para_raio_614.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 25-11-2020_DJI_0240_suspensao_para_raio_638.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 26-11-2020_DJI_0004_suspensao_para_raio_662.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 26-11-2020_DJI_0176_suspensao_para_raio_659.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 26-11-2020_DJI_0377_suspensao_para_raio_648.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 26-11-2020_DJI_0397_suspensao_para_raio_649.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 27-11-2020_DJI_0005_suspensao_para_raio_686.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 27-11-2020_DJI_0097_suspensao_para_raio_685.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 27-11-2020_DJI_0237_suspensao_para_raio_681.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 27-11-2020_DJI_0379_suspensao_para_raio_677.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 27-11-2020_DJI_0448_suspensao_para_raio_674.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 27-11-2020_DJI_0470_suspensao_para_raio_667.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 30-11-2020_DJI_0177_suspensao_para_raio_702.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 30-11-2020_DJI_0233_suspensao_para_raio_699.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 30-11-2020_DJI_0278_suspensao_para_raio_701.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\good\\Fotos 30-11-2020_DJI_0398_suspensao_para_raio_694.jpg",
+      "label": 0
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\01-06-2021_DJI_0092_20_jpg.rf.3d8376126bfbbd00e9775e002b0c633f.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\01-06-2021_DJI_0093_21_jpg.rf.030749d91b7834e2d784b9c0ce6acf0e.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\01-06-2021_DJI_0190_57_jpg.rf.534e02db03ee7cc8f7214b921df73077.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\01-06-2021_DJI_0245_72_jpg.rf.41db584bbf8ff24bed1eb54e4b1ee2dc.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\01-06-2021_DJI_0269_82_jpg.rf.efde56af853ef0bc201720a1fe9f164e.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\01-06-2021_DJI_0333_99_jpg.rf.aa512520a75fee8cf4f0d54b7fafd639.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\01-06-2021_DJI_0510_148_jpg.rf.e8e5a3bc0e0c5cb1577574c69634e3dc.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\01-06-2021_DJI_0593_169_jpg.rf.eb34d20b4eeb5375068456e1c11884c1.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\02-06-2021_DJI_0005_180_jpg.rf.f46a9a606f22c2ef53ad657c8bc271d7.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\02-06-2021_DJI_0006_181_jpg.rf.391507a7cd26b31a0a57ecc78fdf545b.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\02-06-2021_DJI_0044_192_jpg.rf.ddc06595c85e58232c50a96eb24abc93.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\02-06-2021_DJI_0045_193_jpg.rf.1b0e1cc6bf1706e7a044ac33a9b5300e.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\02-06-2021_DJI_0046_194_jpg.rf.a89b284d195afca2c5565eaf71bd7145.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\02-06-2021_DJI_0376_263_jpg.rf.8c4d57ec87e519efc5234d29d7cde9a8.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\02-06-2021_DJI_0440_271_jpg.rf.82bcb5feefd7b12675fe3342c8a6a804.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\02-06-2021_DJI_0592_280_jpg.rf.b996347d8408e511c46f8c814809fe0d.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\02-06-2021_DJI_0638_291_jpg.rf.66e2e501ee0513bfde87e06294a95fbe.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\02-06-2021_DJI_0639_292_jpg.rf.6ca67085d2a70a6b615efad568840dec.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\08-06-2021_DJI_0180_330_jpg.rf.109423414540a4f2704b3c566d4e1717.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\08-06-2021_DJI_0270_377_jpg.rf.8ef1985b32b9f169b874c6bae8c532c6.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\08-06-2021_DJI_0320_396_jpg.rf.99a2e71d659741cdaf69fbd80039d477.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\08-06-2021_DJI_0370_409_jpg.rf.6d01ee510607c96e5c92b01967ca0be7.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\09-06-2021_DJI_0081_462_jpg.rf.1cc059e4ab06568b524fe81d6fea2924.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\09-06-2021_DJI_0182_474_jpg.rf.3572ce8bccd7604386cdc03138c4b717.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\09-06-2021_DJI_0298_525_jpg.rf.72ceaa0bf332ac4cc1bb080fcb54cfba.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\09-06-2021_DJI_0299_526_jpg.rf.3460e54f13b3cb939c34ea6891d907b5.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\09-06-2021_DJI_0402_539_jpg.rf.2814746d9544c6ad242371e33e7b2cb1.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\09-06-2021_DJI_0427_552_jpg.rf.08e2ec1db6959bbab763beacc93b3efa.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\09-06-2021_DJI_0454_559_jpg.rf.1bb10550640868f9853cb77593885cd9.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\10-06-2021_DJI_0006_604_jpg.rf.57dbcfb62db2004aa726849f6a39f861.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\10-06-2021_DJI_0076_629_jpg.rf.d4a5b4ed292b86ddb9f6532a0940fbca.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\10-06-2021_DJI_0327_669_jpg.rf.014c304dd3b2206a7c223d4d02db7941.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\10-06-2021_DJI_0374_679_jpg.rf.365ecff1d09d6f7cbc403b2d8e747fb5.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\15-06-2021_DJI_0098_732_jpg.rf.fb675739e326b8a13e994d4818f43668.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\15-06-2021_DJI_0105_733_jpg.rf.fa3f5c0e904fc2ec42a37b422fcf723f.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\15-06-2021_DJI_0196_758_jpg.rf.ea512ee2626c866fb66ef622be3ce47b.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\15-06-2021_DJI_0243_777_jpg.rf.33d4a22fa9abd7614e12192ca5c22267.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\15-06-2021_DJI_0372_797_jpg.rf.c39f597206af15698d1d0dba786f6f69.jpg",
+      "label": 1
+    },
+    {
+      "path": "lightning-rod-suspension\\test\\rust\\15-06-2021_DJI_0397_802_jpg.rf.23c89ab38163ad4b353bcf65c8bdb361.jpg",
+      "label": 1
+    }
+  ]
+}

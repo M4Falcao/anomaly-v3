@@ -1,0 +1,41 @@
+{
+  "dataset": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-detection-dataset\\insplad-seg\\insplad-seg",
+  "head": "c:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\treino_nf_heads\\run_20261025_181523\\yoke-suspension\\best_models\\best_pixel_auroc.pt",
+  "encoder": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\final_models\\SEDiffernet\\yoke-suspension\\yoke-suspension_se_differnet_yoke_suspension_200_1_epoch_70.pt",
+  "head_sha256": "e947b7b63d6cc7649d2d601aea80fc2ffa150dd9754afaf1475542dc20d101f8",
+  "encoder_sha256": "558642e0179193713d73352936887004f5409d0b4316bac77df73ebe0709120d",
+  "recipe": {
+    "pad": 112,
+    "pad_mode": "reflect",
+    "tta": "flips",
+    "score_mode": "per_level_std",
+    "levels": "012",
+    "align_corners": true,
+    "sigma": 8.0,
+    "image_score": "max",
+    "topk_percent": 1.0,
+    "margin": 0,
+    "pos_calib": "none"
+  },
+  "level_stats": [
+    [
+      -47.84461975097656,
+      21.600007630426045
+    ],
+    [
+      -131.64842224121094,
+      44.223989878513194
+    ],
+    [
+      -246.50418090820312,
+      17.96430178230888
+    ]
+  ],
+  "metric_backend": "histogram",
+  "n_bins": 65536,
+  "bootstrap": 200,
+  "stride": 1,
+  "margin": 0,
+  "cohort": "complete_test",
+  "warning": "descriptive evaluation; validation reused; no independent holdout"
+}

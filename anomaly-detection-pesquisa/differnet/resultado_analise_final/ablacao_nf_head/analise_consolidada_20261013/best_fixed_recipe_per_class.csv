@@ -1,6 +1,0 @@
-cls,name,mean_regret,max_regret,mean_val_auroc
-glass,pad112-reflect|tta=flips|per_level_std|up=False|L=02|calib=none|s=4|m=0|img=topk,0.0020241215415156776,0.005211225707298928,0.9551094624601248
-lightning,pad112-reflect|tta=flips|raw|up=True|L=02|calib=none|s=12|m=0|img=topk,0.006948941027199784,0.01705249086408156,0.8945644337927948
-polymer,pad112-replicate|tta=flips|raw|up=True|L=01|calib=none|s=8|m=0|img=topk,0.01721575744678805,0.0447768349201082,0.8900076637141068
-vari,pad112-reflect|tta=hflip|cflow_original|up=True|L=0|calib=none|s=8|m=0|img=max,0.0006003280354535123,0.0024039117357945727,0.9079164206483801
-yoke,pad112-reflect|tta=hflip|cflow_original|up=True|L=012|calib=none|s=12|m=0|img=max,0.012457136239342304,0.03194604231384035,0.9165984748985325

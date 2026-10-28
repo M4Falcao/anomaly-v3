@@ -23,8 +23,13 @@ partitioned by class:
         └── ...
 
 Recipes:
-    --recipe unified (default):
-        The universal recommendation established in Section 9.0 of docs/plano_ablation_nf_head.md:
+    --recipe general (default), best_per_class, baseline:
+        Current presets from pixel_train_from_pretrained.py. Training and final inference
+        remain separate; --checkpoint_dir selects the frozen SEDifferNet encoders.
+        Summaries distinguish validation metrics from final holdout and include a macro mean.
+
+    --recipe unified (historical):
+        Legacy configuration from docs/plano_ablation_nf_head.md:
         - Features: L1 + L3 (--levels 0,2)
         - In-training selection: --score_norm raw
         - Memory optimization: --disable_patchcore
@@ -46,12 +51,12 @@ Recipes:
     --recipe baseline:
         Standard baseline across all classes (--levels 0,1,2, no feat_norm, clamp 0.5).
 
-    Any explicit CLI flag (--epochs, --levels, --feat_norm, --feat_norm_levels,
-    --clamp_scale, --eval_interval, etc.) overrides the recipe setting for all runs.
+    Epoch and evaluation budgets can be overridden. Current presets reject conflicting
+    architecture/feature flags; historical recipes retain their manual overrides.
 
 Examples:
-    # Train all 5 classes with the unified recipe (dry-run to inspect commands):
-    python scripts/train/train_all_nf_heads.py --dry_run
+    # Inspect all 5 classes without training:
+    python scripts/train/train_all_nf_heads.py --recipe general --checkpoint_dir final_models/SEDiffernet --dry_run
 
     # Train all 5 classes with real training:
     python scripts/train/train_all_nf_heads.py
@@ -72,6 +77,7 @@ import shutil
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 # Ensure project root is in sys.path
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -97,7 +103,32 @@ from core.eval_pipeline import (
 )
 from core.paths import project_path
 
-RECIPES = ('unified', 'selective_l1', 'optimal', 'baseline')
+RECIPES = ('general', 'best_per_class', 'baseline', 'unified', 'selective_l1', 'optimal')
+
+
+def resolve_se_checkpoints(checkpoint_dir, class_names):
+    """Resolve one encoder per class; ambiguity must be settled before training."""
+    root = Path(checkpoint_dir).expanduser().resolve()
+    if not root.is_dir():
+        raise FileNotFoundError(f'Checkpoint directory not found: {root}')
+    candidates = sorted(path for path in root.rglob('*')
+                        if path.is_file() and path.suffix.lower() in ('.pt', '.pth', '.ckpt')
+                        and 'cbam' not in path.name.lower()
+                        and not path.name.lower().startswith('best_pixel_'))
+    checkpoints, problems = {}, []
+    for class_name in class_names:
+        matches = [path for path in candidates
+                   if class_name.replace('_', '-').lower()
+                   in (root.name + '/' + path.relative_to(root).as_posix()).replace('_', '-').lower()]
+        if not matches:
+            problems.append(f'{class_name}: no SEDifferNet checkpoint found')
+        elif len(matches) > 1:
+            problems.append(f'{class_name}: ambiguous checkpoints: ' + ', '.join(str(path) for path in matches))
+        else:
+            checkpoints[class_name] = str(matches[0])
+    if problems:
+        raise ValueError('\n'.join(problems))
+    return checkpoints
 
 # Per-class budgets when --epochs is omitted
 CLASS_BUDGETS = {
@@ -142,6 +173,23 @@ CLASS_BUDGETS = {
 def build_class_cmd(class_name, se_ckpt, class_out_dir, args):
     """Build command argument list for training one class."""
     recipe_cfg = CLASS_BUDGETS.get(args.recipe, {}).get(class_name, {})
+    recipe_plan = None
+    if args.recipe in ('best_per_class', 'general', 'baseline'):
+        from scripts.train.pixel_train_from_pretrained import resolve_training_recipe
+        recipe_plan = resolve_training_recipe(class_name, args.recipe)
+        recipe_cfg = dict(recipe_plan['training'], epochs=recipe_plan['epochs'],
+                          eval_interval=recipe_plan['eval_interval'])
+        overrides = dict(score_norm=args.score_norm, attention=args.attention,
+                         reflect_pad=args.reflect_pad, pad_mode=args.pad_mode, feat_pool=args.feat_pool)
+        for key in ('levels', 'clamp_scale', 'feat_norm_levels'):
+            if getattr(args, key) is not None:
+                overrides[key] = getattr(args, key)
+        for key in ('feat_norm', 'no_rotation'):
+            if getattr(args, key):
+                overrides[key] = True
+        for key, value in overrides.items():
+            if value != recipe_cfg[key]:
+                raise ValueError(f'--{key} conflicts with recipe {args.recipe} for {class_name}')
 
     epochs = args.epochs if args.epochs is not None else recipe_cfg.get('epochs', 40)
     if args.epochs is not None and recipe_cfg.get('epochs') not in (None, args.epochs):
@@ -170,9 +218,14 @@ def build_class_cmd(class_name, se_ckpt, class_out_dir, args):
         '--score_norm', args.score_norm,
         '--clamp_scale', str(clamp_scale),
         '--seed', str(args.seed),
+        '--split_seed', str(args.split_seed),
         '--lr', str(args.lr),
         '--attention', args.attention,
     ]
+    if recipe_plan is not None:
+        cmd.extend(['--recipe', args.recipe])
+    if args.auroc_only:
+        cmd.append('--auroc_only')
 
     if levels:
         cmd.extend(['--levels', str(levels)])
@@ -194,6 +247,8 @@ def build_class_cmd(class_name, se_ckpt, class_out_dir, args):
         cmd.append('--feat_norm')
 
     return cmd, {
+        'recipe': args.recipe,
+        'inference_recipe': recipe_plan['inference'] if recipe_plan else None,
         'epochs': epochs,
         'eval_interval': eval_interval,
         'levels': levels,
@@ -263,10 +318,23 @@ def organize_class_artifacts(class_dir, master_best_dir, class_name):
         except Exception as err:
             meta['read_error'] = str(err)
 
+    holdout_metrics = None
+    final_csv = os.path.join(newest_run, 'final_results.csv')
+    if os.path.exists(final_csv):
+        final_df = pd.read_csv(final_csv)
+        cflow_rows = final_df[final_df['method'] == 'CFLOW']
+        if len(cflow_rows) == 1:
+            holdout_metrics = cflow_rows.iloc[0].to_dict()
+    for filename in ('final_results.csv', 'recipe.json', 'split_manifest.json'):
+        source = os.path.join(newest_run, filename)
+        if os.path.isfile(source):
+            shutil.copy2(source, os.path.join(class_dir, filename))
+
     return {
         'newest_run': newest_run,
         'best_pixel_path': os.path.join(class_best_dir, 'best_pixel_auroc.pt'),
         'meta': meta,
+        'holdout_metrics': holdout_metrics,
     }
 
 
@@ -279,8 +347,13 @@ def main():
                         help=f'Comma-separated classes to train (default: all 5: {", ".join(ALL_CLASSES)}).')
     parser.add_argument('--dataset', type=str, default=c.dataset_path,
                         help='Root dataset path containing INSPLAD classes.')
-    parser.add_argument('--recipe', type=str, default='unified', choices=list(RECIPES),
-                        help='Preconfigured training recipe: unified (default L1+L3 raw), selective_l1, optimal, baseline.')
+    parser.add_argument('--recipe', type=str, default='general', choices=list(RECIPES),
+                        help='general, best_per_class or baseline from the scientific analysis; '
+                             'unified/selective_l1/optimal retain the historical recipes.')
+    parser.add_argument('--checkpoint_dir', type=str,
+                        default=project_path('final_models', 'SEDiffernet'),
+                        help='Recursively search this SEDifferNet checkpoint folder. Exactly one '
+                             'file per class is required; class name must appear in path or filename.')
 
     # Hyperparameter overrides (override recipe defaults when specified)
     parser.add_argument('--epochs', type=int, default=None,
@@ -310,6 +383,9 @@ def main():
     parser.add_argument('--disable_patchcore', action='store_true', default=True,
                         help='Disable PatchCore during training to conserve memory and speed up runs (default: True).')
     parser.add_argument('--seed', type=int, default=42)
+    parser.add_argument('--split_seed', type=int, default=42)
+    parser.add_argument('--auroc_only', action='store_true',
+                        help='Skip AUPRO/AP/F1 in each trainer, including final evaluation.')
     parser.add_argument('--val_fraction', type=float, default=0.4,
                         help='Fraction of the labeled test split used for epoch selection; '
                              'the remainder is reserved for final reporting.')
@@ -321,22 +397,32 @@ def main():
                         help='Skip training if best_models/best_pixel_auroc.pt already exists in the class folder.')
     parser.add_argument('--dry_run', action='store_true',
                         help='Print the planned commands and paths without executing.')
-    parser.add_argument('--evaluate_after', type=str, default='pixel', choices=['none', 'pixel', 'full'],
-                        help='Run evaluation on the newly trained models after batch completes (default: pixel).')
+    parser.add_argument('--evaluate_after', type=str, default='none', choices=['none', 'pixel', 'full'],
+                        help='Optional extra evaluation for historical recipes. The trainer already '
+                             'evaluates its selected recipe on holdout (default: none).')
     parser.add_argument('--export_to_final_models', action='store_true',
                         help='Copy successful best_models into final_models/NF Head/<class>/best_models/ with backup.')
 
     args = parser.parse_args()
     if not 0 <= args.val_fraction < 1:
         parser.error('--val_fraction must be in [0, 1)')
+    if args.recipe in ('general', 'best_per_class', 'baseline') and args.evaluate_after != 'none':
+        parser.error('Named recipes already evaluate holdout; use --evaluate_after none to avoid '
+                     'external evaluators with different recipe/backbone defaults')
 
     class_list = (
         [cls.strip() for cls in args.classes.split(',') if cls.strip()]
         if args.classes else ALL_CLASSES
     )
+    if not class_list or len(class_list) != len(set(class_list)):
+        parser.error('--classes must contain distinct class names')
     for cls in class_list:
         if cls not in ALL_CLASSES:
-            print(f"AVISO: classe '{cls}' desconhecida. Classes padrao: {ALL_CLASSES}")
+            parser.error(f'Unknown class {cls}; choose from {ALL_CLASSES}')
+    try:
+        checkpoint_map = resolve_se_checkpoints(args.checkpoint_dir, class_list)
+    except (FileNotFoundError, ValueError) as exc:
+        parser.error(str(exc))
 
     # Set up master run directory
     timestamp = time.strftime('%Y%m%d_%H%M%S')
@@ -344,6 +430,12 @@ def main():
         'resultado_analise_final', 'treino_nf_heads', f"run_{timestamp}"
     )
     master_best_dir = os.path.join(master_run_dir, 'best_models')
+    try:
+        planned = {class_name: build_class_cmd(
+            class_name, checkpoint_map[class_name], os.path.join(master_run_dir, class_name), args)
+            for class_name in class_list}
+    except ValueError as exc:
+        parser.error(str(exc))
 
     if not args.dry_run:
         os.makedirs(master_run_dir, exist_ok=True)
@@ -360,6 +452,7 @@ def main():
     print('=' * 80)
     print(f"  Diretorio do run: {master_run_dir}")
     print(f"  Receita base:     {args.recipe}")
+    print(f"  Checkpoints SE:   {os.path.abspath(args.checkpoint_dir)}")
     print(f"  Classes ({len(class_list)}):     {class_list}")
     print(f"  Score norm:       {args.score_norm}")
     print(f"  Device:           {DEVICE}")
@@ -372,21 +465,7 @@ def main():
     for idx, class_name in enumerate(class_list, 1):
         print(f"\n[{idx}/{len(class_list)}] Classe: {class_name}")
 
-        se_ckpt = find_se_checkpoint(class_name)
-        if se_ckpt is None:
-            print(f"  ERRO: Checkpoint SEDifferNet nao encontrado para '{class_name}' em final_models/SEDiffernet/!")
-            summary_rows.append({
-                'class': class_name,
-                'status': 'FAILED (no SE ckpt)',
-                'returncode': -1,
-                'train_minutes': 0.0,
-                'epochs': 0,
-                'pixel_auroc': None,
-                'image_auroc': None,
-                'best_epoch': None,
-                'checkpoint': None,
-            })
-            continue
+        se_ckpt = checkpoint_map[class_name]
 
         class_out_dir = os.path.join(master_run_dir, class_name)
         class_best_pt = os.path.join(class_out_dir, 'best_models', 'best_pixel_auroc.pt')
@@ -406,7 +485,7 @@ def main():
             })
             continue
 
-        cmd, effective_cfg = build_class_cmd(class_name, se_ckpt, class_out_dir, args)
+        cmd, effective_cfg = planned[class_name]
 
         print(f"  SE Backbone:   {os.path.basename(se_ckpt)}")
         print(f"  Configuracao:  epochs={effective_cfg['epochs']} | eval_interval={effective_cfg['eval_interval']} | levels={effective_cfg['levels']} | clamp={effective_cfg['clamp_scale']} | feat_norm={effective_cfg['feat_norm']}")
@@ -464,6 +543,7 @@ def main():
         # Organize artifacts into <class_name>/best_models and master best_models/
         info = organize_class_artifacts(class_out_dir, master_best_dir, class_name)
         meta = info['meta'] if info else {}
+        holdout_metrics = info['holdout_metrics'] if info else None
 
         pix_auc = meta.get('pixel_auroc')
         img_auc = meta.get('image_auroc')
@@ -472,7 +552,9 @@ def main():
         print(f"  -> Treino concluido em {elapsed_min:.1f} min | Best pix AUROC ({args.score_norm}): {pix_auc or 'n/a'} (epoch {best_ep or 'n/a'})")
         summary_rows.append({
             'class': class_name,
-            'status': 'SUCCESS',
+            'status': ('SUCCESS' if info and os.path.isfile(info['best_pixel_path'])
+                       and holdout_metrics is not None and 'read_error' not in meta
+                       else 'FAILED (incomplete artifacts)'),
             'returncode': returncode,
             'train_minutes': round(elapsed_min, 2),
             'epochs': effective_cfg['epochs'],
@@ -480,14 +562,33 @@ def main():
             'image_auroc': round(img_auc, 4) if img_auc is not None else None,
             'best_epoch': best_ep,
             'checkpoint': info['best_pixel_path'] if info else None,
+                'se_checkpoint': se_ckpt,
+                'recipe': args.recipe,
+                'inference_recipe': str(effective_cfg['inference_recipe']),
+                'val_pixel_auroc': pix_auc,
+                'val_image_auroc': img_auc,
+                **{f'holdout_{metric}': holdout_metrics.get(metric) if holdout_metrics else None
+                    for metric in ('pixel_auroc', 'image_auroc', 'aupro', 'pixel_ap', 'pixel_f1')},
         })
 
     # Save summary table
     summary_df = pd.DataFrame(summary_rows)
+    summary_df['recipe'] = args.recipe
+    completed = summary_df[summary_df['status'] == 'SUCCESS']
+    if len(completed):
+        average = {'class': 'MACRO_AVERAGE', 'status': f'{len(completed)}/{len(class_list)} classes',
+                   'recipe': args.recipe}
+        for column in completed.columns:
+            if column.startswith(('val_', 'holdout_')) and column != 'holdout_clean':
+                average[column] = pd.to_numeric(completed[column], errors='coerce').mean()
+        summary_df = pd.concat([summary_df, pd.DataFrame([average])], ignore_index=True)
     print('\n' + '=' * 80)
     print('  RESUMO DO TREINAMENTO DE TODAS AS CLASSES')
     print('=' * 80)
-    print(summary_df.to_string(index=False))
+    table_columns = [column for column in ('class', 'status', 'recipe', 'best_epoch', 'train_minutes',
+                     'val_pixel_auroc', 'holdout_pixel_auroc', 'holdout_image_auroc',
+                     'holdout_aupro', 'holdout_pixel_ap', 'holdout_pixel_f1') if column in summary_df]
+    print(summary_df[table_columns].round(4).to_string(index=False))
 
     if not args.dry_run:
         csv_path = os.path.join(master_run_dir, 'training_summary.csv')
@@ -495,7 +596,9 @@ def main():
         summary_df.to_csv(csv_path, index=False)
         with open(md_path, 'w', encoding='utf-8') as f:
             f.write(f"# Resumo do Treinamento de NF Heads (Run: {timestamp})\n\n")
-            f.write(df_to_markdown(summary_df) + "\n")
+            f.write('Validation selects the epoch; holdout reports the final inference recipe. '
+                    'Missing metrics were not computed. Macro averages exclude failed/skipped classes.\n\n')
+            f.write(df_to_markdown(summary_df[table_columns].round(4)) + "\n")
         print(f"\nResumo salvo em:\n  CSV: {csv_path}\n  MD:  {md_path}")
 
     # Optional export to final_models/NF Head/
@@ -541,7 +644,8 @@ def main():
             print('=' * 80)
             subprocess.run(eval_cmd, cwd=PROJECT_ROOT)
             print(f"\nAvaliacao concluida! Resultados salvos em:\n  {eval_out_dir}")
+    return int(any(row['status'].startswith(('FAILED', 'INTERRUPTED')) for row in summary_rows))
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

@@ -1,0 +1,2 @@
+method,pixel_auroc,pixel_ap,pixel_f1,aupro,image_auroc,image_ap,image_f1,auroc_only,recipe
+CFLOW,0.624871,0.010053,0.030207,0.397638,0.634569,0.323457,0.450000,False,general

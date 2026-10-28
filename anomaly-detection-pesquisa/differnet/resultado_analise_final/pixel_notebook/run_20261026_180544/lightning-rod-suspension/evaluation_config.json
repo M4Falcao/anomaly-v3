@@ -1,0 +1,41 @@
+{
+  "dataset": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-detection-dataset\\insplad-seg-no-back-treino",
+  "head": "c:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\treino_nf_heads\\run_20261026_102309\\lightning-rod-suspension\\best_models\\best_pixel_auroc.pt",
+  "encoder": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\final_models\\SEDiffernet_noBg\\lightning-rod-suspension_no_bg_best.pt",
+  "head_sha256": "a7b45e6de880836f285d7a2619dff5acc8985aae14df9e3cb63aac25e83b06eb",
+  "encoder_sha256": "005a865e4d1eac65e9f1f8f2ecfba60c535c7f61ae02e58cf9d4042d2840f987",
+  "recipe": {
+    "pad": 112,
+    "pad_mode": "reflect",
+    "tta": "flips",
+    "score_mode": "per_level_std",
+    "levels": "012",
+    "align_corners": true,
+    "sigma": 8.0,
+    "image_score": "max",
+    "topk_percent": 1.0,
+    "margin": 0,
+    "pos_calib": "none"
+  },
+  "level_stats": [
+    [
+      -62.95930862426758,
+      15.954202906028435
+    ],
+    [
+      -170.28016662597656,
+      47.60140091903449
+    ],
+    [
+      -266.74749755859375,
+      12.998463225628688
+    ]
+  ],
+  "metric_backend": "histogram",
+  "n_bins": 65536,
+  "bootstrap": 200,
+  "stride": 1,
+  "margin": 0,
+  "cohort": "complete_test",
+  "warning": "descriptive evaluation; validation reused; no independent holdout"
+}

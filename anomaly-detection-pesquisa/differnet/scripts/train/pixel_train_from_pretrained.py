@@ -25,6 +25,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(
 
 import time
 import argparse
+from copy import copy
 import numpy as np
 import torch
 import torch.nn as nn
@@ -63,15 +64,70 @@ from core.cflow import (
     border_mask,
     compute_feature_stats,
     compute_level_stats,
+    compute_positional_stats,
     gaussian_smooth,
     image_score_from_map,
     minmax_norm,
+    nll_with_tta,
     save_cflow_checkpoint,
     select_levels,
 )
 
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+RECIPE_CLASSES = (
+    'glass-insulator', 'lightning-rod-suspension', 'polymer-insulator-upper-shackle',
+    'vari-grip', 'yoke-suspension',
+)
+GENERAL_SCORE_LEVELS = ('02', '012', '12', '0', '012')
+RECIPE_BUDGETS = ((40, 5), (40, 5), (30, 3), (40, 5), (12, 2))
+
+
+def resolve_training_recipe(class_name, recipe):
+    """Separate the measured training variant from its inference-only recipe."""
+    if class_name not in RECIPE_CLASSES:
+        raise ValueError(f'Unknown recipe class {class_name!r}; choose from {RECIPE_CLASSES}')
+    if recipe not in ('best_per_class', 'general', 'baseline'):
+        raise ValueError(f'Unknown recipe {recipe!r}')
+    class_index = RECIPE_CLASSES.index(class_name)
+    epochs, eval_interval = RECIPE_BUDGETS[class_index]
+    training = dict(levels='0,1,2', feat_norm=False, feat_norm_levels=None, clamp_scale=0.5,
+                    reflect_pad=0, pad_mode='reflect', feat_pool=0, no_rotation=False,
+                    score_norm='raw', sigma=4.0, attention='se', out_size=96,
+                    cond_dim=64, n_blocks=8, hidden=256, img_size=448, border_margin=0,
+                    image_score='max', disable_patchcore=True)
+    inference = dict(pad=0, pad_mode='reflect', tta='none', score_mode='raw', levels='012',
+                     align_corners=False, sigma=4.0, image_score='max', topk_percent=1.0,
+                     margin=0, pos_calib='none')
+    if recipe == 'general':
+        inference.update(pad=112, tta='flips', score_mode='per_level_std',
+                         levels=GENERAL_SCORE_LEVELS[class_index], align_corners=True,
+                         sigma=8.0)
+    elif recipe == 'best_per_class':
+        variants = (
+            (True, None, 0.5, 'reflect', 'flips', 'per_level_std', '02', False, 2.0),
+            (False, None, 1.9, 'replicate', 'flips', 'cflow_original', '012', True, 8.0),
+            (True, None, 1.9, 'replicate', 'hflip', 'per_level_std', '012', False, 4.0),
+            (True, None, 1.9, 'reflect', 'hflip', 'cflow_original', '0', True, 8.0),
+            (True, '0', 0.5, 'reflect', 'flips', 'per_level_std', '02', True, 12.0),
+        )
+        feat_norm, norm_levels, clamp, pad_mode, tta, score, score_levels, align, sigma = variants[class_index]
+        training.update(feat_norm=feat_norm, feat_norm_levels=norm_levels, clamp_scale=clamp)
+        inference.update(pad=112, pad_mode=pad_mode, tta=tta, score_mode=score,
+                         levels=score_levels, align_corners=align, sigma=sigma, image_score='topk')
+        if class_name == 'polymer-insulator-upper-shackle':
+            inference['image_score'] = 'max'
+    return dict(name=recipe, class_name=class_name, training=training, inference=inference,
+                epochs=epochs, eval_interval=eval_interval)
+
+
+def recipe_score_maps(nll_per_level, channels, img_size, recipe, level_stats=None):
+    selected_levels = [int(level) for level in recipe['levels']]
+    maps = CFlowPixelHead.aggregate_nll(
+        nll_per_level, channels, img_size, mode=recipe['score_mode'], levels=selected_levels,
+        level_stats=level_stats, align_corners=recipe['align_corners'])
+    return gaussian_smooth(maps.cpu().numpy(), sigma=recipe['sigma'])
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Backbone / CFLOW definitions now live in core.cflow (see imports above)
@@ -394,10 +450,17 @@ def plot_anomaly_maps(images, masks, score_maps, save_path, n_samples=8):
 
 def main():
     parser = argparse.ArgumentParser(description="Train pixel-level head on pretrained SEDifferNet")
+    parser.add_argument('--recipe', default='custom',
+                        choices=['custom', 'best_per_class', 'general', 'baseline'],
+                        help='Measured per-class winner, general template with class-specific '
+                             'score levels, or raw baseline. custom preserves legacy CLI settings. '
+                             'Presets train all three levels and apply padding/TTA only at final inference.')
+    parser.add_argument('--print_recipe', action='store_true',
+                        help='Print resolved training/inference settings and exit without training.')
     
     # Model
-    parser.add_argument('--checkpoint', type=str,
-                        default=r"C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detection-pesquisa\differnet\final_models\SEDiffernet\lightning-rod-suspension\lightning-rod-suspension_se_differnet_lightning_rod_suspension_100_1_epoch_41.pt")
+    parser.add_argument('--checkpoint', type=str, default=None,
+                        help='SEDifferNet checkpoint; default: discover the checkpoint for --class_name.')
     parser.add_argument('--arch', type=str, default='auto', choices=['auto', 'se', 'cbam'],
                         help="Backbone class of --checkpoint. 'auto' reads it from the file name "
                              "(SE and CBAM checkpoints share identical state-dict keys).")
@@ -495,11 +558,43 @@ def main():
                              'across training seeds so every head is scored on the same holdout.')
     
     args = parser.parse_args()
+    recipe_plan = None
+    provided_flags = {argument.split('=', 1)[0] for argument in sys.argv[1:]
+                      if argument.startswith('--')}
+    if args.recipe != 'custom':
+        try:
+            recipe_plan = resolve_training_recipe(args.class_name, args.recipe)
+        except ValueError as exc:
+            parser.error(str(exc))
+        for key, value in recipe_plan['training'].items():
+            if f'--{key}' in provided_flags and getattr(args, key) != value:
+                parser.error(f'--{key} conflicts with recipe {args.recipe}; use --recipe custom to override it')
+            setattr(args, key, value)
+        for key in ('epochs', 'eval_interval'):
+            if f'--{key}' not in provided_flags:
+                setattr(args, key, recipe_plan[key])
+        if args.arch not in ('auto', 'se'):
+            parser.error('Named recipes require an SE backbone')
+        recipe_plan['epochs'], recipe_plan['eval_interval'] = args.epochs, args.eval_interval
+        print('Epoch selection: raw, all levels, pad 0, sigma 4; recipe applies to final holdout only.')
+        if args.recipe == 'best_per_class' and args.class_name == 'polymer-insulator-upper-shackle':
+            print('WARNING: historical polymer winner has unresolved AUPRO=0; not a certified best localizer.')
+    if args.epochs < 1 or args.eval_interval < 1:
+        parser.error('--epochs and --eval_interval must be positive')
     if args.auroc_only:
         args.eval_aupro = False
-        print('AUROC-only: epoch/final AUPRO and final AP/F1 are disabled; skipped values are NaN.')
     if args.split_seed is None:
         args.split_seed = args.seed
+    if args.print_recipe:
+        print(json.dumps({'recipe': args.recipe, 'resolved': recipe_plan, 'arguments': vars(args)}, indent=2))
+        return
+    if args.checkpoint is None:
+        from core.eval_pipeline import find_se_checkpoint
+        args.checkpoint = find_se_checkpoint(args.class_name)
+        if args.checkpoint is None:
+            parser.error(f'No SEDifferNet checkpoint found for {args.class_name}; provide --checkpoint')
+    if args.auroc_only:
+        print('AUROC-only: epoch/final AUPRO and final AP/F1 are disabled; skipped values are NaN.')
     if not 0 <= args.val_fraction < 1:
         parser.error('--val_fraction must be in [0, 1)')
     if args.val_fraction == 0:
@@ -539,6 +634,8 @@ def main():
     os.makedirs(plots_dir, exist_ok=True)
     os.makedirs(ckpt_dir, exist_ok=True)
     os.makedirs(best_dir, exist_ok=True)
+    with open(os.path.join(run_dir, 'recipe.json'), 'w', encoding='utf-8') as recipe_file:
+        json.dump({'recipe': recipe_plan, 'arguments': vars(args)}, recipe_file, indent=2)
     
     print(f"Run directory: {run_dir}")
     print(f"Device: {DEVICE}")
@@ -549,6 +646,7 @@ def main():
     mlflow.start_run(run_name=f"pixel_{args.class_name}_{run_timestamp}")
     
     mlflow.log_params({
+        'recipe': args.recipe,
         'checkpoint': os.path.basename(args.checkpoint),
         'img_size': args.img_size,
         'out_size': args.out_size,
@@ -705,6 +803,8 @@ def main():
     }
     # Feature statistics travel with every checkpoint (None when --feat_norm is off).
     ckpt_extra = {'feat_stats': feat_stats}
+    if recipe_plan is not None:
+        ckpt_extra['training_recipe'] = recipe_plan
     ckpt_extra.update({
         'selection_split_seed': args.split_seed,
         'selection_train_seed': args.seed,
@@ -944,6 +1044,33 @@ def main():
     cflow.load_state_dict(best_ckpt['cflow_state_dict'])
     cflow.eval()
     torch.cuda.empty_cache()
+    inference_recipe = recipe_plan['inference'] if recipe_plan is not None else None
+    inference_backbone, inference_stats = None, None
+    recipe_nll = None
+    if inference_recipe is not None:
+        print('Final inference recipe: ' + json.dumps(inference_recipe))
+        inference_backbone = SEBackboneFeatureExtractor(
+            model, out_size=args.out_size, reflect_pad=inference_recipe['pad'],
+            attention=args.attention, pad_mode=inference_recipe['pad_mode'],
+            feat_pool=args.feat_pool).to(DEVICE).eval()
+        if inference_recipe['score_mode'] == 'per_level_std':
+            stats_set = copy(trainset)
+            stats_set.transform = testset.transform
+            stats_set.n_transforms = 1
+            stats_set.get_fixed = False
+            stats_loader = DataLoader(stats_set, batch_size=1, shuffle=False, pin_memory=True)
+            position_stats = compute_positional_stats(
+                inference_backbone, cflow, stats_loader, DEVICE, levels=levels, feat_stats=feat_stats)
+            inference_stats = []
+            for mean_map, std_map in position_stats:
+                mean = float(mean_map.mean())
+                variance = max(float((std_map ** 2 + mean_map ** 2).mean()) - mean ** 2, 0.0)
+                inference_stats.append((mean, math.sqrt(variance)))
+        ckpt_extra.update(inference_recipe=inference_recipe, inference_level_stats=inference_stats)
+        save_cflow_checkpoint(
+            os.path.join(best_dir, 'best_pixel_auroc.pt'), cflow, cflow_hparams,
+            extra={key: value for key, value in best_ckpt.items()
+                   if key not in ('cflow_state_dict', 'cflow_hparams')} | ckpt_extra)
     # Full evaluation with all metrics
     all_cflow_maps = []
     all_patchcore_maps = []
@@ -966,12 +1093,24 @@ def main():
             images_dev = images.to(DEVICE)
             if images_dev.dim() == 5:
                 images_dev = images_dev[:, 0]
-            concat, feats = extract(images_dev)
-            
-            # CFLOW score map
-            cflow_map = t2np(cflow.score_map(feats, args.img_size, mode=args.score_norm))
-            cflow_map = gaussian_smooth(cflow_map, sigma=args.sigma)
-            all_cflow_maps.append(cflow_map)
+            if inference_recipe is None:
+                concat, feats = extract(images_dev)
+                cflow_map = t2np(cflow.score_map(feats, args.img_size, mode=args.score_norm))
+                cflow_map = gaussian_smooth(cflow_map, sigma=args.sigma)
+                all_cflow_maps.append(cflow_map)
+            else:
+                batch_nll = nll_with_tta(
+                    inference_backbone, cflow, images_dev, levels=levels, feat_stats=feat_stats,
+                    tta=inference_recipe['tta'])
+                batch_nll = [level_map.float().cpu() for level_map in batch_nll]
+                if inference_recipe['score_mode'] == 'cflow_original':
+                    if recipe_nll is None:
+                        recipe_nll = [[] for _ in batch_nll]
+                    for accumulator, level_map in zip(recipe_nll, batch_nll):
+                        accumulator.append(level_map)
+                else:
+                    all_cflow_maps.append(recipe_score_maps(
+                        batch_nll, head_channels, args.img_size, inference_recipe, inference_stats))
             
             # PatchCore score map
             if not args.disable_patchcore:
@@ -986,8 +1125,9 @@ def main():
                 all_images_for_viz.extend([images_dev[i] for i in range(images_dev.shape[0])])
             
             # Image-level scores
-            cflow_img = cflow_map.reshape(cflow_map.shape[0], -1).max(axis=1)
-            all_image_scores_cflow.extend(cflow_img.tolist())
+            if inference_recipe is None:
+                cflow_img = cflow_map.reshape(cflow_map.shape[0], -1).max(axis=1)
+                all_image_scores_cflow.extend(cflow_img.tolist())
             
             if not args.disable_patchcore:
                 pc_img = pc_map.reshape(pc_map.shape[0], -1).max(axis=1)
@@ -996,7 +1136,16 @@ def main():
             all_image_labels.extend([1 if l > 0 else 0 for l in labels.numpy()])
     
     # Concatenate
-    cflow_maps = np.concatenate(all_cflow_maps, axis=0)
+    if recipe_nll is not None:
+        cflow_maps = recipe_score_maps(
+            [torch.cat(accumulator, dim=0) for accumulator in recipe_nll],
+            head_channels, args.img_size, inference_recipe, inference_stats)
+    else:
+        cflow_maps = np.concatenate(all_cflow_maps, axis=0)
+    if inference_recipe is not None:
+        all_image_scores_cflow = image_score_from_map(
+            cflow_maps, mode=inference_recipe['image_score'],
+            top_percent=inference_recipe['topk_percent']).tolist()
     gt_masks = np.concatenate(all_masks, axis=0)
     image_labels = np.array(all_image_labels)
     
@@ -1197,11 +1346,11 @@ def main():
     # ─── Save results CSV ────────────────────────────────────────────────────
     csv_path = os.path.join(run_dir, "final_results.csv")
     with open(csv_path, 'w') as f:
-        f.write("method,pixel_auroc,pixel_ap,pixel_f1,aupro,image_auroc,image_ap,image_f1,auroc_only\n")
+        f.write("method,pixel_auroc,pixel_ap,pixel_f1,aupro,image_auroc,image_ap,image_f1,auroc_only,recipe\n")
         for r in results_table:
             f.write(f"{r['method']},{r['pixel_auroc']:.6f},{r['pixel_ap']:.6f},"
                     f"{r['pixel_f1']:.6f},{r['aupro']:.6f},{r['image_auroc']:.6f},"
-                    f"{r['image_ap']:.6f},{r['image_f1']:.6f},{args.auroc_only}\n")
+                    f"{r['image_ap']:.6f},{r['image_f1']:.6f},{args.auroc_only},{args.recipe}\n")
     mlflow.log_artifact(csv_path)
     
     # ─── Save best models as MLflow artifacts ────────────────────────────────

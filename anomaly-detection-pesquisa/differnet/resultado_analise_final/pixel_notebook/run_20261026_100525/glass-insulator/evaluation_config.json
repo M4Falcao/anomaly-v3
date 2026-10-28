@@ -1,0 +1,41 @@
+{
+  "dataset": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-detection-dataset\\insplad-seg\\insplad-seg",
+  "head": "c:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\treino_nf_heads\\run_20261025_181523\\glass-insulator\\best_models\\best_pixel_auroc.pt",
+  "encoder": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\final_models\\SEDiffernet\\glass-insulator\\glass-insulator_se_differnet_glass_insulator_200_1_epoch_170.pt",
+  "head_sha256": "83b3750a91d3c900b543444477cb5aeabc97f592eb29223343ee1fc0d184ea07",
+  "encoder_sha256": "e056bfe8f6a2907b22d6bf2d730a0110fa3652532fc0499447b790e10967a10a",
+  "recipe": {
+    "pad": 112,
+    "pad_mode": "reflect",
+    "tta": "flips",
+    "score_mode": "per_level_std",
+    "levels": "02",
+    "align_corners": true,
+    "sigma": 8.0,
+    "image_score": "max",
+    "topk_percent": 1.0,
+    "margin": 0,
+    "pos_calib": "none"
+  },
+  "level_stats": [
+    [
+      -55.03367233276367,
+      16.46679267897979
+    ],
+    [
+      -159.86181640625,
+      35.790684441547334
+    ],
+    [
+      -263.518798828125,
+      13.302919385690727
+    ]
+  ],
+  "metric_backend": "histogram",
+  "n_bins": 65536,
+  "bootstrap": 200,
+  "stride": 1,
+  "margin": 0,
+  "cohort": "complete_test",
+  "warning": "descriptive evaluation; validation reused; no independent holdout"
+}

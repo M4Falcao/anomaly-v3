@@ -1,0 +1,36 @@
+classes=None
+dataset=C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg
+recipe=general
+checkpoint_dir=.\final_models\SEDiffernet
+epochs=None
+eval_interval=None
+patience=0
+levels=None
+score_norm=raw
+clamp_scale=None
+feat_norm=False
+feat_norm_levels=None
+feat_pool=0
+reflect_pad=0
+pad_mode=reflect
+no_rotation=False
+attention=se
+lr=0.0002
+disable_patchcore=True
+seed=42
+split_seed=42
+auroc_only=False
+val_fraction=0.4
+out_dir=None
+skip_existing=False
+dry_run=False
+evaluate_after=none
+export_to_final_models=False
+timestamp=20261025_181523
+device=cuda
+
+  CSV: C:\Users\teo-s\Do.\scripts\train\run_train_all_nf_heads.ps1 `pesquisa\differnet\r
+>>   -Recipe general `\treino_nf_heads\run_20261025_181523\training_summary.csv
+>>   -CheckpointDir '.\final_models\SEDiffernet' `anomaly-detection-pesquisa\differnet\r
+>>   -DatasetRoot 'C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg' `ideffernet) PS C:\Users\teo-s\Documents\GitHub\anomaly-v3\anomaly-detecti
+>> pesquisa\differnet> 

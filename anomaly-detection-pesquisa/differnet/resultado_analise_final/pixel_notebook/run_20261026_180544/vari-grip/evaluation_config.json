@@ -1,0 +1,41 @@
+{
+  "dataset": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-detection-dataset\\insplad-seg-no-back-treino",
+  "head": "c:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\treino_nf_heads\\run_20261026_102309\\vari-grip\\best_models\\best_pixel_auroc.pt",
+  "encoder": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\final_models\\SEDiffernet_noBg\\vari-grip_no_bg_best.pt",
+  "head_sha256": "14b2ee3a5b5b8344341aadb34cb650bf0354020a7c24369cb3e5439c75fc021f",
+  "encoder_sha256": "e4d78d6b85afd9aff03105adc376fa44a1cf655d28ad1955efb3f7eb15acd7c0",
+  "recipe": {
+    "pad": 112,
+    "pad_mode": "reflect",
+    "tta": "flips",
+    "score_mode": "per_level_std",
+    "levels": "0",
+    "align_corners": true,
+    "sigma": 8.0,
+    "image_score": "max",
+    "topk_percent": 1.0,
+    "margin": 0,
+    "pos_calib": "none"
+  },
+  "level_stats": [
+    [
+      -53.786800384521484,
+      31.270003393158426
+    ],
+    [
+      -133.5564727783203,
+      96.03946446781023
+    ],
+    [
+      -252.44384765625,
+      25.17179782033936
+    ]
+  ],
+  "metric_backend": "histogram",
+  "n_bins": 65536,
+  "bootstrap": 200,
+  "stride": 1,
+  "margin": 0,
+  "cohort": "complete_test",
+  "warning": "descriptive evaluation; validation reused; no independent holdout"
+}

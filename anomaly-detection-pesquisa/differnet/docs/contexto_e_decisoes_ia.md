@@ -1,7 +1,7 @@
 # Contexto do Projeto e Registro de Decisões para IAs
 
 **Escopo:** pesquisa de localização de anomalias por pixel usando uma NF head local sobre features do SEDifferNet, no INSPLAD-seg.  
-**Atualizado:** 2026-10-10.  
+**Atualizado:** 2026-10-26.
 **Instrução:** leia este documento antes de propor ou executar qualquer decisão experimental ou metodológica. Registre neste mesmo arquivo as decisões novas que alterem o protocolo ou a interpretação.
 
 ## 1. Para que existe este documento
@@ -279,6 +279,41 @@ Use este formato para cada item:
 - Riscos/limites: uma seed; holdout já inspecionado; AUPRO ausente em vari/yoke; 14 AUPRO = 0 interpretados como provável colapso da grade linear de limiares, sem verificação; receitas fixas por classe e template medidos só na validação; com n = 5 classes, Wilcoxon não alcança p < 0,05.
 - Verificação que poderia refutar: protocolo confirmatório da seção 9 do documento (validação cruzada aninhada ou split novo, 3 seeds, AUPRO por quantis, receitas fixas no holdout, baselines externos no mesmo split).
 - Resultado da verificação / próxima revisão: pendente; nenhuma rodada nova foi iniciada.
+
+#### D-17 — Presets executáveis no treinador da pixel head
+- Data / responsável: 2026-10-25 / solicitação explícita do usuário, implementação por GitHub Copilot.
+- Estado: aceita como opção de execução; superioridade de desempenho dos presets continua provisória.
+- Decisão: adicionar `--recipe best_per_class`, `--recipe general` e `--recipe baseline` em `scripts/train/pixel_train_from_pretrained.py`. Sem opção, `custom` preserva os controles manuais. `--print_recipe` consulta as configurações sem carregar modelo ou iniciar treino. Checkpoint SEDifferNet omitido é descoberto pela classe, não fixado em lightning.
+- Por quê: permitir executar as receitas do relatório sem misturar parâmetros de treino com inferência. Todos os presets treinam 012, sem padding, com seleção de época por raw/σ4; níveis, pad, TTA, score e sigma da receita são aplicados somente na avaliação final do melhor checkpoint. Remover flows do treino seria uma nova ablação, não reprodução do resultado de inferência por subconjunto.
+- Evidência: Tabela G e template da seção 3.6 da análise científica. `best_per_class` usa featnorm em glass, clamp19 em lightning, featnorm_clamp19 em polymer/vari e normalização só L1 em yoke; herda os critérios históricos mistos, não um novo ranking de holdout. Em polymer mantém o vencedor histórico com alerta de AUPRO zero não resolvido.
+- Alternativas consideradas e motivo para não escolhê-las: aplicar pad/TTA no treino (não foi o regime vencedor); treinar apenas os níveis de score (muda o modelo e sua aleatoriedade); calcular cflow_original por minibatch (muda a coorte e o score). O preset baseline usa head sem normalização, clamp 0.5, score raw, todos os níveis, pad 0, sem TTA e σ4; não é a referência legada min-max nem baseline_cflow_original.
+- Riscos/limites: general é template candidato, não desempenho confirmado no holdout; nova inicialização/dataset não garante os números históricos. Campos fixos de presets rejeitam flags conflitantes; épocas e intervalo de avaliação podem ser explicitamente ajustados e são registrados. Presets desligam PatchCore. `--auroc_only` continua explícito, inclusive para executar a política D-14; seed/split permanecem 42 por padrão. O dataset padrão da configuração difere do usado nas ablações, por isso fornecê-lo explicitamente para comparações.
+- Verificação que poderia refutar: testar as 15 combinações classe/preset, a CLI e conflitos; comparar numericamente agregação/smoothing com as funções compartilhadas; verificar coorte completa para cflow_original, estatísticas só do treino normal e round-trip dos metadados. Depois, avaliar checkpoints efetivamente treinados no mesmo protocolo antes de alegar reprodução de métricas.
+- Resultado da verificação / próxima revisão: resolver/parser das 15 combinações e agregação numérica passaram; caminho final sintético passou nos três modos; CLI real de consulta passou. A receita é salva em recipe.json, checkpoints e identificada em final_results.csv; o melhor checkpoint recebe também inference_recipe/inference_level_stats. A política de escolha de época e os arquivos históricos não foram alterados; não foi iniciado treino real. Avaliadores externos ainda precisam receber a receita explicitamente: não assumir que seus defaults leem automaticamente esses novos metadados.
+
+Uso a partir de `differnet/`, com o ambiente Conda da pesquisa ativado:
+
+```powershell
+python scripts/train/pixel_train_from_pretrained.py `
+	--class_name vari-grip --recipe general `
+	--dataset 'C:\Users\teo-s\Documents\GitHub\anomaly-detection-dataset\insplad-seg\insplad-seg' `
+	--auroc_only --print_recipe
+```
+
+Remover `--print_recipe` inicia o treino. Trocar `general` por `best_per_class` ou `baseline` seleciona os outros modos. O preset general usa baseline no treino e inferência pad112 reflect, flips, per_level_std, up=True, σ8, max, sem calibração e margem 0; só os níveis de inferência mudam por classe: glass 02, lightning 012, polymer 12, vari 0, yoke 012. Orçamentos padrão: 40/40/30/40/12 épocas, com avaliações a cada 5/5/3/5/2, respectivamente.
+
+Execução em lote dos presets (atualização operacional de D-17, 2026-10-25): `scripts/train/train_all_nf_heads.py` e wrapper `scripts/train/run_train_all_nf_heads.ps1` usam general por padrão e também aceitam best_per_class/baseline. Fornecer `--checkpoint_dir` / `-CheckpointDir` com a pasta dos encoders SEDifferNet, não das NF heads. A busca é recursiva, admite .pt/.pth/.ckpt e exige uma correspondência por classe no nome ou caminho; ausência/ambiguidade aborta antes do primeiro treino. As cinco classes são executadas em sequência. `--dry_run` / `-DryRun` apenas imprime o plano. `--auroc_only` / `-AurocOnly` propaga D-14 explicitamente. Validação escolhe a época; métricas finais vêm da linha CFLOW do final_results.csv, não do pixel_auroc de validação do checkpoint. Ao terminar, training_summary.csv e training_summary.md reúnem status, receita, época, duração, validação, holdout e média macro das classes concluídas, com contagem do denominador; falhas/métricas ausentes não viram zero. Checkpoints são centralizados em best_models/<classe>/best_models/. Nenhum treino real foi executado para validar essa automação: passaram dry-runs reais das cinco classes, compatibilidade dos 15 comandos e simulações de lote completo/parcial com conferência de CSV/Markdown/média. A avaliação externa adicional fica desligada nos presets para não aplicar defaults diferentes de receita ou encoder.
+
+#### D-18 — Notebook descritivo para avaliação do teste completo
+- Data / responsável: 2026-10-26 / solicitação explícita do usuário, implementação por GitHub Copilot.
+- Estado: aceita como ferramenta de avaliação; não converte o teste reutilizado em holdout independente.
+- Decisão: usar [avaliacao_completa_pixel_heads.ipynb](../avaliacao_completa_pixel_heads.ipynb) para ler a receita e as estatísticas do checkpoint e avaliar todas as imagens/pixels do teste, stride 1 e margem 0. AUPRO global, AP, F1, IoU/Dice e métricas por imagem voltam a ser calculados nesta avaliação solicitada; isso não muda a política de treino D-14.
+- Por quê: os avaliadores antigos têm defaults anteriores aos presets e um AUPRO por imagem não equivalente ao global. A análise completa precisa reproduzir padding/TTA/alinhamento/níveis e distinguir ranking, segmentação em limiar e classificação por imagem.
+- Evidência: checkpoint inference_recipe/inference_level_stats e training_recipe; funções compartilhadas de NLL/agregação e AUPRO global. O preflight confirmou as cinco heads de run_20261025_181523 sem executar inferência real.
+- Alternativas consideradas e motivo para não escolhê-las: aplicar defaults antigos silenciosamente (muda a função); manter todos os mapas em RAM (risco de paginação); escolher limiar no teste e chamá-lo operacional (otimismo). Mapas grandes usam memmap por classe. O modo padrão histogram percorre todos os pixels, mas aproxima AUROC/AP e limiares com bins; exact usa sklearn para AUROC/AP e pode exigir muita RAM. F1/mIoU/Dice de limiar são contados diretamente nos pixels.
+- Riscos/limites: teste completo inclui imagens de seleção. Limiares vêm da validação registrada quando disponível; na ausência, são declarados oráculos de teste. Scores não são probabilidades calibradas. ICs bootstrap reamostram imagens com bins reduzidos, condicionados à receita/coorte; não cobrem treino/seeds nem têm IC AUPRO. O possível colapso de AUPRO global não é corrigido automaticamente; legacy fica separado e opcional. Latência é observada, sem benchmark padronizado.
+- Verificação que poderia refutar: comparar métricas sintéticas ao sklearn, validar coorte inteira em cflow_original e exportações em pipeline simulado, depois executar no kernel da pesquisa sobre as heads reais e auditar imagens/máscaras/contagens antes de interpretar resultados.
+- Resultado da verificação / próxima revisão: todas as células compilaram; testes sintéticos de AUROC/AP, F1 macro/micro/weighted e mIoU passaram; pipeline simulado raw/std/original gerou figuras, CSV/Excel/JSON/HTML. Importação e descoberta das cinco heads reais passaram; a inferência completa não foi iniciada durante a criação do notebook. Dependências IPython/ipykernel/nbformat foram instaladas no Conda da pesquisa.
 
 ## 12. Fontes técnicas principais
 

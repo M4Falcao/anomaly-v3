@@ -11,7 +11,13 @@
     Lista de classes a treinar separadas por virgula (default: todas as 5).
 
 .PARAMETER Recipe
-    Receita de treino: unified (default), selective_l1, optimal, baseline.
+    Receita: general (default), best_per_class, baseline; receitas historicas tambem disponiveis.
+
+.PARAMETER CheckpointDir
+    Pasta dos checkpoints SEDifferNet, pesquisada recursivamente por classe.
+
+.PARAMETER DatasetRoot
+    Pasta das classes INSPLAD-seg.
 
 .PARAMETER Epochs
     Numero de epocas (se omitido, usa os orcamentos por classe da receita).
@@ -20,7 +26,7 @@
     Apenas exibe os comandos e configuracoes sem executar.
 
 .PARAMETER EvaluateAfter
-    Avaliacao pos-treino: pixel (default), full, none.
+    Avaliacao externa adicional para receitas historicas (default: none).
 
 .PARAMETER ExportToFinalModels
     Copia os melhores modelos gerados para final_models/NF Head/<classe>/best_models/ com backup.
@@ -35,13 +41,18 @@
 [CmdletBinding()]
 param(
     [string] $Classes,
-    [ValidateSet('unified', 'selective_l1', 'optimal', 'baseline')]
-    [string] $Recipe = 'unified',
+    [ValidateSet('general', 'best_per_class', 'baseline', 'unified', 'selective_l1', 'optimal')]
+    [string] $Recipe = 'general',
+    [string] $CheckpointDir,
+    [string] $DatasetRoot,
+    [int] $Seed = 42,
+    [int] $SplitSeed = 42,
+    [switch] $AurocOnly,
     [int]    $Epochs,
     [int]    $EvalInterval,
     [switch] $DryRun,
     [ValidateSet('pixel', 'full', 'none')]
-    [string] $EvaluateAfter = 'pixel',
+    [string] $EvaluateAfter = 'none',
     [switch] $ExportToFinalModels,
     [string] $OutDir
 )
@@ -60,7 +71,17 @@ $repo = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 Push-Location $repo
 try {
     $cmdArgs = @('scripts/train/train_all_nf_heads.py', '--recipe', $Recipe)
+    $cmdArgs += @('--seed', "$Seed", '--split_seed', "$SplitSeed")
 
+    if ($CheckpointDir) {
+        $cmdArgs += @('--checkpoint_dir', $CheckpointDir)
+    }
+    if ($DatasetRoot) {
+        $cmdArgs += @('--dataset', $DatasetRoot)
+    }
+    if ($AurocOnly) {
+        $cmdArgs += '--auroc_only'
+    }
     if ($Classes) {
         $cmdArgs += @('--classes', $Classes)
     }
@@ -85,6 +106,9 @@ try {
 
     Write-Host "Executando: $pythonExe $($cmdArgs -join ' ')"
     & $pythonExe @cmdArgs
+    if ($LASTEXITCODE -ne 0) {
+        throw "Batch training failed (exit code $LASTEXITCODE). Inspect training_summary.csv for class status."
+    }
 } finally {
     Pop-Location
 }
