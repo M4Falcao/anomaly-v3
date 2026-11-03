@@ -1,0 +1,102 @@
+{
+  "class_name": "lightning-rod-suspension",
+  "rule": {
+    "max_gt_lost": 0.05,
+    "max_finalists": 2,
+    "fallback": [
+      "dil64",
+      "bbox20"
+    ],
+    "partition": "val",
+    "tie_break": "menor área train/good"
+  },
+  "finalists": [
+    "dil16"
+  ],
+  "mask_reliable": true,
+  "override": [
+    "dil16"
+  ],
+  "table": [
+    {
+      "strategy": "raw",
+      "val_gt_lost_frac": 0.02632,
+      "train_area_kept": 0.15313,
+      "val_n_lost50": 0,
+      "val_n_lost95": 0,
+      "eligible": true
+    },
+    {
+      "strategy": "dil8",
+      "val_gt_lost_frac": 0.00134,
+      "train_area_kept": 0.20349,
+      "val_n_lost50": 0,
+      "val_n_lost95": 0,
+      "eligible": true
+    },
+    {
+      "strategy": "dil16",
+      "val_gt_lost_frac": 0.0,
+      "train_area_kept": 0.25283,
+      "val_n_lost50": 0,
+      "val_n_lost95": 0,
+      "eligible": true
+    },
+    {
+      "strategy": "dil32",
+      "val_gt_lost_frac": 0.0,
+      "train_area_kept": 0.34554,
+      "val_n_lost50": 0,
+      "val_n_lost95": 0,
+      "eligible": true
+    },
+    {
+      "strategy": "dil64",
+      "val_gt_lost_frac": 0.0,
+      "train_area_kept": 0.52265,
+      "val_n_lost50": 0,
+      "val_n_lost95": 0,
+      "eligible": true
+    },
+    {
+      "strategy": "hull",
+      "val_gt_lost_frac": 0.00208,
+      "train_area_kept": 0.28295,
+      "val_n_lost50": 0,
+      "val_n_lost95": 0,
+      "eligible": true
+    },
+    {
+      "strategy": "hull+dil16",
+      "val_gt_lost_frac": 0.0,
+      "train_area_kept": 0.35952,
+      "val_n_lost50": 0,
+      "val_n_lost95": 0,
+      "eligible": true
+    },
+    {
+      "strategy": "bbox10",
+      "val_gt_lost_frac": 0.0,
+      "train_area_kept": 0.5773,
+      "val_n_lost50": 0,
+      "val_n_lost95": 0,
+      "eligible": true
+    },
+    {
+      "strategy": "bbox20",
+      "val_gt_lost_frac": 0.0,
+      "train_area_kept": 0.81991,
+      "val_n_lost50": 0,
+      "val_n_lost95": 0,
+      "eligible": true
+    }
+  ],
+  "variants": [
+    {
+      "variant": "dil16__imagenet_mean",
+      "role": "candidate",
+      "strategy": "dil16"
+    }
+  ],
+  "created_at": "20261101_125636"
+}

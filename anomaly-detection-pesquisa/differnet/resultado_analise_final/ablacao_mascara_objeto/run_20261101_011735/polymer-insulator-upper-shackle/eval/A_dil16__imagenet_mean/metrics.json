@@ -1,0 +1,47 @@
+{
+  "arm": "A",
+  "variant": "dil16__imagenet_mean",
+  "role": "candidate",
+  "checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\polymer-insulator-upper-shackle\\arm_A\\dil16__imagenet_mean\\nf_head\\run_20261101_212943\\best_models\\best_pixel_auroc.pt",
+  "se_checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\final_models\\SEDiffernet\\polymer-insulator-upper-shackle\\polymer-insulator-upper-shackle_se_differnet_polymer_insulator_upper_shackle_200_1_epoch_146.pt",
+  "dataset_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\data\\masked\\polymer-insulator-upper-shackle_yolo_20261101_212633\\dil16__imagenet_mean",
+  "recipe": {
+    "pad": 112,
+    "pad_mode": "reflect",
+    "tta": "flips",
+    "score_mode": "per_level_std",
+    "levels": "12",
+    "align_corners": true,
+    "sigma": 8.0,
+    "image_score": "max",
+    "topk_percent": 1.0,
+    "margin": 0,
+    "pos_calib": "none"
+  },
+  "stats_source": "checkpoint",
+  "n_images": 317,
+  "contour_threshold": 6.732018403447,
+  "encoder_selection": null,
+  "val": {
+    "pixel_auroc": 0.6507494988895932,
+    "pixel_ap": 0.02487832565319076,
+    "pixel_auroc_in_object": 0.7484876294214254,
+    "lost_gt_auroc": 0.3991685449491948,
+    "gt_lost_frac": 0.5286015083342673,
+    "contour_fpr": 0.006950940879985095,
+    "offcontour_fpr": 0.010254346376312845,
+    "image_auroc": 0.7214700193423598,
+    "aupro": 0.5086586902117942
+  },
+  "holdout": {
+    "pixel_auroc": 0.6737728001338001,
+    "pixel_ap": 0.017740991876456846,
+    "pixel_auroc_in_object": 0.7280311362757818,
+    "lost_gt_auroc": 0.43585802620165004,
+    "gt_lost_frac": 0.5122251940261587,
+    "contour_fpr": 0.008445043684100305,
+    "offcontour_fpr": 0.0067367903365231855,
+    "image_auroc": 0.7028513533072803,
+    "aupro": 0.4522034062547871
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "orig_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-detection-dataset\\insplad-seg\\insplad-seg",
+  "val_fraction": 0.4,
+  "split_seed": 42,
+  "mask_source": "yolo",
+  "created_at": "20261101_011735",
+  "decision": "D-19"
+}

@@ -1,0 +1,234 @@
+{
+  "classes": {
+    "vari-grip": {
+      "convert": {
+        "state": "skipped",
+        "at": "20261101_011735",
+        "reason": "dataset YOLO já existe"
+      },
+      "yolo": {
+        "state": "skipped",
+        "at": "20261101_011735",
+        "reason": "pesos existentes C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\runs\\yolo_seg\\vari-grip_20261030_212613\\weights\\best.pt"
+      },
+      "masks": {
+        "state": "skipped",
+        "at": "20261101_011735",
+        "reason": "máscaras existentes vari-grip_yolo_20261030_215259"
+      },
+      "audit": {
+        "state": "ok",
+        "at": "20261101_011746",
+        "minutes": 0.18,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\vari-grip__audit.txt",
+        "returncode": 0
+      },
+      "select": {
+        "state": "ok",
+        "at": "20261101_011746",
+        "minutes": 0.0,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\vari-grip__select.txt",
+        "returncode": 0
+      },
+      "frozen": {
+        "state": "ok",
+        "at": "20261101_025241",
+        "minutes": 94.92,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\vari-grip__frozen.txt",
+        "returncode": 0
+      },
+      "retrain": {
+        "state": "ok",
+        "at": "20261101_122007",
+        "minutes": 567.43,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\vari-grip__retrain.txt",
+        "returncode": 0
+      },
+      "report": {
+        "state": "ok",
+        "at": "20261101_122701",
+        "minutes": 6.9,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\vari-grip__report.txt",
+        "returncode": 0
+      },
+      "image": {
+        "state": "ok",
+        "at": "20261102_192224",
+        "minutes": 1.43,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\vari-grip__image.txt",
+        "returncode": 0
+      }
+    },
+    "lightning-rod-suspension": {
+      "convert": {
+        "state": "skipped",
+        "at": "20261101_123600",
+        "reason": "dataset YOLO já existe"
+      },
+      "yolo": {
+        "state": "ok",
+        "at": "20261101_125539",
+        "minutes": 19.65,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\lightning-rod-suspension__yolo.txt",
+        "returncode": 0
+      },
+      "masks": {
+        "state": "ok",
+        "at": "20261101_125611",
+        "minutes": 0.53,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\lightning-rod-suspension__masks.txt",
+        "returncode": 0
+      },
+      "audit": {
+        "state": "ok",
+        "at": "20261101_125636",
+        "minutes": 0.42,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\lightning-rod-suspension__audit.txt",
+        "returncode": 0
+      },
+      "select": {
+        "state": "ok",
+        "at": "20261101_125636",
+        "minutes": 0.0,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\lightning-rod-suspension__select.txt",
+        "returncode": 0
+      },
+      "frozen": {
+        "state": "ok",
+        "at": "20261101_140407",
+        "minutes": 67.5,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\lightning-rod-suspension__frozen.txt",
+        "returncode": 0
+      },
+      "retrain": {
+        "state": "ok",
+        "at": "20261101_202546",
+        "minutes": 381.66,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\lightning-rod-suspension__retrain.txt",
+        "returncode": 0
+      },
+      "report": {
+        "state": "ok",
+        "at": "20261101_203329",
+        "minutes": 7.72,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\lightning-rod-suspension__report.txt",
+        "returncode": 0
+      },
+      "image": {
+        "state": "ok",
+        "at": "20261102_192337",
+        "minutes": 1.22,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\lightning-rod-suspension__image.txt",
+        "returncode": 0
+      }
+    },
+    "polymer-insulator-upper-shackle": {
+      "convert": {
+        "state": "skipped",
+        "at": "20261101_204436",
+        "reason": "dataset YOLO já existe"
+      },
+      "yolo": {
+        "state": "ok",
+        "at": "20261101_212631",
+        "minutes": 41.91,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\polymer-insulator-upper-shackle__yolo.txt",
+        "returncode": 0
+      },
+      "masks": {
+        "state": "ok",
+        "at": "20261101_212753",
+        "minutes": 1.36,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\polymer-insulator-upper-shackle__masks.txt",
+        "returncode": 0
+      },
+      "audit": {
+        "state": "ok",
+        "at": "20261101_212849",
+        "minutes": 0.93,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\polymer-insulator-upper-shackle__audit.txt",
+        "returncode": 0
+      },
+      "select": {
+        "state": "ok",
+        "at": "20261101_212849",
+        "minutes": 0.0,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\polymer-insulator-upper-shackle__select.txt",
+        "returncode": 0
+      },
+      "frozen": {
+        "state": "ok",
+        "at": "20261101_232305",
+        "minutes": 114.27,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\polymer-insulator-upper-shackle__frozen.txt",
+        "returncode": 0
+      },
+      "retrain": {
+        "state": "ok",
+        "at": "20261102_152437",
+        "minutes": 961.53,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\polymer-insulator-upper-shackle__retrain.txt",
+        "returncode": 0
+      },
+      "report": {
+        "state": "ok",
+        "at": "20261102_153348",
+        "minutes": 9.19,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\polymer-insulator-upper-shackle__report.txt",
+        "returncode": 0
+      },
+      "image": {
+        "state": "ok",
+        "at": "20261102_192731",
+        "minutes": 3.91,
+        "log": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\logs\\polymer-insulator-upper-shackle__image.txt",
+        "returncode": 0
+      }
+    }
+  },
+  "config": {
+    "orig_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-detection-dataset\\insplad-seg\\insplad-seg",
+    "nobg_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-detection-dataset\\insplad-seg-no-back-treino",
+    "bg_encoder_dir": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\final_models\\SEDiffernet",
+    "nobg_encoder_dir": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\final_models\\SEDiffernet_noBg",
+    "reference_head_run": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\treino_nf_heads\\run_20261025_181523",
+    "output_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto",
+    "data_dir": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\data",
+    "yolo_runs_dir": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\runs",
+    "masks_dir": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\masks",
+    "python": "C:\\Users\\teo-s\\.conda\\envs\\anomaly_attentideffernet\\python.exe",
+    "classes": [
+      "vari-grip",
+      "lightning-rod-suspension",
+      "polymer-insulator-upper-shackle"
+    ],
+    "stages": [
+      "image"
+    ],
+    "force": [],
+    "yolo_model": "yolo26s-seg.pt",
+    "yolo_epochs": 100,
+    "yolo_batch": 8,
+    "yolo_imgsz": 640,
+    "yolo_patience": 20,
+    "mask_conf": 0.1,
+    "audit_strategies": "raw,dil8,dil16,dil32,dil64,hull,hull+dil16,bbox10,bbox20",
+    "force_strategies": "dil16",
+    "fills": "imagenet_mean",
+    "feathers": "0",
+    "include_reference_nobg": false,
+    "recipe": "general",
+    "seed": 42,
+    "val_fraction": 0.4,
+    "split_seed": 42,
+    "arm_b_variants": "",
+    "arm_b_encoder_pick": "best_test",
+    "arm_b_pre_epochs": null,
+    "arm_b_meta_epochs": null,
+    "n_boot": 1000,
+    "encoder_views": 64,
+    "image_cross": true,
+    "image_on_masked": true,
+    "html_mask_previews": 4
+  }
+}

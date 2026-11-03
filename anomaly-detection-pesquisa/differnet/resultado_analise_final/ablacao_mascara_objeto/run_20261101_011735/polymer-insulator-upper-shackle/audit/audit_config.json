@@ -1,0 +1,57 @@
+{
+  "class_name": "polymer-insulator-upper-shackle",
+  "masks_dir": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\masks\\polymer-insulator-upper-shackle_yolo_20261101_212633",
+  "orig_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-detection-dataset\\insplad-seg\\insplad-seg",
+  "strategies": [
+    "raw",
+    "dil8",
+    "dil16",
+    "dil32",
+    "dil64",
+    "hull",
+    "hull+dil16",
+    "bbox10",
+    "bbox20"
+  ],
+  "train_sample": 300,
+  "limit": null,
+  "mask_manifest": {
+    "class_name": "polymer-insulator-upper-shackle",
+    "source": "yolo",
+    "weights": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\runs\\yolo_seg\\polymer-insulator-upper-shackle_20261101_204438\\weights\\best.pt",
+    "weights_sha256": "61ed41001a6be3c93a1cbcbc86577c31a9e02953ef95c4207a696d2aab86ef5d",
+    "nobg_root": null,
+    "ultralytics_version": "8.4.194",
+    "orig_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-detection-dataset\\insplad-seg\\insplad-seg",
+    "splits": [
+      "train",
+      "test"
+    ],
+    "conf": 0.1,
+    "iou": 0.5,
+    "imgsz": 640,
+    "retina_masks": true,
+    "union_of_instances": true,
+    "no_detection_policy": "full",
+    "limit": null,
+    "counts": {
+      "train/good": {
+        "n": 935,
+        "no_detection": 11,
+        "multi_instance": 75
+      },
+      "test/good": {
+        "n": 235,
+        "no_detection": 4,
+        "multi_instance": 25
+      },
+      "test/rust": {
+        "n": 82,
+        "no_detection": 11,
+        "multi_instance": 4
+      }
+    },
+    "created_at": "20261101_212752"
+  },
+  "created_at": "20261101_212845"
+}

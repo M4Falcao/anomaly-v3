@@ -236,3 +236,19 @@ differnet_glass_insulator_200_1
 *.tmp
 *.zip
 *.jpg
+*.npy
+*.npz
+# MLflow local artifacts and database sidecars
+mlartifacts/
+mlflow.db
+mlflow.db-shm
+mlflow.db-wal
+
+# Background-removal ablation: generated artifacts, for every run.
+# Keep source code, configs, audits and summary tables available for versioning.
+/anomaly-detection-pesquisa/differnet/resultado_analise_final/ablacao_mascara_objeto/run_*/logs/
+/anomaly-detection-pesquisa/differnet/resultado_analise_final/ablacao_mascara_objeto/run_*/pipeline_log.txt
+/anomaly-detection-pesquisa/differnet/resultado_analise_final/ablacao_mascara_objeto/run_*/*/arm_A/
+/anomaly-detection-pesquisa/differnet/resultado_analise_final/ablacao_mascara_objeto/run_*/*/arm_B/
+/anomaly-detection-pesquisa/differnet/resultado_analise_final/ablacao_mascara_objeto/run_*/image_level/cache/
+/anomaly-detection-pesquisa/differnet/resultado_analise_final/ablacao_mascara_objeto/run_*/*/eval*/encoder_scores/

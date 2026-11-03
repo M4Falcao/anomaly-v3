@@ -1,0 +1,7 @@
+data/*
+runs/*
+masks/*
+!data/.gitkeep
+!runs/.gitkeep
+!masks/.gitkeep
+*.pt

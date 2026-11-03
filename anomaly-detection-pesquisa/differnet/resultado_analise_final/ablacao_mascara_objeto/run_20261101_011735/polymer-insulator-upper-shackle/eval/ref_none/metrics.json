@@ -1,0 +1,47 @@
+{
+  "arm": "ref",
+  "variant": "none",
+  "role": "reference_bg",
+  "checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\treino_nf_heads\\run_20261025_181523\\polymer-insulator-upper-shackle\\best_models\\best_pixel_auroc.pt",
+  "se_checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\final_models\\SEDiffernet\\polymer-insulator-upper-shackle\\polymer-insulator-upper-shackle_se_differnet_polymer_insulator_upper_shackle_200_1_epoch_146.pt",
+  "dataset_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-detection-dataset\\insplad-seg\\insplad-seg",
+  "recipe": {
+    "pad": 112,
+    "pad_mode": "reflect",
+    "tta": "flips",
+    "score_mode": "per_level_std",
+    "levels": "12",
+    "align_corners": true,
+    "sigma": 8.0,
+    "image_score": "max",
+    "topk_percent": 1.0,
+    "margin": 0,
+    "pos_calib": "none"
+  },
+  "stats_source": "checkpoint",
+  "n_images": 317,
+  "contour_threshold": 4.794410201197024,
+  "encoder_selection": null,
+  "val": {
+    "pixel_auroc": 0.8755636174176438,
+    "pixel_ap": 0.041074467838499815,
+    "pixel_auroc_in_object": 0.7929543853962384,
+    "lost_gt_auroc": NaN,
+    "gt_lost_frac": 0.0,
+    "contour_fpr": 0.023983844063824332,
+    "offcontour_fpr": 0.008761911826286684,
+    "image_auroc": 0.61605415860735,
+    "aupro": 0.6393446533232231
+  },
+  "holdout": {
+    "pixel_auroc": 0.8598254599656536,
+    "pixel_ap": 0.02613859719034121,
+    "pixel_auroc_in_object": 0.7439362896836602,
+    "lost_gt_auroc": NaN,
+    "gt_lost_frac": 0.0,
+    "contour_fpr": 0.01935607963693464,
+    "offcontour_fpr": 0.008922736542249756,
+    "image_auroc": 0.5404544796642061,
+    "aupro": 0.616073139043056
+  }
+}

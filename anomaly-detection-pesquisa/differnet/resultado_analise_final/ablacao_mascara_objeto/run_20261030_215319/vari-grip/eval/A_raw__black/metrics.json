@@ -1,0 +1,47 @@
+{
+  "arm": "A",
+  "variant": "raw__black",
+  "role": "reference_nobg",
+  "checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261030_215319\\vari-grip\\arm_A\\raw__black\\nf_head\\run_20261031_025822\\best_models\\best_pixel_auroc.pt",
+  "se_checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\final_models\\SEDiffernet\\vari-grip\\vari-grip_se_differnet_vari_grip_200_1_epoch_163.pt",
+  "dataset_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\data\\masked\\vari-grip_yolo_20261030_215259\\raw__black",
+  "recipe": {
+    "pad": 112,
+    "pad_mode": "reflect",
+    "tta": "flips",
+    "score_mode": "per_level_std",
+    "levels": "0",
+    "align_corners": true,
+    "sigma": 8.0,
+    "image_score": "max",
+    "topk_percent": 1.0,
+    "margin": 0,
+    "pos_calib": "none"
+  },
+  "stats_source": "checkpoint",
+  "n_images": 154,
+  "contour_threshold": 2.30654968322051,
+  "encoder_selection": null,
+  "val": {
+    "pixel_auroc": 0.9010496613936313,
+    "pixel_ap": 0.08069455573702004,
+    "pixel_auroc_in_object": 0.7802500338309136,
+    "lost_gt_auroc": 0.7119883696586978,
+    "gt_lost_frac": 0.0633799178528067,
+    "contour_fpr": 0.04499748489667752,
+    "offcontour_fpr": 0.005580908369960317,
+    "image_auroc": 0.5163043478260869,
+    "aupro": 0.718243300538262
+  },
+  "holdout": {
+    "pixel_auroc": 0.8993163354659618,
+    "pixel_ap": 0.0766029348406012,
+    "pixel_auroc_in_object": 0.8109257886980593,
+    "lost_gt_auroc": 0.6325830909511042,
+    "gt_lost_frac": 0.09234780054343834,
+    "contour_fpr": 0.0443442796717108,
+    "offcontour_fpr": 0.005617766841619514,
+    "image_auroc": 0.5729166666666666,
+    "aupro": 0.7268507872501915
+  }
+}

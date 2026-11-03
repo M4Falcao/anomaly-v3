@@ -1,0 +1,57 @@
+{
+  "class_name": "lightning-rod-suspension",
+  "masks_dir": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\masks\\lightning-rod-suspension_yolo_20261101_125539",
+  "orig_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-detection-dataset\\insplad-seg\\insplad-seg",
+  "strategies": [
+    "raw",
+    "dil8",
+    "dil16",
+    "dil32",
+    "dil64",
+    "hull",
+    "hull+dil16",
+    "bbox10",
+    "bbox20"
+  ],
+  "train_sample": 300,
+  "limit": null,
+  "mask_manifest": {
+    "class_name": "lightning-rod-suspension",
+    "source": "yolo",
+    "weights": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\runs\\yolo_seg\\lightning-rod-suspension_20261101_123600\\weights\\best.pt",
+    "weights_sha256": "6db336381e69eea08f0c262a8e1fe346d266d697bf5b409d32808e5565923264",
+    "nobg_root": null,
+    "ultralytics_version": "8.4.194",
+    "orig_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-detection-dataset\\insplad-seg\\insplad-seg",
+    "splits": [
+      "train",
+      "test"
+    ],
+    "conf": 0.1,
+    "iou": 0.5,
+    "imgsz": 640,
+    "retina_masks": true,
+    "union_of_instances": true,
+    "no_detection_policy": "full",
+    "limit": null,
+    "counts": {
+      "train/good": {
+        "n": 462,
+        "no_detection": 0,
+        "multi_instance": 125
+      },
+      "test/good": {
+        "n": 117,
+        "no_detection": 0,
+        "multi_instance": 31
+      },
+      "test/rust": {
+        "n": 46,
+        "no_detection": 0,
+        "multi_instance": 22
+      }
+    },
+    "created_at": "20261101_125610"
+  },
+  "created_at": "20261101_125634"
+}

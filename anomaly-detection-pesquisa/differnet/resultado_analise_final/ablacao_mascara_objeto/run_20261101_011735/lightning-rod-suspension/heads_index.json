@@ -1,0 +1,40 @@
+{
+  "heads": [
+    {
+      "arm": "A",
+      "variant": "dil16__imagenet_mean",
+      "role": "candidate",
+      "dataset_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\data\\masked\\lightning-rod-suspension_yolo_20261101_125539\\dil16__imagenet_mean",
+      "se_checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\final_models\\SEDiffernet\\lightning-rod-suspension\\lightning-rod-suspension_se_differnet_lightning_rod_suspension_100_1_epoch_41.pt",
+      "head_run": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\lightning-rod-suspension\\arm_A\\dil16__imagenet_mean\\nf_head\\run_20261101_125702",
+      "checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\lightning-rod-suspension\\arm_A\\dil16__imagenet_mean\\nf_head\\run_20261101_125702\\best_models\\best_pixel_auroc.pt",
+      "status": "SUCCESS",
+      "returncode": 0,
+      "minutes": 67.2,
+      "split_check": "ok",
+      "recipe": "general",
+      "seed": 42,
+      "split_seed": 42
+    },
+    {
+      "arm": "B",
+      "variant": "dil16__imagenet_mean",
+      "role": "candidate",
+      "dataset_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\data\\masked\\lightning-rod-suspension_yolo_20261101_125539\\dil16__imagenet_mean",
+      "se_checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\lightning-rod-suspension\\arm_B\\dil16__imagenet_mean\\encoder\\run_20261101_140421_lightning-rod-suspension\\best_models\\best_img_auroc.pt",
+      "head_run": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\lightning-rod-suspension\\arm_B\\dil16__imagenet_mean\\nf_head\\run_20261101_195114",
+      "checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\lightning-rod-suspension\\arm_B\\dil16__imagenet_mean\\nf_head\\run_20261101_195114\\best_models\\best_pixel_auroc.pt",
+      "status": "SUCCESS",
+      "returncode": 0,
+      "minutes": 34.92,
+      "split_check": "ok",
+      "recipe": "general",
+      "seed": 42,
+      "split_seed": 42,
+      "encoder_selection": "test_full",
+      "encoder_pre_epochs": null,
+      "encoder_meta_epochs": null
+    }
+  ],
+  "updated_at": "20261101_202546"
+}

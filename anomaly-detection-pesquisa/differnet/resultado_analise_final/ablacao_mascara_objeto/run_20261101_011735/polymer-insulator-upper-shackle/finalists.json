@@ -1,0 +1,102 @@
+{
+  "class_name": "polymer-insulator-upper-shackle",
+  "rule": {
+    "max_gt_lost": 0.05,
+    "max_finalists": 2,
+    "fallback": [
+      "dil64",
+      "bbox20"
+    ],
+    "partition": "val",
+    "tie_break": "menor área train/good"
+  },
+  "finalists": [
+    "dil16"
+  ],
+  "mask_reliable": false,
+  "override": [
+    "dil16"
+  ],
+  "table": [
+    {
+      "strategy": "raw",
+      "val_gt_lost_frac": 0.58446,
+      "train_area_kept": 0.11077,
+      "val_n_lost50": 20,
+      "val_n_lost95": 11,
+      "eligible": false
+    },
+    {
+      "strategy": "dil8",
+      "val_gt_lost_frac": 0.55303,
+      "train_area_kept": 0.15285,
+      "val_n_lost50": 19,
+      "val_n_lost95": 9,
+      "eligible": false
+    },
+    {
+      "strategy": "dil16",
+      "val_gt_lost_frac": 0.52817,
+      "train_area_kept": 0.19392,
+      "val_n_lost50": 19,
+      "val_n_lost95": 6,
+      "eligible": false
+    },
+    {
+      "strategy": "dil32",
+      "val_gt_lost_frac": 0.47285,
+      "train_area_kept": 0.27316,
+      "val_n_lost50": 16,
+      "val_n_lost95": 4,
+      "eligible": false
+    },
+    {
+      "strategy": "dil64",
+      "val_gt_lost_frac": 0.34252,
+      "train_area_kept": 0.42572,
+      "val_n_lost50": 11,
+      "val_n_lost95": 4,
+      "eligible": false
+    },
+    {
+      "strategy": "hull",
+      "val_gt_lost_frac": 0.52789,
+      "train_area_kept": 0.21565,
+      "val_n_lost50": 19,
+      "val_n_lost95": 8,
+      "eligible": false
+    },
+    {
+      "strategy": "hull+dil16",
+      "val_gt_lost_frac": 0.4487,
+      "train_area_kept": 0.28366,
+      "val_n_lost50": 14,
+      "val_n_lost95": 4,
+      "eligible": false
+    },
+    {
+      "strategy": "bbox10",
+      "val_gt_lost_frac": 0.19406,
+      "train_area_kept": 0.47241,
+      "val_n_lost50": 4,
+      "val_n_lost95": 4,
+      "eligible": false
+    },
+    {
+      "strategy": "bbox20",
+      "val_gt_lost_frac": 0.10352,
+      "train_area_kept": 0.66864,
+      "val_n_lost50": 4,
+      "val_n_lost95": 3,
+      "eligible": false
+    }
+  ],
+  "variants": [
+    {
+      "variant": "dil16__imagenet_mean",
+      "role": "candidate",
+      "strategy": "dil16"
+    }
+  ],
+  "created_at": "20261101_212849"
+}

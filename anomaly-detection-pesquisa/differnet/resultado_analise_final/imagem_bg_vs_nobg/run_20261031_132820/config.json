@@ -1,0 +1,20 @@
+{
+  "classes": "vari-grip",
+  "orig_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-detection-dataset\\insplad-seg\\insplad-seg",
+  "nobg_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-detection-dataset\\insplad-seg-no-back-treino",
+  "extra": {
+    "yolo_raw": "ablation_bg_removal\\data\\masked\\vari-grip_yolo_20261030_215259\\raw__black",
+    "yolo_dil16_mean": "ablation_bg_removal\\data\\masked\\vari-grip_yolo_20261030_215259\\dil16__imagenet_mean"
+  },
+  "cross": true,
+  "views": 64,
+  "val_fraction": 0.4,
+  "split_seed": 42,
+  "n_boot": 2000,
+  "seed": 0,
+  "cache_dir": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\imagem_bg_vs_nobg\\cache",
+  "out_dir": null,
+  "limit": null,
+  "dry_run": false,
+  "created_at": "20261031_132820"
+}

@@ -271,10 +271,13 @@ def train(train_loader, test_loader):
             mlflow.log_metric("train_loss", avg_train_loss, step=meta_epoch)
 
         # --- Eval (image-level only) ---
+        # As 64 rotações fixas tornam o AUROC por época determinístico; é o mesmo protocolo do
+        # treino que gerou final_models/SEDiffernet e do score usado na avaliação (D-25).
         model.eval()
         test_loss = []
         test_labels = []
         test_z = []
+        test_loader.dataset.get_fixed = True
 
         with torch.no_grad():
             for i, data in enumerate(tqdm(test_loader, desc=f"Eval {meta_epoch+1}")):
@@ -293,6 +296,7 @@ def train(train_loader, test_loader):
                 test_labels.append(t2np(labels))
                 test_z.append(z)
 
+        test_loader.dataset.get_fixed = False
         avg_test_loss = np.mean(test_loss)
 
         # Image-level AUROC

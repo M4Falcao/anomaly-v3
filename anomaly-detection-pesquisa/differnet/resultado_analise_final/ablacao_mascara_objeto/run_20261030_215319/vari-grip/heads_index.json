@@ -1,0 +1,53 @@
+{
+  "heads": [
+    {
+      "arm": "A",
+      "variant": "dil16__black",
+      "role": "candidate",
+      "dataset_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\data\\masked\\vari-grip_yolo_20261030_215259\\dil16__black",
+      "se_checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\final_models\\SEDiffernet\\vari-grip\\vari-grip_se_differnet_vari_grip_200_1_epoch_163.pt",
+      "head_run": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261030_215319\\vari-grip\\arm_A\\dil16__black\\nf_head\\run_20261030_220211",
+      "checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261030_215319\\vari-grip\\arm_A\\dil16__black\\nf_head\\run_20261030_220211\\best_models\\best_pixel_auroc.pt",
+      "status": "SUCCESS",
+      "returncode": 0,
+      "minutes": 0.0,
+      "split_check": "ok",
+      "recipe": "general",
+      "seed": 42,
+      "split_seed": 42
+    },
+    {
+      "arm": "A",
+      "variant": "dil16__imagenet_mean",
+      "role": "candidate",
+      "dataset_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\data\\masked\\vari-grip_yolo_20261030_215259\\dil16__imagenet_mean",
+      "se_checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\final_models\\SEDiffernet\\vari-grip\\vari-grip_se_differnet_vari_grip_200_1_epoch_163.pt",
+      "head_run": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261030_215319\\vari-grip\\arm_A\\dil16__imagenet_mean\\nf_head\\run_20261030_232659",
+      "checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261030_215319\\vari-grip\\arm_A\\dil16__imagenet_mean\\nf_head\\run_20261030_232659\\best_models\\best_pixel_auroc.pt",
+      "status": "SUCCESS",
+      "returncode": 0,
+      "minutes": 0.0,
+      "split_check": "ok",
+      "recipe": "general",
+      "seed": 42,
+      "split_seed": 42
+    },
+    {
+      "arm": "A",
+      "variant": "raw__black",
+      "role": "reference_nobg",
+      "dataset_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\data\\masked\\vari-grip_yolo_20261030_215259\\raw__black",
+      "se_checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\final_models\\SEDiffernet\\vari-grip\\vari-grip_se_differnet_vari_grip_200_1_epoch_163.pt",
+      "head_run": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261030_215319\\vari-grip\\arm_A\\raw__black\\nf_head\\run_20261031_025822",
+      "checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261030_215319\\vari-grip\\arm_A\\raw__black\\nf_head\\run_20261031_025822\\best_models\\best_pixel_auroc.pt",
+      "status": "SUCCESS",
+      "returncode": 0,
+      "minutes": 106.61,
+      "split_check": "ok",
+      "recipe": "general",
+      "seed": 42,
+      "split_seed": 42
+    }
+  ],
+  "updated_at": "20261031_044453"
+}

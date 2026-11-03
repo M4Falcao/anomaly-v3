@@ -315,6 +315,208 @@ Execução em lote dos presets (atualização operacional de D-17, 2026-10-25): 
 - Verificação que poderia refutar: comparar métricas sintéticas ao sklearn, validar coorte inteira em cflow_original e exportações em pipeline simulado, depois executar no kernel da pesquisa sobre as heads reais e auditar imagens/máscaras/contagens antes de interpretar resultados.
 - Resultado da verificação / próxima revisão: todas as células compilaram; testes sintéticos de AUROC/AP, F1 macro/micro/weighted e mIoU passaram; pipeline simulado raw/std/original gerou figuras, CSV/Excel/JSON/HTML. Importação e descoberta das cinco heads reais passaram; a inferência completa não foi iniciada durante a criação do notebook. Dependências IPython/ipykernel/nbformat foram instaladas no Conda da pesquisa.
 
+#### D-19 — Corrigir a máscara de objeto antes de retreinar sem fundo (ablação de máscara)
+- Data / responsável: 2026-10-30 / escolha do usuário (opção 2), plano por GitHub Copilot.
+- Estado: proposta; nenhum código, treino ou inferência executado.
+- Decisão: investigar a remoção de fundo com uma máscara de objeto ampliada de forma controlada, conforme o [plano de ablação de máscara](plano_ablacao_mascara_objeto.md). Estratégia primária: dilatação morfológica, preferida à envoltória convexa. Máscaras regeneradas como união de instâncias YOLO, sem descartar imagens. Inventário de teste e split da rodada com fundo. Braço A com SEDifferNet congelado (D-01); braço B (retreino do encoder) só para finalistas.
+- Por quê: nas rodadas D-18 `pixel_notebook/run_with_background` × `run_no_background`, a queda de Pixel AUROC acompanha o GT apagado: glass 41.7% do GT no preto (0.924→0.680), polymer 69.5% (0.867→0.667), contra lightning 9.3% (0.866→0.921), vari 8.4% e yoke 17.4% (estáveis). O teste sem fundo também perdeu mais anômalas que normais (glass 87→66, polymer 82→63). `create_dataset.py` usa só a primeira instância e descarta imagens sem detecção.
+- Evidência: diagnóstico exploratório de 2026-10-30 sobre máscaras reconstruídas (seção 2 do plano). Com área comparável, a dilatação perde GT igual ou menor que a envoltória, exceto polymer (leve vantagem da envoltória). Nenhuma estratégia sobre a máscara atual baixa o GT perdido de glass/polymer abaixo de ~23%. Usou o teste inteiro; serve só para desenhar o grid.
+- Alternativas consideradas e motivo para não escolhê-las: envoltória convexa (sem parâmetro, não cobre fora do contorno externo, inclui fundo arbitrário em peças em Y); mascarar só o score (opção 1, adiada por escolha do usuário); mascarar a loss (opção 3, adiada).
+- Riscos/limites: pesos YOLO não encontrados localmente (fallback com máscara atual limita glass/polymer); missing-cap é ausência de peça, logo pode não haver máscara adequada; uma seed; teste já inspecionado.
+- Verificação que poderia refutar a decisão: estágio `audit` com máscaras regeneradas mostrando GT perdido de validação > 5% para todas as estratégias; ou ΔPixel AUROC de validação < 0 contra a rodada com fundo no mesmo inventário/split.
+- Resultado da verificação / próxima revisão: pendente; revisar após `masks` + `audit`.
+- Atualização operacional 2026-10-30 (pedido do usuário): estágio `masks` implementado em [`ablation_bg_removal/`](../ablation_bg_removal/README.md) com **YOLO26-seg** (Ultralytics 8.4.194, instalado no env da pesquisa sem alterar torch/numpy), treinado por classe em uma **conversão do dataset sem fundo**: imagem original + polígonos dos pixels não-pretos de `train/good`; split interno 85/15, seed 42; teste nunca usado. Conversão executada: glass 928/164, lightning 330/58, polymer 746/132, vari 402/71, yoke 3882/686 (train/val YOLO), IoU polígono×máscara médio 0.988–0.994, 4 imagens rejeitadas por área; Ultralytics leu todos os rótulos. Geração de máscara: união de instâncias, `retina_masks`, `conf=0.10`, sem descarte (máscara cheia + log). Risco aceito: os rótulos herdam a falha de primeira instância/corte do segmentador antigo; o audit de GT perdido decide. Treino YOLO e geração de máscaras ainda não executados; testes sintéticos (6) e dry-runs passaram.
+- Atualização de implementação 2026-10-30 (pedido do usuário: "implemente tudo"): etapas 4–8 implementadas em `ablation_bg_removal/` (`04_audit_masks.py`, `05_select_strategies.py`, `06_train_nf_head_masked.py`, `07_retrain_encoder_masked.py`, `08_report.py`, launcher `run_pipeline.ps1 -Stage audit|select|frozen|retrain|report|ablation`). Decisões de implementação, sem mudar o protocolo: (a) máscara aplicada por **dataset materializado** com os mesmos nomes e árvore, então o treinador, o split e o notebook D-18 rodam sem mudança em `core/`; (b) estratégias definidas no grid 448; (c) audit e relatório importam `stratified_test_split` do treinador, e heads com `split_manifest` diferente do audit são recusadas; (d) a referência com fundo é a head existente de `treino_nf_heads/run_20261025_181523`, com conferência de `selection_validation_paths`; (e) métricas de pixel por histograma de 65 536 bins (validadas contra o sklearn) e bootstrap pareado estratificado; (f) o critério da seção 3.6 do plano é aplicado automaticamente só na validação; (g) braço B herda a seleção de encoder por Image AUROC no teste inteiro (`encoder_selection=test_full`, ressalva no relatório; `--encoder_pick latest` como alternativa); (h) `--source nobg` como máscara de controle sem GPU. Verificação: 22 testes unitários e smoke test em vari-grip com máscaras `nobg` (audit, poda, materialização, `--print_recipe`, igualdade de split, etapa 8 em 16 imagens com métricas/IC/figura). Artefatos do smoke removidos. Nenhum treino de modelo nem inferência completa executados.
+
+#### D-20 — vari-grip: usar `dil16` (override da regra de poda de D-19)
+- Data / responsável: 2026-10-30 / decisão do usuário, registrada por GitHub Copilot.
+- Estado: aceita para vari-grip; proposta de emenda da regra para as demais classes (ver abaixo).
+- Decisão: no braço A de vari-grip (rodada `ablacao_mascara_objeto/run_20261030_215319`), treinar `dil16__black`, `dil16__imagenet_mean` e a referência `raw__black`, no lugar das finalistas que a regra de D-19 escolheria (`dil8`, `hull`). Registrado em `finalists.json` com `override=["dil16"]`.
+- Por quê: na validação, `dil8` e `dil16` perdem praticamente o mesmo GT (2.12% × 2.05%) e o resíduo é constante de `dil16` a `dil64`. Nos exemplos, o resíduo é defeito em um **segundo vari-grip** vizinho ou cortado na borda, que o segmentador não marca, e nenhuma dilatação local resolve isso. `dil16` custa +5 pp de área, mas afasta o contorno artificial do objeto em ~3 células da grade 96 da NF head, o que reduz a contaminação das features da peça pela borda preta e dá margem para erros do YOLO26 (recall de instância da máscara 0.83). `hull` foi descartada pela análise de D-19 (sem parâmetro, inclui fundo arbitrário em peças em Y).
+- Evidência: audit `run_20261030_215319/vari-grip/audit/` (máscaras `vari-grip_yolo_20261030_215259`, YOLO26s-seg com mask mAP50-95 0.819 na validação interna do YOLO, nenhuma imagem sem detecção). Somente geometria de máscara; **nenhuma métrica de modelo foi vista** antes da decisão.
+- Alternativas consideradas e motivo para não escolhê-las: seguir a regra (`dil8`, `hull`) faria a regra de menor área favorecer o contorno mais próximo do objeto, justamente o artefato da hipótese 2; incluir `dil8__black` como controle de raio custaria +1 head (opcional).
+- Riscos/limites: o audit também imprimiu o holdout. A geometria do holdout (GT perdido de 6.1% com `dil16`, concentrado em uma imagem de objeto cortado na borda) foi vista, mas não usada na escolha; isso vai aparecer nas métricas de holdout. O resíduo de vizinhos só sai com `bbox20` (≈ sem remoção de fundo). Uma seed.
+- Emenda proposta para as próximas classes (decidir **antes** dos audits delas): menor `dil<r>` com `r ≥ 16` e GT perdido de validação ≤ 5%, mais a segunda menor área elegível como contraste; se nenhuma passar, manter o fallback de D-19.
+- Verificação que poderia refutar: ΔPixel AUROC de validação de `dil16__*` < 0 contra a referência com fundo, ou `contour_fpr` ≫ `offcontour_fpr` no relatório (o contorno continua dominando os FPs).
+- Resultado da verificação / próxima revisão: após `-Stage frozen` + `-Stage report` de vari-grip.
+- Resultado (2026-10-31, `run_20261030_215319/summary.md`; validação = 62 imagens, 16 anômalas; holdout = 92): **refutada como ganho no braço A.** Pixel AUROC de validação (Δ contra a head com fundo 0.8837, IC95 pareado): `dil16__black` 0.8478 (−0.036 [−0.067, −0.010]; ΔAUPRO −0.108; FPR na faixa de contorno 0.041 × 0.007 fora dela, ou seja, a borda preta gera FP); `dil16__imagenet_mean` 0.8820 (−0.002 [−0.038, +0.027]; ΔAUPRO −0.003; FPR de contorno 0.013 × 0.010, igual à referência), que é **empate**; `raw__black` 0.9010 (+0.017 [−0.015, +0.046]) com GT perdido de 6.3%, inverte de sinal no holdout (−0.014). Nenhuma variante passa o critério pré-registrado. AUROC dentro do objeto (região `dil32`, sem IC): referência 0.790, `imagenet_mean` 0.738, `raw__black` 0.780, `black` 0.649. A máscara não melhorou a localização na peça com o encoder congelado. Diagnóstico de imagem: o SEDifferNet com fundo recebendo a imagem mascarada **colapsa** (Image AUROC de validação 0.961 → 0.451 / 0.552 / 0.454 para `dil16__black` / `dil16__imagenet_mean` / `raw__black`; IC95 todos < −0.25). A entrada mascarada é fora da distribuição para o encoder com fundo, o que também explica a perda dentro do objeto no braço A.
+
+#### D-21 — Consequências da ablação de máscara em vari-grip (itens 1–3 aceitos em D-23; item 4 substituído)
+- Data / responsável: 2026-10-31 / análise de GitHub Copilot sobre o relatório de D-20; decidida pelo usuário em D-23.
+- Estado: itens (1)–(3) aceitos; item (4) substituído por D-23 (braço B sempre roda).
+- Decisão proposta: (1) registrar vari-grip como "remoção de fundo não melhora a localização" no protocolo de encoder congelado; a head com fundo continua sendo a de vari-grip; (2) **remover o preenchimento `black` das variantes candidatas** nas próximas classes, mantendo só `imagenet_mean` (e `raw__black` apenas como referência do experimento sem fundo); (3) tratar o braço A como teste da *head* e não da remoção de fundo em si. Qualquer conclusão sobre "remover o fundo melhora o modelo" exige o braço B (encoder retreinado com a mesma máscara), porque o encoder com fundo não consome imagens mascaradas (colapso do Image AUROC); (4) não rodar o braço B em vari-grip. Pela regra ele nem seria disparado (nenhum Δ de validação ≥ 0), e o experimento antigo sem fundo já aproximava esse braço (0.900 → 0.897). Priorizar classes em que a remoção tem mais a ganhar: lightning (+0.055 na rodada D-18 sem fundo) e glass/polymer (onde a máscara antiga apagava o defeito).
+- Por quê: preto gera FPs no contorno (4× a taxa fora dele) e piora AUROC/AUPRO com IC excluindo zero; `imagenet_mean` elimina o excesso de contorno e empata. O colapso do encoder mostra que o braço A mede uma head treinada sobre features deslocadas, não o benefício potencial de um modelo sem fundo.
+- Evidência: `resultado_analise_final/ablacao_mascara_objeto/run_20261030_215319/{summary.md,summary.csv,vari-grip/eval/}`; uma seed; holdout não independente (D-18).
+- Alternativas: rodar o braço B em vari-grip mesmo assim (≈ 200 épocas de SEDifferNet + head por variante; ganho esperado baixo dado o histórico); testar feather em `black` (desnecessário, já que `imagenet_mean` resolve o contorno).
+- Riscos/limites: n de validação pequeno (16 anômalas). O ruído do Δ é ~±0.03 a 0.04 e diferenças menores que isso não são detectáveis em vari-grip. O AUROC dentro do objeto não tem IC. Uma classe só para a regra do preenchimento. Para as demais classes, o encoder congelado vai dar o mesmo problema de distribuição, então o braço B deve ser planejado desde o início se o objetivo for a conclusão sobre o modelo.
+- Verificação que poderia refutar: em outra classe, `black` sem excesso de FP de contorno ou com Δ de validação ≥ `imagenet_mean`; ou braço B em lightning/glass/polymer sem ganho de validação contra a referência com fundo.
+- Resultado da verificação / próxima revisão: pendente da escolha do usuário sobre a próxima classe e sobre o braço B.
+
+#### D-22 — Nível de imagem: comparação pareada SEDifferNet com fundo × sem fundo
+- Data / responsável: 2026-10-31 / pedido do usuário (foco em nível de imagem), implementação por GitHub Copilot.
+- Estado: aceita como ferramenta; resultado parcial (só vari-grip).
+- Decisão: comparar `final_models/SEDiffernet` (com fundo) e `final_models/SEDiffernet_noBg` (fundo preto) com `ablation_bg_removal/09_image_level_compare.py` (`run_pipeline.ps1 -Stage image`): cada encoder no seu domínio (`bg@orig`, `nobg@nobg`), **nas mesmas imagens** (interseção por nome normalizado "Fotos " = "Fotos-"), score DifferNet com 64 rotações fixas, Δ pareado com IC95 (bootstrap estratificado, 2000), split val/holdout do protocolo. Diagnósticos opcionais: `--cross` (cada encoder no domínio do outro) e `--extra` (encoder sem fundo em dataset mascarado pela YOLO26).
+- Por quê: os números gravados nos checkpoints (com × sem fundo: glass 0.835/0.817, lightning 0.991/0.966, polymer 0.968/0.962, vari 0.977/0.958, yoke 0.984/0.963) vêm de testes diferentes (o sem fundo perdeu imagens, mais anômalas) e de seleção de época no próprio teste, sem IC.
+- Evidência (vari-grip, `resultado_analise_final/imagem_bg_vs_nobg/run_20261031_132820/`, 154 imagens, 40 anômalas): `bg@orig` 0.9770 (reproduz o checkpoint; validação 0.9606 = relatório D-20); `nobg@nobg` 0.9544, Δ −0.023 [−0.051, +0.003], com validação −0.026 e holdout −0.019. A queda é consistente em sinal, mas não significativa em 95%. Diagnósticos: `bg@nobg` 0.598 e `nobg@orig` 0.764, ou seja, cada encoder colapsa fora do próprio domínio; `nobg@yolo_raw` 0.933 (−0.044 [−0.086, −0.008]), em que a máscara YOLO26 justa, diferente da usada no treino, já degrada o encoder sem fundo; `nobg@yolo_dil16_mean` 0.686, de modo que o encoder sem fundo não generaliza para fundo cinza/dilatado. Portanto, o encoder é sensível ao *estilo exato* da máscara do treino.
+- Alternativas: comparar os valores dos checkpoints (testes diferentes, sem IC); retreinar já (caro antes de saber se a queda é real).
+- Riscos/limites: os dois encoders escolheram a época pelo AUROC no próprio teste. Os AUROCs absolutos são otimistas e nenhuma partição é limpa; o viés de seleção pode ter magnitude comparável ao Δ (~0.02). Uma seed. A interseção exclui as imagens que a segmentação antiga descartou (sem fundo não há como pontuá-las).
+- Verificação que poderia refutar: nas 5 classes, Δ `nobg@nobg` − `bg@orig` com IC95 cobrindo 0 em todas (sem efeito) ou acima de 0 (ganho); depois, um retreino com seleção de época na validação (opção 3 da análise de 2026-10-31) para eliminar o viés de seleção.
+- Resultado da verificação / próxima revisão: rodar `-Stage image` nas 5 classes (~35 min sem `-Cross`, ~70 min com).
+
+#### D-23 — Remover `black` e tornar o braço B parte fixa do pipeline
+- Data / responsável: 2026-10-31 / decisão do usuário ("remova o black, e adicione o retreino do SEDifferNet de imagem; após o retreino a avaliação de pixel deve ser feita novamente"), implementação por GitHub Copilot.
+- Estado: aceita. Aprova os itens (1)–(3) de D-21 e **substitui o item (4)**: o braço B passa a rodar sempre, não só quando o braço A empata ou ganha.
+- Decisão:
+  - **Preenchimento.** Nas próximas rodadas do `ablation_bg_removal/run_all.py`, as variantes candidatas usam só `imagenet_mean` (`fills='imagenet_mean'`; default do `05` idem). A referência `raw__black` sai do default (`include_reference_nobg=False`).
+  - **Braço B.** A etapa `retrain` (`07`) entra no pipeline padrão, antes do `report`, sobre todas as candidatas de `finalists.json`. Ela retreina o SEDifferNet na imagem mascarada e treina a NF head (receita `general`) sobre esse encoder novo.
+  - **Reavaliação de pixel.** O `report` (`08`) roda depois e avalia as heads dos braços A e B contra a head com fundo, com a mesma métrica, o mesmo split e o mesmo critério da seção 3.6.
+  - **Avaliação de imagem.** A etapa `image` (`09 --encoder`) acrescenta `retrained_<variante>@masked_<variante>`, pareada contra `bg@orig`.
+  - **Tolerância a falhas.** Uma falha no braço B não bloqueia o relatório do braço A.
+- Por quê:
+  - D-20 mostrou que `black` gera FP no contorno.
+  - D-20/D-22 mostraram que nenhum encoder transfere entre estilos de máscara. O braço A só mede a head sobre features deslocadas, então a pergunta "remover o fundo melhora o modelo" exige o encoder retreinado com a mesma máscara.
+  - A regra antiga de disparo nunca rodaria o braço B: em vari-grip, nenhum Δ de validação do braço A ficou ≥ 0.
+- Evidência: D-20 (FP de contorno e colapso do encoder com fundo nas imagens mascaradas) e D-22 (`nobg@yolo_dil16_mean` 0.686). Smoke test em vari-grip (cópia temporária da rodada `run_20261030_215319`, depois removida):
+  - `05` gerou só `dil16__imagenet_mean`;
+  - o `07`, com 1 época de pré-treino + 1 de meta-treino + 1 época de head, terminou com `SUCCESS` e `split=ok`;
+  - o `08 --limit 16` avaliou A/B;
+  - a etapa `image` incluiu a condição retreinada (0.803 com 1 época; só valida a infraestrutura, não é resultado).
+- Alternativas: manter a regra condicional de D-19, mais barata, mas que não responde à pergunta do usuário; retreinar também `raw__black` como controle do experimento antigo sem fundo, já aproximado por `final_models/SEDiffernet_noBg`.
+- Riscos/limites:
+  - O SEDifferNet do braço B escolhe a época pelo Image AUROC no **teste inteiro** (`encoder_pick=best_test`, igual aos `final_models`). As métricas de imagem dele são otimistas e o holdout não é limpo para imagem; a head de pixel continua selecionada só na validação. `arm_b_encoder_pick='latest'` evita a seleção no teste.
+  - O custo é de ~200 épocas de SEDifferNet por classe (de horas a mais de um dia em yoke).
+  - Uma seed.
+- Verificação que poderia refutar: ΔPixel AUROC de validação do braço B `dil16__imagenet_mean` < 0 com IC excluindo 0 contra a head com fundo, e Image AUROC `retrained@masked` abaixo de `bg@orig` nas classes rodadas.
+- Resultado da verificação / próxima revisão: após `run_all.py` com as etapas `select,frozen,retrain,report,image` nas classes escolhidas.
+- Resultado parcial (2026-11-01, vari-grip, rodada `ablacao_mascara_objeto/run_20261101_011735`): ver D-24. No pixel, o braço B é **idêntico** ao A por construção. No nível de imagem, o encoder retreinado em `dil16__imagenet_mean` empata com o encoder com fundo.
+
+#### D-24 — O retreino do SEDifferNet não muda as features da NF head (braço B de pixel = braço A)
+- Data / responsável: 2026-11-01 / achado de GitHub Copilot ao analisar a rodada `run_20261101_011735` a pedido do usuário.
+- Estado: achado verificado. Consequência aceita pelo usuário em 2026-11-01: opção "braço B só no nível de imagem".
+- Implementação: `07_retrain_encoder_masked.py` não treina mais a head B por padrão (`status=ENCODER_ONLY` no índice; `--train_head` restaura o comportamento antigo); `run_all.py` passa o encoder ENCODER_ONLY para a etapa `image`. A rodada `run_20261101_011735` já tinha iniciado o `07` de lightning com o código antigo, então essa classe ainda treina a head B redundante.
+- Achado:
+  - Em vari-grip, as linhas de pixel dos braços A e B saíram iguais em todas as casas decimais. Os `maps.npy` de `eval/A_*` e `eval/B_*` têm o mesmo MD5, e os pesos das duas NF heads (`best_pixel_auroc.pt`) também são iguais.
+  - O treinador recebeu de fato o encoder retreinado: o log da head B carrega `arm_B/.../best_img_auroc.pt`.
+  - A causa é que `core/train.py` só otimiza `model.nf.parameters()`. Comparando o `state_dict` do encoder com fundo (`final_models/SEDiffernet/vari-grip/..._epoch_163.pt`) com o do retreinado, `alexnet.features`, `alexnet.classifier`, `cbam*` e `simsa*` são **bit a bit iguais**; só o `nf` (flow de imagem) difere.
+  - A NF head de pixel usa apenas as ativações L1/L2/L3 do backbone (AlexNet ImageNet + blocos SE com a inicialização da seed 42, nunca treinados). Então, com a mesma seed, o mesmo dataset mascarado e a mesma receita, a head B reproduz a head A.
+- Consequências:
+  1. **Pixel.** "Retreinar o SEDifferNet" não altera o nível de pixel neste projeto. O braço B de pixel é redundante, gastou ~95 min em vari-grip e vai gastar o mesmo por classe. A única alavanca de pixel da remoção de fundo é a entrada mascarada (braço A).
+  2. **Imagem.** O braço B continua sendo a medida certa: o retreino adapta o flow de imagem ao domínio mascarado.
+  3. **Interpretação de D-01.** "Encoder congelado" na NF head equivale, na prática, a "AlexNet ImageNet + SE não treinados (seed 42)", e não a um encoder especializado por classe. Vale para todas as ablações de pixel anteriores e convém declarar isso no texto.
+  4. **D-20 se reproduz.** A head A `dil16__imagenet_mean` desta rodada repete exatamente a de `run_20261030_215319` (0.8820; Δ −0.0017 [−0.0376, +0.0266]).
+- Resultado vari-grip (154 imagens, 40 anômalas):
+  - **Pixel** (A = B), Δ contra a head com fundo: validação −0.002 [−0.038, +0.027]; holdout −0.021 [−0.067, +0.011]. Não passa o critério.
+  - **Imagem** (`09`), `retrained_dil16__imagenet_mean@masked`: 0.9605 contra 0.9770 de `bg@orig`, Δ −0.016 [−0.039, +0.002] (validação +0.001, holdout −0.026). Época 108, escolhida no teste inteiro.
+  - Ficou acima de `nobg@nobg` (0.9544, Δ −0.023), mas não supera o encoder com fundo.
+  - O encoder com fundo recebendo a imagem mascarada colapsa (validação 0.55), como já se sabia.
+- Proposta original (decidida acima: opção de pular a head B):
+  - **(a)** No `07`, retreinar só o encoder e reaproveitar a head do braço A no braço B, ou pular a head B e reportar o braço B só no nível de imagem. Isso economiza 1–2,5 h por classe.
+  - **(b)** Se o objetivo for que a remoção de fundo mude o pixel por meio do encoder, seria preciso treinar o backbone ou os SE (fine-tuning). Isso está fora do escopo de D-01 e exigiria uma nova decisão.
+- Verificação que poderia refutar: em outra classe, pesos de backbone diferentes entre o encoder retreinado e o de referência, ou head B ≠ head A com a mesma seed (por exemplo, por não determinismo de GPU). Confirmar com o mesmo teste de MD5 em lightning.
+
+#### D-25 — Treino do SEDifferNet: avaliação por época com 64 rotações fixas; FP32 mantido
+- Data / responsável: 2026-11-01 / pergunta do usuário ("o treino dessa ablation está diferente do treino normal? deveria estar igual"); decisão do usuário, implementação por GitHub Copilot.
+- Estado: aceita e implementada em `core/train.py`.
+- Contexto:
+  - O braço B (`ablation_bg_removal/_train_encoder_runner.py`) já usava o treino normal atual (`main.py` + `core/train.py` + `config.py`), com os mesmos hiperparâmetros do `config.py`: lr 2e-4, `n_transforms` 4, 64 de teste, 30 pré-épocas + 170 meta, 8 coupling blocks, `fc_internal` 2048, `clamp_alpha` 3, rotações on. É o mesmo código que treinou `final_models/SEDiffernet_noBg` (14–17/10/2026).
+  - Já `final_models/SEDiffernet` (com fundo; abr–mai/2026; código na raiz até `da7abe2`) foi treinado com duas diferenças:
+    - **(1) AMP.** `autocast` fp16 + `GradScaler`, removido no commit `de2a9e4` "ajuste treinamento" de 14/10/2026.
+    - **(2) Avaliação por época com rotações fixas.** O código antigo usava `test_loader.dataset.get_fixed = True`, com 64 rotações fixas. Desde a refatoração para `core/` (`1f86bbe`, 08/09/2026), o teste recebe o transform de treino (`RandomRotation`), e o Image AUROC por época, que escolhe `best_img_auroc.pt`, fica estocástico.
+  - Lightning com fundo (`..._100_1_epoch_41.pt`, 09/04/2026) veio de uma versão anterior do `config.py`, que não dá para reconstruir com precisão.
+- Decisão: restaurar (2) no treino normal (`get_fixed=True` só durante a avaliação de cada época) e manter FP32 (não restaurar AMP). Não retreinar a referência com fundo.
+- Por quê: com rotações aleatórias, a seleção de época mede ruído. As 64 rotações fixas também são o score usado em `09`, no `08` e em `core.eval_pipeline.image_score`, então a época passa a ser escolhida pela mesma métrica que é reportada. O FP32 foi escolha explícita do usuário em `de2a9e4`.
+- Evidência (encoder B de vari-grip, `run_20261101_011735`, imagens `dil16__imagenet_mean`):
+  - O laço de avaliação do `train.py` com `get_fixed=True` deu Image AUROC 0.9605, idêntico ao `09`.
+  - Com rotações aleatórias, duas passadas deram 0.9645 e 0.9548 (±0.005 de ruído) no mesmo checkpoint.
+- Consequências:
+  - Os encoders treinados de 08/09 a 01/11/2026 escolheram a época com AUROC ruidoso: `SEDiffernet_noBg`, braço B de vari-grip, e o de lightning, que estava em execução com o código antigo. Os scores reportados pelo `08`/`09` não mudam, porque sempre usaram rotações fixas; só a época escolhida pode não ser a melhor.
+  - Continua existindo a diferença de AMP contra `final_models/SEDiffernet`. A comparação com fundo × sem fundo/mascarado no nível de imagem mistura o efeito da máscara com fp16 × fp32 e com o código de abr–mai, e isso deve ser declarado.
+  - A seleção de época continua sendo no teste inteiro (o otimismo de D-22 permanece).
+- Alternativas: restaurar também o AMP (igual à referência, mas reverte a decisão do usuário de `de2a9e4`); aplicar o protocolo antigo só no braço B (deixaria noBg e o treino normal divergentes); retreinar a referência com fundo com o código atual (~8 h/classe; recusado por ora).
+- Verificação que poderia refutar: retreinar um encoder com o código novo e checar que o AUROC gravado em `best_img_auroc.pt` coincide com o do `09` para o mesmo checkpoint.
+- Resultado da verificação (2026-11-02): o encoder B do polymer (treinado depois de D-25) gravou `best_img_auroc` 0.9328, e o `09` mediu 0.9328 (`própria`, n=317) no mesmo checkpoint. **Confirmada.**
+
+#### D-26 — Resultado da ablação de máscara em 3 classes (vari-grip, lightning, polymer)
+- Data / responsável: 2026-11-02 / análise de GitHub Copilot a pedido do usuário ("dada as classes rodadas, o que podemos inferir?").
+- Estado: achados registrados. As consequências para o protocolo estão propostas e aguardam o usuário.
+- Rodada: `resultado_analise_final/ablacao_mascara_objeto/run_20261101_011735` (YOLO26s-seg por classe; `dil16__imagenet_mean` forçado em todas as classes; referência de pixel `treino_nf_heads/run_20261025_181523`; uma seed; holdout não independente).
+- Correções operacionais nesta análise:
+  - (i) A etapa `image` do polymer tinha sido executada sem a condição retreinada, porque o processo `run_all.py` iniciado em 01/11 01:17 ainda tinha o filtro antigo (`status == 'SUCCESS'`) em memória. Reexecutada com `--stages image`, usando o cache para as demais condições.
+  - (ii) O `08` passou a escrever `summary.md` com todas as classes do `summary.csv`; antes, só com a última processada.
+- **Pixel** (braço A = braço B; D-24 confirmado em mais uma classe, pois lightning tem A e B idênticos em todas as métricas):
+
+  | classe | GT perdido val (`dil16`) | Δ Pixel AUROC val [IC95] | Δ holdout [IC95] | Δ AUPRO val | AUROC no objeto (ref → A) | FPR contorno/fora (ref → A) | critério |
+  |---|---|---|---|---|---|---|---|
+  | vari-grip | 2.1% | −0.002 [−0.038, +0.027] | −0.021 [−0.067, +0.011] | −0.003 | 0.790 → 0.738 | 0.013/0.010 → 0.013/0.010 | falhou (delta) |
+  | lightning | 0.0% | **+0.068 [+0.053, +0.087]** | **+0.075 [+0.058, +0.093]** | **+0.212** | 0.832 → 0.849 | 0.014/0.010 → 0.021/0.009 | **★ recomendada** |
+  | polymer | **52.8%** | −0.225 [−0.313, −0.143] | −0.186 [−0.267, −0.109] | −0.131 | 0.793 → 0.749 | 0.024/0.009 → 0.007/0.010 | falhou (gt_lost, delta, aupro) |
+
+- **Imagem** (Image AUROC na interseção; Δ contra `bg@orig`, IC95 pareado):
+
+  | classe | `bg@orig` | `nobg@nobg` (preto antigo) | `retrained@masked` (braço B) | época B | encoder com fundo + imagem mascarada |
+  |---|---|---|---|---|---|
+  | vari-grip (154/40) | 0.977 | −0.023 [−0.051, +0.002] | −0.016 [−0.039, +0.002] | 108 (rotações aleatórias) | 0.686 |
+  | lightning (135/39) | 0.990 | −0.030 [−0.058, −0.007] | −0.030 [−0.065, −0.002] | 12 (rotações aleatórias) | 0.351 |
+  | polymer (283/63) | 0.964 | −0.003 [−0.020, +0.017] | −0.032 [−0.061, −0.007] | 18 (rotações fixas) | 0.750 |
+
+- Inferências:
+  1. **No pixel, o efeito da remoção de fundo depende da classe, e o principal preditor é o GT perdido pela máscara.**
+     - Lightning (peça fina, com ~75% de fundo removido e 0% do defeito perdido) teve ganho grande e consistente em validação, holdout e AUPRO. É o mesmo sinal do experimento antigo sem fundo (+0.055; D-21).
+     - Vari-grip (2% perdido) empata.
+     - Polymer perde porque o defeito anotado fica no **suporte de fixação superior**, fora da peça segmentada (visto em `polymer.../audit/audit_examples.png`). Mesmo `dil64` perde 34% do GT, e só `bbox20` preserva (10% de perda na validação). O rótulo de "objeto" herdado do dataset sem fundo não contém a região do defeito, e nenhuma dilatação corrige isso.
+  2. **O override `dil16` de D-20 não deveria ter valido para o polymer.** A regra de D-19 marcaria `mask_reliable=false` e cairia no fallback (`dil64`, `bbox20`). O `force_strategies='dil16'` global do `run_all.py` ignorou isso. O resultado do polymer é válido como "máscara errada degrada", não como teste justo da remoção de fundo.
+  3. **No nível de imagem, a remoção de fundo não ajudou em nenhuma das 3 classes.**
+     - O encoder retreinado na imagem mascarada fica entre 0.016 e 0.032 abaixo do encoder com fundo, com IC excluindo 0 em lightning e polymer. É o mesmo padrão do `nobg@nobg`.
+     - O SEDifferNet de imagem se beneficia do contexto ou fundo. A explicação não é só falta de treino: o pico de AUROC do encoder mascarado ocorre cedo (épocas 12–18 em lightning/polymer) e depois cai (polymer: 0.933 → 0.921 na época 170).
+     - Ressalvas: (a) fp16 × fp32 e o código de abr–mai na referência (D-25); (b) épocas escolhidas no teste para ambos (otimista para ambos); (c) no polymer, parte da queda pode vir do defeito apagado pela máscara.
+  4. **Todo encoder colapsa fora do próprio domínio** (3/3 classes): com fundo + imagem mascarada fica em 0.35–0.75. Uma única imagem mascarada não serve aos dois níveis com o encoder de referência.
+  5. **Arquitetura sugerida pelos dados:** usar o encoder com fundo no nível de imagem e, no pixel, a head com entrada mascarada **só onde a máscara cobre o defeito** (lightning). Isso é possível porque a head de pixel não depende do flow de imagem (D-24); só mudam a imagem de entrada e a head.
+  6. **O contorno ainda gera FP com `imagenet_mean` em lightning** (0.021 × 0.009 fora), mas o ganho líquido é grande. `dil32` pode reduzir o efeito (não testado).
+- Proposta (aguarda o usuário):
+  - **(a)** Adotar `dil16__imagenet_mean` no pixel para lightning, como receita exploratória (holdout não independente; uma seed).
+  - **(b)** Polymer: não mascarar (manter com fundo) ou testar `bbox20`. Tornar o override condicional: `force_strategies` só onde o GT perdido de validação for ≤ 5%; nas demais classes, seguir a regra/fallback de D-19.
+  - **(c)** Glass e yoke: rodar primeiro só `convert,yolo,masks,audit` e decidir pela perda de GT antes de treinar heads.
+  - **(d)** Nível de imagem: manter o encoder com fundo; não investir mais no braço B, salvo se surgir uma hipótese nova (por exemplo, fundo borrado em vez de removido).
+- Verificação que poderia refutar: em glass/yoke, ganho de pixel com GT perdido alto, ou perda com GT perdido ≈ 0; Image AUROC de `retrained@masked` ≥ `bg@orig` com encoder treinado no mesmo código (FP32, rotações fixas) e época escolhida na validação.
+
+#### D-27 — Por que a remoção de fundo piora o nível de imagem mesmo sem perda de defeito (hipóteses e literatura)
+- Data / responsável: 2026-11-02 / análise de GitHub Copilot a pedido do usuário.
+- Estado: hipóteses, ordenadas pela evidência local. **Nenhuma confirmada por experimento dedicado.**
+- Fenômeno:
+  - Em vari-grip e lightning (GT perdido ≤ 2%), o Image AUROC do encoder retreinado na imagem mascarada fica 0.016–0.030 abaixo do encoder com fundo (D-26).
+  - No pixel, vari-grip empata; dentro do objeto, cai de 0.790 para 0.738.
+  - Lightning melhora no pixel (+0.068), então o efeito não é uniforme.
+- H1 — **As features do backbone não se adaptam à imagem mascarada** (evidência forte).
+  - O retreino só ajusta o flow (D-24). AlexNet/SE seguem com pesos do ImageNet, treinados em cenas naturais, e regiões de cor constante com bordas artificiais são entrada fora da distribuição para CNNs ("missingness bias"; Jain et al., ICLR 2022, arXiv:2204.08945).
+  - Hooker et al. (ROAR, NeurIPS 2019) mostram que remover pixels sem retreinar confunde a perda de informação com a mudança de distribuição. Aqui o retreino é parcial (só o flow), então a mudança de distribuição persiste nas features.
+  - Evidência local: o encoder com fundo nas imagens mascaradas colapsa (0.35–0.75). Retreinar o flow recupera a maior parte, mas não tudo.
+- H2 — **O contorno e o preenchimento viram a principal fonte de variação modelada pelo flow** (evidência moderada).
+  - O DifferNet faz média de features globais multiescala (Rudolph et al., WACV 2021). Com fundo constante, o vetor médio mistura "objeto" e "preenchimento" em proporção que depende da área e do recorte de cada imagem, e as primeiras camadas respondem fortemente à borda artificial.
+  - Flows tendem a modelar estatísticas locais e de baixo nível em vez de semântica (Kirichenko et al., NeurIPS 2020; Schirrmeister et al., NeurIPS 2020). O NLL passa a refletir a silhueta e o ruído da máscara do YOLO, e não a textura do defeito.
+  - Evidência local:
+    - Excesso de FP no contorno no pixel: 4× com `black` (D-20) e 2.4× com `imagenet_mean` em lightning (D-26).
+    - O encoder sem fundo é sensível ao estilo exato da máscara (D-22: `nobg@yolo_raw` −0.044).
+    - A área do objeto **não** prediz o rótulo (abaixo). A variação de área/contorno é ruído, não sinal.
+- H3 — **O fundo é contexto informativo, não só ruído** (plausível; sem teste local).
+  - Modelos de reconhecimento usam o fundo, e removê-lo reduz a acurácia mesmo com o objeto intacto (Xiao et al., "Noise or Signal", ICLR 2021). O contexto regula a percepção de objetos (Oliva & Torralba, Trends Cogn. Sci. 2007).
+  - Aqui, por exemplo, a iluminação e o balanço de cor da cena servem de referência para tons de corrosão (4 dos 6 defeitos do INSPLAD são corrosão; Vieira-e-Silva et al., arXiv:2311.01619).
+  - O campo receptivo efetivo é aproximadamente gaussiano e centrado (Luo et al., NIPS 2016). Perto da borda, as features misturam peça e entorno, o que explica a queda de AUROC dentro do objeto em vari-grip mesmo sem perder GT.
+- H4 — **Atalho no fundo** (Geirhos et al., Nat. Mach. Intell. 2020; Beery et al., ECCV 2018): imagens anômalas viriam de voos/locais com fundos diferentes, e o encoder com fundo pontuaria em parte o local.
+  - Teste local sem inferência (`masks_report.csv`, teste completo): AUROC da área do objeto como score = 0.468 [0.358, 0.584] em vari-grip, 0.551 [0.453, 0.652] em lightning e 0.528 [0.453, 0.607] em polymer. AUROC do desvio de área contra o treino = 0.570 / 0.550 / 0.539 (ICs cobrem 0.5).
+  - **O atalho de enquadramento/escala foi refutado.** O conteúdo do fundo continua sem teste.
+  - Sinal fraco: a proporção de imagens com várias instâncias difere entre normais e anômalas (lightning 0.26 × 0.48; vari 0.18 × 0.03), o que muda quanto fundo sobra entre peças.
+- H5 — **Parte da diferença é artefato de protocolo** (evidência moderada):
+  - (a) A referência escolheu a época com o mesmo score que é reportado (64 rotações fixas). Os encoders B de vari e lightning escolheram com rotações aleatórias (antes de D-25), cujo ruído é de ±0.005. Isso cria uma "maldição do vencedor" assimétrica a favor da referência (Cawley & Talbot, JMLR 2010). O polymer B, escolhido com rotações fixas, ainda cai −0.032, mas lá há defeito apagado.
+  - (b) fp16/AMP e código de abr–mai na referência × FP32 no braço B (D-25).
+  - (c) Época escolhida no teste para ambos.
+  - O tamanho do efeito (0.02–0.03) é da mesma ordem desses vieses, e em vari-grip o IC encosta em 0.
+- Contraponto da literatura: em modelos generativos de pixel, as estatísticas de fundo **confundem** a likelihood (Ren et al., NeurIPS 2019, razão de likelihood), o que favoreceria remover o fundo. Isso é coerente com o **ganho no pixel** de lightning: a head local pontua cada posição, e a vegetação ou os cabos geram NLL alto. No nível de imagem, o DifferNet já opera sobre embeddings semânticos médios, onde flows funcionam melhor (Kirichenko et al. 2020), e o fundo pesa menos como ruído.
+- Diagnósticos propostos (aguardam o usuário):
+  - **(1) Atalho de conteúdo (H4).** Pontuar com o encoder com fundo as imagens **só com fundo** (objeto preenchido). AUROC ≫ 0.5 indicaria atalho. Só inferência, poucos minutos por classe; a máscara invertida exige implementação.
+  - **(2) H2/H3.** Fundo **borrado** (`fill=blur`) ou máscara com `feather`, que preserva cor e iluminação e suaviza o contorno. Exige retreinar o flow (~8 h/classe).
+  - **(3) H5.** Comparação justa: retreinar o encoder com fundo no código atual, com época escolhida na validação.
+  - **(4) H1.** Ajuste fino do backbone/SE na imagem mascarada (fora de D-01).
+
 ## 12. Fontes técnicas principais
 
 - [Análise científica consolidada das 5 classes](analise_cientifica_ablacao_nf_head_5classes.md): **fonte principal para publicação** a partir de 2026-10-13; tabela de ablação, receitas, estatística e reconciliação com documentos anteriores.

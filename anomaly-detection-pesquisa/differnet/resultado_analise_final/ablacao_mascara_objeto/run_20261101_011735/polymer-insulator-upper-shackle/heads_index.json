@@ -1,0 +1,34 @@
+{
+  "heads": [
+    {
+      "arm": "A",
+      "variant": "dil16__imagenet_mean",
+      "role": "candidate",
+      "dataset_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\data\\masked\\polymer-insulator-upper-shackle_yolo_20261101_212633\\dil16__imagenet_mean",
+      "se_checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\final_models\\SEDiffernet\\polymer-insulator-upper-shackle\\polymer-insulator-upper-shackle_se_differnet_polymer_insulator_upper_shackle_200_1_epoch_146.pt",
+      "head_run": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\polymer-insulator-upper-shackle\\arm_A\\dil16__imagenet_mean\\nf_head\\run_20261101_212943",
+      "checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\polymer-insulator-upper-shackle\\arm_A\\dil16__imagenet_mean\\nf_head\\run_20261101_212943\\best_models\\best_pixel_auroc.pt",
+      "status": "SUCCESS",
+      "returncode": 0,
+      "minutes": 113.48,
+      "split_check": "ok",
+      "recipe": "general",
+      "seed": 42,
+      "split_seed": 42
+    },
+    {
+      "arm": "B",
+      "variant": "dil16__imagenet_mean",
+      "role": "candidate",
+      "status": "ENCODER_ONLY",
+      "dataset_root": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\ablation_bg_removal\\data\\masked\\polymer-insulator-upper-shackle_yolo_20261101_212633\\dil16__imagenet_mean",
+      "se_checkpoint": "C:\\Users\\teo-s\\Documents\\GitHub\\anomaly-v3\\anomaly-detection-pesquisa\\differnet\\resultado_analise_final\\ablacao_mascara_objeto\\run_20261101_011735\\polymer-insulator-upper-shackle\\arm_B\\dil16__imagenet_mean\\encoder\\run_20261101_232328_polymer-insulator-upper-shackle\\best_models\\best_img_auroc.pt",
+      "minutes": 961.51,
+      "seed": 42,
+      "encoder_selection": "test_full",
+      "encoder_pre_epochs": null,
+      "encoder_meta_epochs": null
+    }
+  ],
+  "updated_at": "20261102_152436"
+}
